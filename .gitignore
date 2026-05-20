@@ -10,7 +10,6 @@
 # Whitelist documentation
 !README.md
 !LICENSE
-!*.md
 
 # Whitelist makefile
 !Makefile
