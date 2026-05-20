@@ -12,9 +12,9 @@ function GameOver:update()
   local text_w, text_h = gfx.getTextSize(display_text)
 
   gfx.clear()
-  gfx.drawText(display_text, CONSTANTS.SCREEN_W_HALF - text_w / 2, CONSTANTS.SCREEN_H_HALF - text_h / 2, kTextAlignment.center)
+  gfx.drawText(display_text, CONSTANTS.SCREEN_W_HALF - text_w / 2, CONSTANTS.SCREEN_H_HALF - text_h / 2)
 
   if (playdate.buttonJustPressed(playdate.kButtonA)) then
-    setState(SCENE_TITLE)
+    setScene(SCENE_TITLE)
   end
 end

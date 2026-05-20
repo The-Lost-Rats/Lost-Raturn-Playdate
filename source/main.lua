@@ -12,15 +12,15 @@ SCENE_TITLE = Title()
 SCENE_GAME_PLAY = GamePlay()
 SCENE_GAME_OVER = GameOver()
 
-local current_game_state = SCENE_TITLE
-current_game_state:enter()
+local current_game_scene = SCENE_TITLE
+current_game_scene:enter()
 
-function setState(new_state)
-  current_game_state:leave()
-  current_game_state = new_state
-  current_game_state:enter()
+function setScene(new_state)
+  current_game_scene:leave()
+  current_game_scene = new_state
+  current_game_scene:enter()
 end
 
 function playdate.update()
-  current_game_state:update()
+  current_game_scene:update()
 end
