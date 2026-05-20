@@ -1,0 +1,25 @@
+# Ignore everything by default
+/*
+/*/
+.*
+
+# Whitelist git files
+!.gitignore
+!.github/
+
+# Whitelist documentation
+!README.md
+!LICENSE
+!*.md
+
+# Whitelist makefile
+!Makefile
+
+# Whitelist playdate files
+!pdxinfo
+
+# Whitelist source lua files
+!Source/
+Source/**
+
+!Source/*.lua
