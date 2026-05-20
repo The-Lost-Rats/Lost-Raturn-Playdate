@@ -6,6 +6,7 @@ import "states/GamePlayState"
 import "states/TitleState"
 
 local gfx <const> = playdate.graphics
+playdate.display.setRefreshRate(30)
 
 STATE_TITLE = TitleState()
 STATE_GAME_PLAY = GamePlayState()
