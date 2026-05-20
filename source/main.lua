@@ -1,18 +1,18 @@
 import "CoreLibs/graphics"
 import "CoreLibs/object"
 
-import "states/GameOverState"
-import "states/GamePlayState"
-import "states/TitleState"
+import "scenes/GameOver"
+import "scenes/GamePlay"
+import "scenes/Title"
 
 local gfx <const> = playdate.graphics
 playdate.display.setRefreshRate(30)
 
-STATE_TITLE = TitleState()
-STATE_GAME_PLAY = GamePlayState()
-STATE_GAME_OVER = GameOverState()
+SCENE_TITLE = Title()
+SCENE_GAME_PLAY = GamePlay()
+SCENE_GAME_OVER = GameOver()
 
-local current_game_state = STATE_TITLE
+local current_game_state = SCENE_TITLE
 current_game_state:enter()
 
 function setState(new_state)
