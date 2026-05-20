@@ -18,7 +18,8 @@
 !pdxinfo
 
 # Whitelist source lua files
-!Source/
-Source/**
+!source
+source/**
 
-!Source/*.lua
+!source/**/
+!source/**/*.lua
