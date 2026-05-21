@@ -16,5 +16,34 @@ CONSTANTS = {
     JUMP_V = -9 -- px/frame
   },
 
-  GRAVITY = 0.6 -- px/frame^2
+  GRAVITY = 0.6, -- px/frame^2
+
+  PEDESTRIANS = {
+    COWBOY = {
+      item = "SIX_SHOOTER",
+      sprite = "cowboy"
+    },
+    BUSINESS_MAN = {
+      item = "WATCH",
+      sprite = "business_man"
+    },
+    WOMAN = {
+      item = "RING",
+      sprite = "woman"
+    },
+    SWIMMER = {
+      item = "SUNSCREEN",
+      sprite = "swimmer"
+    },
+    CONSTRUCTION_WORKER = {
+      item = "WRENCH",
+      sprite = "construction_worker"
+    },
+    RUNNER = {
+      item = "PHONE",
+      sprite = "runner"
+    },
+
+    STEP_LENGTH = 100
+  }
 }

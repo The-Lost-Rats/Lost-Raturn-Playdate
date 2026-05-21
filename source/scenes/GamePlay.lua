@@ -5,17 +5,23 @@ import "scenes/BaseScene"
 import "scripts/Player"
 import "utilities/constants"
 
+import "scripts/pedestrian/Leg"
+
 local gfx <const> = playdate.graphics
 
 class ('GamePlay').extends(BaseScene)
 function GamePlay:init()
   GamePlay.super.init(self)
   self.player = Player(0, 0, 1, true)
+
+  self.test_leg = Leg(CONSTANTS.SCREEN_W_HALF, CONSTANTS.FLOOR_Y)
 end
 
 function GamePlay:enter()
   self.player:reset()
   self.player:add()
+
+  self.test_leg:add()
 
   gfx.sprite.setBackgroundDrawingCallback(function(x, y, w, h)
     -- Redraw background elements and clip to dirty rect
@@ -48,6 +54,8 @@ end
 
 function GamePlay:update()
   gfx.sprite.update()
+
+  self.test_leg:update()
 
   if (playdate.buttonJustPressed(playdate.kButtonA)) then
     setScene(SCENE_GAME_OVER)

@@ -1,5 +1,4 @@
 import "CoreLibs/graphics"
-import "CoreLibs/object"
 
 import "scenes/GameOver"
 import "scenes/GamePlay"
