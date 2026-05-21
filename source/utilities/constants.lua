@@ -10,4 +10,11 @@ CONSTANTS = {
 
   HUD_H = 24,
   FLOOR_Y = 220,
+
+  PLAYER = {
+    MOVE_SPEED = 4, -- px/frame
+    JUMP_V = -9 -- px/frame
+  },
+
+  GRAVITY = 0.6 -- px/frame^2
 }
