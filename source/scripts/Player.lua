@@ -51,17 +51,17 @@ function Player:update()
   x = x + self.vx
 
   -- Bounds check
-  if (y > CONSTANTS.FLOOR_Y - self.height / 2) then
+  if (y >= CONSTANTS.FLOOR_Y - self.height / 2) then
     self.vy = 0
     y = CONSTANTS.FLOOR_Y - self.height / 2
     self.is_grounded = true
   end
 
-  if (x > CONSTANTS.SCREEN_W - self.width / 2) then
+  if (x >= CONSTANTS.SCREEN_W - self.width / 2) then
     x = CONSTANTS.SCREEN_W - self.width / 2
   end
 
-  if (x < self.width / 2) then
+  if (x <= self.width / 2) then
     x = self.width / 2
   end
 
