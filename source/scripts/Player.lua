@@ -18,6 +18,14 @@ function Player:init(vx, vy, direction_x, is_grounded)
   self.is_grounded = is_grounded
 end
 
+function Player:reset()
+  self.vx = 0
+  self.vy = 0
+  self.is_grounded = true
+
+  self:moveTo(CONSTANTS.SCREEN_W_HALF, CONSTANTS.FLOOR_Y - self.height / 2)
+end
+
 function Player:update()
   local x, y = self:getPosition()
 

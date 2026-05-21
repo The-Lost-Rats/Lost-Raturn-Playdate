@@ -8,13 +8,17 @@ import "utilities/constants"
 local gfx <const> = playdate.graphics
 
 class ('GamePlay').extends(BaseScene)
-function GamePlay:enter()
+function GamePlay:init()
+  GamePlay.super.init(self)
   self.player = Player(0, 0, 1, true)
-  self.player:moveTo(CONSTANTS.SCREEN_W_HALF, CONSTANTS.FLOOR_Y - self.player.height / 2)
-  self.player:setVisible(true)
+end
+
+function GamePlay:enter()
+  self.player:reset()
   self.player:add()
 
   gfx.sprite.setBackgroundDrawingCallback(function(x, y, w, h)
+    -- Redraw background elements and clip to dirty rect
     gfx.setColor(gfx.kColorBlack)
 
     local display_text = self.className
@@ -48,4 +52,8 @@ function GamePlay:update()
   if (playdate.buttonJustPressed(playdate.kButtonA)) then
     setScene(SCENE_GAME_OVER)
   end
+end
+
+function GamePlay:leave()
+  self.player:remove()
 end
