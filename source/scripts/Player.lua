@@ -49,5 +49,13 @@ function Player:update()
     self.is_grounded = true
   end
 
+  if (x > CONSTANTS.SCREEN_W - self.width / 2) then
+    x = CONSTANTS.SCREEN_W - self.width / 2
+  end
+
+  if (x < self.width / 2) then
+    x = self.width / 2
+  end
+
   self:moveTo(x, y)
 end
