@@ -108,8 +108,18 @@ end
 
 function GamePlay:spawnWalker()
   -- TODO: need better way to manage coordinate systems/origin point of legs
-  local new_walker = Walker(CONSTANTS.PEDESTRIANS.COWBOY, CONSTANTS.PEDESTRIANS.SPAWN_POSITION_RIGHT, CONSTANTS.FLOOR_Y - 20 / 2)
-  new_walker:add()
+  local random_float = math.random()
+  local new_walker
 
+  local walker_type_index = math.random(#CONSTANTS.PEDESTRIANS.TYPES)
+  local walker_type = CONSTANTS.PEDESTRIANS.TYPES[self.walker_type_index]
+
+  if (random_float >= 0.5) then
+    new_walker = Walker(walker_type, CONSTANTS.PEDESTRIANS.SPAWN_POSITION_RIGHT, CONSTANTS.FLOOR_Y - 20 / 2, -5, -5, CONSTANTS.PEDESTRIANS.DIRECTION.LEFT)
+  else
+    new_walker = Walker(walker_type, CONSTANTS.PEDESTRIANS.SPAWN_POSITION_LEFT, CONSTANTS.FLOOR_Y - 20 / 2, 5, -5, CONSTANTS.PEDESTRIANS.DIRECTION.RIGHT)
+  end
+  
+  new_walker:add()
   table.insert(self.walkers, new_walker)
 end

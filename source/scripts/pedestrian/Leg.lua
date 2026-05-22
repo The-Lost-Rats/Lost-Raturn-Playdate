@@ -16,11 +16,12 @@ local MOVEMENT_STATES = {
 }
 
 class('Leg').extends()
-function Leg:init(x_pos, y_pos)
+function Leg:init(x_pos, y_pos, direction)
   Leg.super.init(self)
 
-  self.dx_remaining = 0
+  self.direction = direction
 
+  self.dx_remaining = 0
   self.vx, self.vy = 0, 0
   self.x, self.y = 0, 0
 
@@ -93,8 +94,13 @@ end
 -- TODO: this should be private?
 function Leg:moveTo(x, y)
   self.x, self.y = x, y
+
   self.shoe_sprite:moveTo(x, y)
-  self.leg_sprite:moveTo(x + 32 / 2 - 16 / 2, y - 20 /2 - 120 / 2)
+  if (self.direction == CONSTANTS.PEDESTRIANS.DIRECTION.LEFT) then
+    self.leg_sprite:moveTo(x + 32 / 2 - 16 / 2, y - 20 /2 - 120 / 2)
+  else
+    self.leg_sprite:moveTo(x - 32 / 2 + 16 / 2, y - 20 /2 - 120 / 2)
+  end
 end
 
 function Leg:justLanded()

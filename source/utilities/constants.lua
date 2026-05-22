@@ -18,30 +18,33 @@ CONSTANTS = {
 
   GRAVITY = 0.6, -- px/frame^2
 
+  -- TODO: is this the right format for the constants? Should I have walkers be its own?
   PEDESTRIANS = {
-    COWBOY = {
-      item = "SIX_SHOOTER",
-      sprite = "cowboy"
-    },
-    BUSINESS_MAN = {
-      item = "WATCH",
-      sprite = "business_man"
-    },
-    WOMAN = {
-      item = "RING",
-      sprite = "woman"
-    },
-    SWIMMER = {
-      item = "SUNSCREEN",
-      sprite = "swimmer"
-    },
-    CONSTRUCTION_WORKER = {
-      item = "WRENCH",
-      sprite = "construction_worker"
-    },
-    RUNNER = {
-      item = "PHONE",
-      sprite = "runner"
+    TYPES = {
+      COWBOY = {
+        item = "SIX_SHOOTER",
+        sprite = "cowboy"
+      },
+      BUSINESS_MAN = {
+        item = "WATCH",
+        sprite = "business_man"
+      },
+      WOMAN = {
+        item = "RING",
+        sprite = "woman"
+      },
+      SWIMMER = {
+        item = "SUNSCREEN",
+        sprite = "swimmer"
+      },
+      CONSTRUCTION_WORKER = {
+        item = "WRENCH",
+        sprite = "construction_worker"
+      },
+      RUNNER = {
+        item = "PHONE",
+        sprite = "runner"
+      }
     },
 
     STEP_LENGTH = 120,
@@ -56,6 +59,12 @@ CONSTANTS = {
     MIN_WALKERS = 2,
 
     MIN_SPAWN_INTERVAL_MS = 1000,
-    MAX_SPAWN_INTERVAL_MS = 8000
+    MAX_SPAWN_INTERVAL_MS = 8000,
+
+    -- TODO: do i want this?
+    DIRECTION = {
+      LEFT = 0,
+      RIGHT = 1
+    }
   }
 }
