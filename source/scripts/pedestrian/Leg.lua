@@ -18,15 +18,13 @@ local MOVEMENT_STATES = {
 class('Leg').extends()
 function Leg:init(x_pos, y_pos)
   Leg.super.init(self)
-  
-  self.step_dx = -5
-  self.step_dy = -5
+
   self.dx_remaining = 0
 
-  self.vy = 0
-  self.vx = 0
+  self.vx, self.vy = 0, 0
+  self.x, self.y = 0, 0
 
-  self:rise(CONSTANTS.PEDESTRIANS.STEP_LENGTH, -5, -5)
+  self.just_landed = false
 
   -- Leg
   self.leg_sprite = gfx.sprite.new(leg_image)
@@ -74,6 +72,8 @@ function Leg:land()
   self.y = CONSTANTS.FLOOR_Y - 20 / 2
   self.vx, self.vy = 0, 0
   self:moveTo(self.x, self.y)
+
+  self.just_landed = true
 end
 
 function Leg:add()
@@ -96,3 +96,11 @@ function Leg:moveTo(x, y)
   self.shoe_sprite:moveTo(x, y)
   self.leg_sprite:moveTo(x + 32 / 2 - 16 / 2, y - 20 /2 - 120 / 2)
 end
+
+function Leg:justLanded()
+  local temp_just_landed = self.just_landed
+  self.just_landed = false
+  return temp_just_landed
+end
+
+-- TODO: make function to check out of bounds

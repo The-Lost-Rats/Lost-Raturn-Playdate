@@ -44,6 +44,7 @@ CONSTANTS = {
       sprite = "runner"
     },
 
-    STEP_LENGTH = 100
+    STEP_LENGTH = 120,
+    LEG_SPACING = 40
   }
 }
