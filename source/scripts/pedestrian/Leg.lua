@@ -103,4 +103,6 @@ function Leg:justLanded()
   return temp_just_landed
 end
 
--- TODO: make function to check out of bounds
+function Leg:isOffScreen()
+  return self.x < CONSTANTS.PEDESTRIANS.DESPAWN_BOUND_LEFT or self.x > CONSTANTS.PEDESTRIANS.DESPAWN_BOUND_RIGHT
+end

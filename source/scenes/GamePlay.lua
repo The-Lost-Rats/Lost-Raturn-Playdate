@@ -65,6 +65,17 @@ function GamePlay:update()
     walker:update()
   end
 
+  -- Clean up walkers off screen
+  -- TODO: this is not very performant ;-;
+  -- TODO: maybe we can also make this a callback or something? remove when ready...
+  for i = #self.walkers, 1, -1 do
+    local walker = self.walkers[i]
+    if (walker:isOffScreen()) then
+      walker:remove()
+      table.remove(self.walkers, i)
+    end
+  end
+
   -- Update sprites last to draw at new positions
   gfx.sprite.update()
 
@@ -96,7 +107,8 @@ function GamePlay:trySpawnWalker()
 end
 
 function GamePlay:spawnWalker()
-  local new_walker = Walker(CONSTANTS.PEDESTRIANS.COWBOY, CONSTANTS.SCREEN_W_HALF, CONSTANTS.FLOOR_Y)
+  -- TODO: need better way to manage coordinate systems/origin point of legs
+  local new_walker = Walker(CONSTANTS.PEDESTRIANS.COWBOY, CONSTANTS.PEDESTRIANS.SPAWN_POSITION_RIGHT, CONSTANTS.FLOOR_Y - 20 / 2)
   new_walker:add()
 
   table.insert(self.walkers, new_walker)

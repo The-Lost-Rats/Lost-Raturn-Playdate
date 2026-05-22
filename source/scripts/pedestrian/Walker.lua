@@ -38,7 +38,14 @@ function Walker:remove()
   end
 end
 
--- 1. remove walker when off screen
--- 2. create array of walkers (max 6)
--- 3. create timer to populate array
+function Walker:isOffScreen()
+  for _, leg in ipairs(self.legs) do
+    if (not leg:isOffScreen()) then
+      return false
+    end
+  end
+
+  return true
+end
+
 -- 4. create walkers from left and right
