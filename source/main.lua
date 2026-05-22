@@ -1,10 +1,12 @@
 import "CoreLibs/graphics"
+import "CoreLibs/timer"
 
 import "scenes/GameOver"
 import "scenes/GamePlay"
 import "scenes/Title"
 
 local gfx <const> = playdate.graphics
+local timer <const> = playdate.timer
 playdate.display.setRefreshRate(30)
 
 SCENE_TITLE = Title()
@@ -21,5 +23,7 @@ function setScene(new_state)
 end
 
 function playdate.update()
+  timer.updateTimers()
+
   current_game_scene:update()
 end

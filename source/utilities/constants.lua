@@ -45,6 +45,15 @@ CONSTANTS = {
     },
 
     STEP_LENGTH = 120,
-    LEG_SPACING = 40
+    LEG_SPACING = 40,
+
+    SPAWN_POSITION_LEFT = -20,
+    SPAWN_POSITION_RIGHT = SCREEN_W + 20, -- TODO: 20 should not be hardcoded
+
+    MAX_WALKERS = 6,
+    MIN_WALKERS = 2,
+
+    MIN_SPAWN_INTERVAL_MS = 1000,
+    MAX_SPAWN_INTERVAL_MS = 8000
   }
 }

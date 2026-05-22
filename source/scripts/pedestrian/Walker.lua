@@ -37,3 +37,8 @@ function Walker:remove()
     leg:remove()
   end
 end
+
+-- 1. remove walker when off screen
+-- 2. create array of walkers (max 6)
+-- 3. create timer to populate array
+-- 4. create walkers from left and right
