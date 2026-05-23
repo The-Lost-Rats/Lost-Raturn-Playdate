@@ -21,27 +21,33 @@ CONSTANTS = {
   -- TODO: is this the right format for the constants? Should I have walkers be its own?
   PEDESTRIANS = {
     TYPES = {
-      COWBOY = {
+      {
+        name = "COWBOY",
         item = "SIX_SHOOTER",
         sprite = "cowboy"
       },
-      BUSINESS_MAN = {
+      {
+        name= "BUSINESS_MAN",
         item = "WATCH",
         sprite = "business_man"
       },
-      WOMAN = {
+      {
+        name = "WOMAN",
         item = "RING",
         sprite = "woman"
       },
-      SWIMMER = {
+      {
+        name = "SWIMMER",
         item = "SUNSCREEN",
         sprite = "swimmer"
       },
-      CONSTRUCTION_WORKER = {
+      {
+        name = "CONSTRUCTION_WORKER",
         item = "WRENCH",
         sprite = "construction_worker"
       },
-      RUNNER = {
+      {
+        name = "RUNNER",
         item = "PHONE",
         sprite = "runner"
       }
@@ -65,6 +71,11 @@ CONSTANTS = {
     DIRECTION = {
       LEFT = 0,
       RIGHT = 1
-    }
+    },
+
+    -- TODO: do i want an item section?
+    ITEM_DROP_CHANCE = 0.65,
+    ITEM_SPAWN_LEFT_BOUND = 30,
+    ITEM_SPAWN_RIGHT_BOUND = SCREEN_W - 30
   }
 }

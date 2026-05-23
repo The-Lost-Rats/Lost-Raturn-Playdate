@@ -79,9 +79,9 @@ function GamePlay:update()
   -- Update sprites last to draw at new positions
   gfx.sprite.update()
 
-  if (playdate.buttonJustPressed(playdate.kButtonA)) then
-    setScene(SCENE_GAME_OVER)
-  end
+  -- if (playdate.buttonJustPressed(playdate.kButtonA)) then
+  --   setScene(SCENE_GAME_OVER)
+  -- end
 end
 
 function GamePlay:leave()
@@ -112,7 +112,7 @@ function GamePlay:spawnWalker()
   local new_walker
 
   local walker_type_index = math.random(#CONSTANTS.PEDESTRIANS.TYPES)
-  local walker_type = CONSTANTS.PEDESTRIANS.TYPES[self.walker_type_index]
+  local walker_type = CONSTANTS.PEDESTRIANS.TYPES[walker_type_index]
 
   if (random_float >= 0.5) then
     new_walker = Walker(walker_type, CONSTANTS.PEDESTRIANS.SPAWN_POSITION_RIGHT, CONSTANTS.FLOOR_Y - 20 / 2, -5, -5, CONSTANTS.PEDESTRIANS.DIRECTION.LEFT)

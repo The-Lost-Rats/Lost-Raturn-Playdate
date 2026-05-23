@@ -2,6 +2,8 @@ import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/sprites"
 
+import "scripts/Item"
+
 local gfx <const> = playdate.graphics
 
 -- TODO: constants/sprites etc.
@@ -111,4 +113,16 @@ end
 
 function Leg:isOffScreen()
   return self.x < CONSTANTS.PEDESTRIANS.DESPAWN_BOUND_LEFT or self.x > CONSTANTS.PEDESTRIANS.DESPAWN_BOUND_RIGHT
+end
+
+function Leg:isRising()
+  return self.current_move_state == MOVEMENT_STATES.RISING
+end
+
+function Leg:dropItem(item)
+  item:drop(self.x, -10) -- TODO: -10 should be something..
+end
+
+function Leg:getPosition()
+  return self.x, self.y
 end

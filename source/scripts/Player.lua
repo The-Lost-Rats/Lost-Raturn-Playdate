@@ -26,11 +26,12 @@ function Player:reset()
   self:moveTo(CONSTANTS.SCREEN_W_HALF, CONSTANTS.FLOOR_Y - self.height / 2)
 end
 
+-- TODO: split into functions
 function Player:update()
   local x, y = self:getPosition()
 
   -- Handle input
-  if (playdate.buttonJustPressed(playdate.kButtonB) and self.is_grounded) then
+  if (playdate.buttonJustPressed(playdate.kButtonA) and self.is_grounded) then
     self.is_grounded = false
 
     self.vy += CONSTANTS.PLAYER.JUMP_V
