@@ -8,6 +8,7 @@ import "scenes/Title"
 local gfx <const> = playdate.graphics
 local timer <const> = playdate.timer
 playdate.display.setRefreshRate(30)
+math.randomseed(playdate.getSecondsSinceEpoch())
 
 SCENE_TITLE = Title()
 SCENE_GAME_PLAY = GamePlay()
