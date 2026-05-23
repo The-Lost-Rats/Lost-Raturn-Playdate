@@ -41,7 +41,7 @@ function Walker:update()
 
    -- TODO: do we want this to be a function?
   if (self.will_drop_item) then
-    x, _ = self.legs[self.active_leg_index]:getPosition()
+    local x, _ = self.legs[self.active_leg_index]:getPosition()
     if (not self.has_dropped_item and
         ((x >= self.drop_at_x and self.direction == CONSTANTS.PEDESTRIANS.DIRECTION.RIGHT) or
         (x <= self.drop_at_x and self.direction == CONSTANTS.PEDESTRIANS.DIRECTION.LEFT)
