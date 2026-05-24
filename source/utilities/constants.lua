@@ -76,6 +76,7 @@ CONSTANTS = {
     -- TODO: do i want an item section?
     ITEM_DROP_CHANCE = 0.65,
     ITEM_SPAWN_LEFT_BOUND = 30,
-    ITEM_SPAWN_RIGHT_BOUND = SCREEN_W - 30
+    ITEM_SPAWN_RIGHT_BOUND = SCREEN_W - 30,
+    ITEM_TTL_MS = 2000
   }
 }

@@ -25,7 +25,6 @@ function Item:init(item_type)
 
   -- TODO: should this be passed in as inital state? ITEM STATES would need to be global/in constants
   self.current_state = nil
-  self.grounded_frame_num = 0
 end
 
 -- TODO: split into functions
@@ -41,15 +40,16 @@ function Item:update()
     if (y >= CONSTANTS.FLOOR_Y - self.height / 2) then
       self.vy = 0
       y = CONSTANTS.FLOOR_Y - self.height / 2
+      self.grounded_start_time_ms = playdate.getCurrentTimeMilliseconds()
       self.current_state = ITEM_STATES.GROUNDED
     end
 
     self:moveTo(x, y)
   elseif(self.current_state == ITEM_STATES.GROUNDED) then
-    -- TODO: sine wave moving
-    local y_offset = 15 * math.sin(self.grounded_frame_num * 0.15) - 15
+    -- TODO: double check my whiteboard math
+    local delta_time_s = (playdate.getCurrentTimeMilliseconds() - self.grounded_start_time_ms) / 1000
+    local y_offset = 15 * math.sin(delta_time_s * math.pi) - 15
     self:moveTo(self.x, CONSTANTS.FLOOR_Y - (self.height / 2) + y_offset)
-    self.grounded_frame_num = self.grounded_frame_num + 1
   elseif (self.current_state == ITEM_STATES.DISAPPEARING) then
     local t = 1
     -- TODO: blink for 2s then remove self? what happens to ref in walker class?
