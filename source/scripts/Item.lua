@@ -1,8 +1,10 @@
 import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/sprites"
+import "CoreLibs/timer"
 
 local gfx <const> = playdate.graphics
+local timer <const> = playdate.timer
 
 local image = gfx.image.new(8, 8, gfx.kColorBlack)
 
@@ -25,6 +27,7 @@ function Item:init(item_type)
 
   -- TODO: should this be passed in as inital state? ITEM STATES would need to be global/in constants
   self.current_state = nil
+  self.is_visible = true
 end
 
 -- TODO: split into functions
@@ -37,11 +40,15 @@ function Item:update()
     y = y + self.vy
     x = x + self.vx
 
+    -- TODO: move to func
     if (y >= CONSTANTS.FLOOR_Y - self.height / 2) then
       self.vy = 0
       y = CONSTANTS.FLOOR_Y - self.height / 2
       self.grounded_start_time_ms = playdate.getCurrentTimeMilliseconds()
       self.current_state = ITEM_STATES.GROUNDED
+
+       -- TODO: item should be its own section
+      self.grounded_timer = timer.performAfterDelay(CONSTANTS.PEDESTRIANS.ITEM_GROUNDED_TIME_MS, function() self:startDisappearing() end)
     end
 
     self:moveTo(x, y)
@@ -50,13 +57,42 @@ function Item:update()
     local delta_time_s = (playdate.getCurrentTimeMilliseconds() - self.grounded_start_time_ms) / 1000
     local y_offset = 15 * math.sin(delta_time_s * math.pi) - 15
     self:moveTo(self.x, CONSTANTS.FLOOR_Y - (self.height / 2) + y_offset)
-  elseif (self.current_state == ITEM_STATES.DISAPPEARING) then
-    local t = 1
-    -- TODO: blink for 2s then remove self? what happens to ref in walker class?
   end
 end
 
 function Item:drop(x_pos, y_pos)
   self:moveTo(x_pos, y_pos)
   self.current_state = ITEM_STATES.FALLING
+end
+
+-- TODO: ill keep this as is for now, but I think we should change this to keep the sine motion and add blinking on top
+function Item:startDisappearing()
+  self.current_state = ITEM_STATES.DISAPPEARING
+  self.disappear_timer = timer.performAfterDelay(CONSTANTS.PEDESTRIANS.ITEM_TTL_MS, function() self:disappear() end)
+  self:startBlinking()
+end
+
+function Item:disappear()
+  if (self.blinking_timer ~= nil) then
+    self.blinking_timer:remove()
+  end
+
+  self:remove()
+end
+
+function Item:startBlinking()
+  -- TODO: toggle visibility
+  self.is_visible = not self.is_visible
+  self:setVisible(self.is_visible)
+
+  -- TODO: make blinking faster as time goes on/or as we get closer to disappaering
+  self.blinking_timer = timer.performAfterDelay(400, function() self:startBlinking() end)
+end
+
+function Item:pickUp()
+  if (self.disappear_timer ~= nil) then self.disappear_timer:remove() end
+  if (self.blinking_timer ~= nil) then self.blinking_timer:remove() end
+
+  self:setVisible(true)
+  self.current_state = ITEM_STATES.PICKED_UP
 end
