@@ -7,3 +7,4 @@ TODO: what to do when a player picks up and drops an item? do we want the timer 
 TODO: tutorial
 TODO: splash screen TLS logo
 TODO: could I replace the bounds checks with colliders? would that be cleaner?
+TODO: how would a player pick up items on the same x value?
