@@ -21,7 +21,8 @@ CONSTANTS = {
   GROUPS = {
     PLAYER = 1,
     PICK_UP = 2,
-    HAZARD = 3
+    HAZARD = 3,
+    CLIMBABLE = 4
   },
 
   PLAYER = {
