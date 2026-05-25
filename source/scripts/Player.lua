@@ -12,10 +12,16 @@ function Player:init(vx, vy, direction_x, is_grounded)
   Player.super.init(self)
 
   self:setImage(image)
+  self:setCollideRect(0, 0, self:getSize())
+  self:setGroups({CONSTANTS.GROUPS.PLAYER})
+  self:setCollidesWithGroups({CONSTANTS.GROUPS.PICK_UP, CONSTANTS.GROUPS.HAZARD})
+  self:setTag(CONSTANTS.TAGS.PLAYER)
+
   self.vx = vx
   self.vy = vy
   self.direction_x = direction_x
   self.is_grounded = is_grounded
+  self.held_item = nil
 end
 
 function Player:reset()
@@ -35,6 +41,20 @@ function Player:update()
     self.is_grounded = false
 
     self.vy += CONSTANTS.PLAYER.JUMP_V
+  end
+
+  if (playdate.buttonJustPressed(playdate.kButtonB)) then
+    if (self.held_item == nil) then
+      local touched_sprites = self:overlappingSprites()
+      for _, other_sprite in ipairs(touched_sprites) do
+        if (other_sprite:getTag() == CONSTANTS.TAGS.ITEM) then
+          self:pickUpItem(other_sprite)
+        end
+      end
+    else
+      self.held_item:drop()
+      self.held_item = nil
+    end
   end
 
   -- TODO: get x component of forces (gravity, jump, momentum, etc.)
@@ -67,4 +87,13 @@ function Player:update()
   end
 
   self:moveTo(x, y)
+
+  if (self.held_item ~= nil) then
+    self.held_item:moveTo(x, y - 10)
+  end
+end
+
+function Player:pickUpItem(item)
+  item:pickUp()
+  self.held_item = item
 end

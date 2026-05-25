@@ -22,8 +22,13 @@ class('Item').extends(gfx.sprite)
 -- TODO: what else should this take in? x, y, vx, vy?
 function Item:init(item_type)
   Item.super.init(self)
-  self.vx, self.vy = 0, 0
+
   self:setImage(image)
+  self:setCollideRect(0, 0, self:getSize())
+  self:setGroups({CONSTANTS.GROUPS.PICK_UP})
+  self:setTag(CONSTANTS.TAGS.ITEM)
+
+  self.vx, self.vy = 0, 0
 
   -- TODO: should this be passed in as inital state? ITEM STATES would need to be global/in constants
   self.current_state = nil
@@ -98,4 +103,8 @@ function Item:pickUp()
 
   self:setVisible(true)
   self.current_state = ITEM_STATES.PICKED_UP
+end
+
+function Item:drop()
+  self.current_state = ITEM_STATES.FALLING
 end

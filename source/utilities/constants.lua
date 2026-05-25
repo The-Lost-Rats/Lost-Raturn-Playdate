@@ -11,6 +11,19 @@ CONSTANTS = {
   HUD_H = 24,
   FLOOR_Y = 220,
 
+  TAGS = {
+    PLAYER = 1,
+    ITEM = 2,
+    LEG = 3,
+    SHOE = 4
+  },
+
+  GROUPS = {
+    PLAYER = 1,
+    PICK_UP = 2,
+    HAZARD = 3
+  },
+
   PLAYER = {
     MOVE_SPEED = 4, -- px/frame
     JUMP_V = -9 -- px/frame

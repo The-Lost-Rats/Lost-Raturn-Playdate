@@ -11,6 +11,7 @@ import "scripts/pedestrian/Walker"
 local gfx <const> = playdate.graphics
 local timer <const> = playdate.timer
 
+-- TODO: should we have itemsbe tracked here?
 class ('GamePlay').extends(BaseScene)
 function GamePlay:init()
   -- TODO: should i set center of sprites to like bottom center?
