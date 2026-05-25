@@ -69,7 +69,7 @@ end
 function Item:startDisappearing()
   self.current_state = ITEM_STATES.DISAPPEARING
   self.disappear_timer = timer.performAfterDelay(CONSTANTS.PEDESTRIANS.ITEM_TTL_MS, function() self:disappear() end)
-  self:startBlinking()
+  self:startBlinking(CONSTANTS.PEDESTRIANS.ITEM_MAX_BLINK_SPEED_MS)
 end
 
 function Item:disappear()
@@ -80,16 +80,19 @@ function Item:disappear()
   self:remove()
 end
 
-function Item:startBlinking()
+function Item:startBlinking(duration_ms)
+  local blink_duration_ms = math.max(CONSTANTS.PEDESTRIANS.ITEM_MIN_BLINK_SPEED_MS, duration_ms)
+  
   -- TODO: toggle visibility
   self.is_visible = not self.is_visible
   self:setVisible(self.is_visible)
 
   -- TODO: make blinking faster as time goes on/or as we get closer to disappaering
-  self.blinking_timer = timer.performAfterDelay(400, function() self:startBlinking() end)
+  self.blinking_timer = timer.performAfterDelay(blink_duration_ms, function() self:startBlinking(blink_duration_ms / 1.5) end)
 end
 
 function Item:pickUp()
+  if (self.grounded_timer ~= nil) then self.grounded_timer:remove() end
   if (self.disappear_timer ~= nil) then self.disappear_timer:remove() end
   if (self.blinking_timer ~= nil) then self.blinking_timer:remove() end
 
