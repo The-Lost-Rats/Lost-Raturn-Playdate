@@ -105,6 +105,6 @@ function Item:pickUp()
   self.current_state = ITEM_STATES.PICKED_UP
 end
 
-function Item:drop()
+function Item:release()
   self.current_state = ITEM_STATES.FALLING
 end

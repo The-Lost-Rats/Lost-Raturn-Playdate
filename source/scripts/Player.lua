@@ -54,7 +54,7 @@ function Player:update()
         end
       end
     else
-      self.held_item:drop()
+      self.held_item:release()
       self.held_item = nil
     end
   end
@@ -183,6 +183,21 @@ function Player:handleClimbing(x, y)
     y = leg_y - CONSTANTS.SCREEN_H / 2 - 16 / 2
   elseif (y > leg_y + CONSTANTS.SCREEN_H / 2 - 16 / 2) then
     y = leg_y + CONSTANTS.SCREEN_H / 2 - 16 / 2
+  end
+
+    -- TODO: off screen should be helper? also make drop leg a helper?
+  if (x >= CONSTANTS.SCREEN_W - self.width / 2) then
+    x = CONSTANTS.SCREEN_W - self.width / 2
+    self.current_state = PLAYER_STATE.JUMPING
+    self.attached_leg = nil
+    self.previous_leg_x, self.previous_leg_y = nil, nil
+  end
+
+  if (x <= self.width / 2) then
+    x = self.width / 2
+    self.current_state = PLAYER_STATE.JUMPING
+    self.attached_leg = nil
+    self.previous_leg_x, self.previous_leg_y = nil, nil
   end
 
   return x, y
