@@ -146,11 +146,16 @@ function Player:handleFalling(x, y)
 end
 
 function Player:handleClimbing(x, y)
-  -- if (playdate.buttonJustPressed(playdate.kButtonA)) then
-  -- jump off leg
-  -- end
+  -- TODO: handle bounds checking
+  if (playdate.buttonJustPressed(playdate.kButtonA)) then
+    self.current_state = PLAYER_STATE.JUMPING
+    self.attached_leg = nil
+    self.previous_leg_x, self.previous_leg_y = nil, nil
+    return x, y
+  end
 
   -- TODO: should I nil check?
+  -- TODO: delta works in our case cuz the leg is simple and straight - but what if it is more complex? we will need to know how the attach/current leg point moves. How do i get the attach point? Do I need to track it or can collisions get us this?
   local leg_x, leg_y = self.attached_leg:getPosition()
   local leg_dx = leg_x - self.previous_leg_x
   local leg_dy = leg_y - self.previous_leg_y
