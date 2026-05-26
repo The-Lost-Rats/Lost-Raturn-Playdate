@@ -31,11 +31,15 @@ function Leg:init(x_pos, y_pos, direction)
 
   -- Leg
   self.leg_sprite = gfx.sprite.new(leg_image)
-  -- TODO: collisions
+  self.leg_sprite:setCollideRect(0, 0, self.leg_sprite:getSize())
+  self.leg_sprite:setGroups({CONSTANTS.GROUPS.CLIMBABLE})
+  self.leg_sprite:setTag(CONSTANTS.TAGS.LEG)
 
   -- Shoe
   self.shoe_sprite = gfx.sprite.new(shoe_image)
-  -- TODO: collisions
+  self.shoe_sprite:setCollideRect(0, 0, self.shoe_sprite:getSize())
+  self.shoe_sprite:setGroups({CONSTANTS.GROUPS.HAZARD})
+  self.shoe_sprite:setTag(CONSTANTS.TAGS.SHOE)
 
   self:moveTo(x_pos, y_pos)
 end
