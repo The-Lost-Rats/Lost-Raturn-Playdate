@@ -7,7 +7,7 @@ import "scripts/Item"
 local gfx <const> = playdate.graphics
 
 -- TODO: constants/sprites etc.
-local leg_image = gfx.image.new(16, 120, gfx.kColorBlack)
+local leg_image = gfx.image.new(16, CONSTANTS.SCREEN_H, gfx.kColorBlack)
 local shoe_image = gfx.image.new(32, 20, gfx.kColorBlack)
 
 -- TODO: maybe change to map to functions? and do switch stmt like lookup
@@ -103,9 +103,9 @@ function Leg:moveTo(x, y)
 
   self.shoe_sprite:moveTo(x, y)
   if (self.direction == CONSTANTS.PEDESTRIANS.DIRECTION.LEFT) then
-    self.leg_sprite:moveTo(x + 32 / 2 - 16 / 2, y - 20 /2 - 120 / 2)
+    self.leg_sprite:moveTo(x + 32 / 2 - 16 / 2, y - 20 /2 - CONSTANTS.SCREEN_H / 2)
   else
-    self.leg_sprite:moveTo(x - 32 / 2 + 16 / 2, y - 20 /2 - 120 / 2)
+    self.leg_sprite:moveTo(x - 32 / 2 + 16 / 2, y - 20 /2 - CONSTANTS.SCREEN_H / 2)
   end
 end
 

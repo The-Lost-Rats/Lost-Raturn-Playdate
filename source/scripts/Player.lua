@@ -163,6 +163,8 @@ function Player:handleClimbing(x, y)
   self.previous_leg_x = leg_x
   self.previous_leg_y = leg_y
 
+  -- TODO: handle cranking
+
   -- TODO: I really gotta keep naming consistent and ordering of x and y
   -- Update position
   y = y + self.vy + leg_dy
@@ -194,4 +196,8 @@ end
 function Player:pickUpItem(item)
   item:pickUp()
   self.held_item = item
+end
+
+function Player:isClimbing()
+  return self.current_state == PLAYER_STATE.CLIMBING
 end

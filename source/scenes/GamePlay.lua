@@ -1,6 +1,7 @@
 import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/timer"
+import "CoreLibs/ui"
 
 import "scenes/BaseScene"
 import "scripts/Player"
@@ -10,6 +11,7 @@ import "scripts/pedestrian/Walker"
 
 local gfx <const> = playdate.graphics
 local timer <const> = playdate.timer
+local ui <const> = playdate.ui
 
 -- TODO: should we have itemsbe tracked here?
 class ('GamePlay').extends(BaseScene)
@@ -35,6 +37,8 @@ function GamePlay:enter()
 
   gfx.sprite.setBackgroundDrawingCallback(function(x, y, w, h)
     -- Redraw background elements and clip to dirty rect
+    gfx.pushContext()
+
     gfx.setColor(gfx.kColorBlack)
 
     local display_text = self.className
@@ -57,8 +61,7 @@ function GamePlay:enter()
     gfx.fillCircleInRect(CONSTANTS.SCREEN_W - 40, 0, 10, CONSTANTS.HUD_H)
     gfx.fillCircleInRect(CONSTANTS.SCREEN_W - 60, 0, 10, CONSTANTS.HUD_H)
     
-    gfx.setImageDrawMode(gfx.kDrawModeFillBlack)
-    gfx.setColor(gfx.kColorBlack)
+    gfx.popContext()
   end)
 end
 
@@ -80,6 +83,12 @@ function GamePlay:update()
 
   -- Update sprites last to draw at new positions
   gfx.sprite.update()
+
+  -- Show crank indicator when climbing and docked
+  -- TODO: should we just show this at the start?
+  if (playdate.isCrankDocked() and self.player:isClimbing()) then
+    ui.crankIndicator:draw()
+  end
 
   -- if (playdate.buttonJustPressed(playdate.kButtonA)) then
   --   setScene(SCENE_GAME_OVER)
