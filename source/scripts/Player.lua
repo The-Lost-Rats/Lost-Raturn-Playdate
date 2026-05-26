@@ -163,12 +163,27 @@ function Player:handleClimbing(x, y)
   self.previous_leg_x = leg_x
   self.previous_leg_y = leg_y
 
-  -- TODO: handle cranking
+  -- Handle crank motion
+  -- TODO: should we use change or accelerated change?
+  -- TODO: i need a mapping from degrees to vertical motion up and down the leg
+  local change, acceleratedChange = playdate.getCrankChange()
+  -- TODO: make this better oh lorde
+  local CLIMB_PIXELS_PER_DEGREE = 0.17
+  local dy = -change * CLIMB_PIXELS_PER_DEGREE
+
 
   -- TODO: I really gotta keep naming consistent and ordering of x and y
   -- Update position
-  y = y + self.vy + leg_dy
+  y = y + self.vy + leg_dy + dy
   x = x + self.vx + leg_dx
+
+  -- TODO: handle this better w/ image anchors and get height of leg
+  -- TODO: leg height / 2 - player height / 2
+  if (y < leg_y - CONSTANTS.SCREEN_H / 2 - 16 / 2) then
+    y = leg_y - CONSTANTS.SCREEN_H / 2 - 16 / 2
+  elseif (y > leg_y + CONSTANTS.SCREEN_H / 2 - 16 / 2) then
+    y = leg_y + CONSTANTS.SCREEN_H / 2 - 16 / 2
+  end
 
   return x, y
 end
