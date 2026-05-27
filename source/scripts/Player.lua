@@ -186,6 +186,7 @@ function Player:handleClimbing(x, y)
   end
 
     -- TODO: off screen should be helper? also make drop leg a helper?
+    -- TODO: is this unsafe? should I check if the leg exists before using it above?
   if (x >= CONSTANTS.SCREEN_W - self.width / 2) then
     x = CONSTANTS.SCREEN_W - self.width / 2
     self.current_state = PLAYER_STATE.JUMPING
