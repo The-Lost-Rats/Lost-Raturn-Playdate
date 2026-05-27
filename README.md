@@ -10,3 +10,7 @@ TODO: could I replace the bounds checks with colliders? would that be cleaner?
 TODO: how would a player pick up items on the same x value?
 TODO: draw framrate if debug config is true (logging system too?)
 TODO: learn how to use profiler
+TODO: time/streak/combo bonus
+TODO: penalty for getting squashed points wise?
+TODO: pick ups? (speed? health?)
+TODO: different items give different points?
