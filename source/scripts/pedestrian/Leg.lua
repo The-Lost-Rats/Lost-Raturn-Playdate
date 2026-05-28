@@ -38,12 +38,14 @@ function Leg:init(x_pos, y_pos, direction, item_type)
   self.leg_sprite:setGroups({CONSTANTS.GROUPS.CLIMBABLE})
   self.leg_sprite:setTag(CONSTANTS.TAGS.LEG)
   self.leg_sprite.item_type = item_type
+  self.leg_sprite.controller = self
 
   -- Shoe
   self.shoe_sprite = gfx.sprite.new(shoe_image)
   self.shoe_sprite:setCollideRect(0, 0, self.shoe_sprite:getSize())
   self.shoe_sprite:setGroups({CONSTANTS.GROUPS.HAZARD})
   self.shoe_sprite:setTag(CONSTANTS.TAGS.SHOE)
+  self.shoe_sprite.controller = self
 
   self:moveTo(x_pos, y_pos)
 end
@@ -133,4 +135,8 @@ end
 
 function Leg:getPosition()
   return self.x, self.y
+end
+
+function Leg:isFalling()
+  return self.current_move_state == MOVEMENT_STATES.FALLING
 end

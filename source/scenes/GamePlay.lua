@@ -18,7 +18,7 @@ class ('GamePlay').extends(BaseScene)
 function GamePlay:init()
   -- TODO: should i set center of sprites to like bottom center?
   GamePlay.super.init(self)
-  self.player = Player(0, 0, 1, CONSTANTS.MAX_HEALTH, self)
+  self.player = Player(0, 0, 1, CONSTANTS.PLAYER.MAX_HEALTH, self)
 
   self.walkers = {}
   -- Start with a small number of walkers to let the player get used to the game.

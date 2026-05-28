@@ -12,7 +12,9 @@ local PLAYER_STATE = {
   JUMPING = 1,
   FALLING = 2,
   CLIMBING = 3,
-  SCORING = 4
+  SCORING = 4,
+  HIT = 5,
+  DEAD = 6
 }
 
 class('Player').extends(gfx.sprite)
@@ -65,6 +67,7 @@ function Player:update()
 
   -- TODO: get x component of forces (gravity, jump, momentum, etc.)
   -- TODO: switch statement table thing?
+  -- TODO: all these taking in position kinda sux?
   if (self.current_state == PLAYER_STATE.GROUNDED) then
     x, y = self:handleGrounded(x, y)
   elseif (self.current_state == PLAYER_STATE.JUMPING) then
@@ -75,6 +78,8 @@ function Player:update()
     x, y = self:handleClimbing(x, y)
   elseif (self.current_state == PLAYER_STATE.SCORING) then
     x, y = self:handleScoring(x, y)
+  elseif (self.current_state == PLAYER_STATE.HIT) then
+    x, y = self:handleHit(x, y)
   end
 
   self:moveTo(x, y)
@@ -97,6 +102,14 @@ function Player:handleGrounded(x, y)
   -- Update position
   y = y + self.vy
   x = x + self.vx
+
+  -- TODO: should this be before or after move?
+  local touched_sprites = self:overlappingSprites()
+  for _, other_sprite in ipairs(touched_sprites) do
+    if (other_sprite:getTag() == CONSTANTS.TAGS.SHOE and other_sprite.controller:isFalling()) then
+      self.current_state = PLAYER_STATE.HIT
+    end
+  end
 
   return x, y
 end
@@ -242,6 +255,20 @@ function Player:handleScoring(x, y)
   return x, y
 end
 
+function Player:handleHit(x, y)
+  self.vy += CONSTANTS.PLAYER.JUMP_V
+  self.current_state = PLAYER_STATE.FALLING
+
+  if (self.held_item ~= nil) then
+    self.held_item:release()
+    self.held_item = nil
+  end
+
+  self:takeDamage(1)
+
+  return x, y
+end
+
 function Player:handleHorizontalMovement(x_pos)
   if (playdate.buttonIsPressed(playdate.kButtonLeft)) then
     x_pos -= CONSTANTS.PLAYER.MOVE_SPEED
@@ -277,4 +304,5 @@ end
 
 function Player:takeDamage(amount)
   self.health = math.max(0, self.health - amount)
+  gfx.sprite.addDirtyRect(0, 0, CONSTANTS.SCREEN_W, CONSTANTS.HUD_H)
 end
