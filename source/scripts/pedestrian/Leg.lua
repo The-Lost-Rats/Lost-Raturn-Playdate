@@ -18,6 +18,7 @@ local MOVEMENT_STATES = {
 }
 
 class('Leg').extends()
+-- TODO: taking in item type is kinda gross
 function Leg:init(x_pos, y_pos, direction, item_type)
   Leg.super.init(self)
 

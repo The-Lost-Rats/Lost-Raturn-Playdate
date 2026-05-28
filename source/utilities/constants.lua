@@ -27,7 +27,8 @@ CONSTANTS = {
 
   PLAYER = {
     MOVE_SPEED = 4, -- px/frame
-    JUMP_V = -9 -- px/frame
+    JUMP_V = -9, -- px/frame
+    MAX_HEALTH = 3
   },
 
   GRAVITY = 0.6, -- px/frame^2

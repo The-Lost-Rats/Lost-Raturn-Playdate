@@ -18,7 +18,7 @@ class ('GamePlay').extends(BaseScene)
 function GamePlay:init()
   -- TODO: should i set center of sprites to like bottom center?
   GamePlay.super.init(self)
-  self.player = Player(0, 0, 1, self)
+  self.player = Player(0, 0, 1, CONSTANTS.MAX_HEALTH, self)
 
   self.walkers = {}
   -- Start with a small number of walkers to let the player get used to the game.
@@ -58,9 +58,14 @@ function GamePlay:enter()
     gfx.drawText("Score: " .. self.current_score, 4, 4) -- TODO: make these constants or something
 
     -- TODO: these should not be hard coded - num hears should be here, loop, math to place
-    gfx.fillCircleInRect(CONSTANTS.SCREEN_W - 20, 0, 10, CONSTANTS.HUD_H)
-    gfx.fillCircleInRect(CONSTANTS.SCREEN_W - 40, 0, 10, CONSTANTS.HUD_H)
-    gfx.fillCircleInRect(CONSTANTS.SCREEN_W - 60, 0, 10, CONSTANTS.HUD_H)
+    local player_health = self.player:getCurrentHealth()
+    for i = 1, CONSTANTS.PLAYER.MAX_HEALTH, 1 do
+      if (i <= player_health) then
+        gfx.fillCircleInRect(CONSTANTS.SCREEN_W - 20 * i, 0, 10, CONSTANTS.HUD_H)
+      else
+        gfx.drawCircleInRect(CONSTANTS.SCREEN_W - 20 * i, 0, 10, CONSTANTS.HUD_H)
+      end
+    end
     
     gfx.popContext()
   end)
@@ -136,6 +141,7 @@ function GamePlay:spawnWalker()
   table.insert(self.walkers, new_walker)
 end
 
+-- TODO: accessing this with a singleton/shread instance is gross
 function GamePlay:updateScore(points)
   self.current_score += points
   gfx.sprite.addDirtyRect(0, 0, CONSTANTS.SCREEN_W, CONSTANTS.HUD_H)
