@@ -42,6 +42,8 @@ function Player:reset()
   self.vx = 0
   self.vy = 0
   self.current_state = PLAYER_STATE.GROUNDED
+  -- TODO: should really be whatever the player was initially created with tbh
+  self.health = CONSTANTS.PLAYER.MAX_HEALTH
 
   self:moveTo(CONSTANTS.SCREEN_W_HALF, CONSTANTS.FLOOR_Y - self.height / 2)
 end
@@ -49,6 +51,10 @@ end
 -- TODO: split into functions
 function Player:update()
   local x, y = self:getPosition()
+
+  if (self.health == 0) then
+    self.current_state = PLAYER_STATE.DEAD
+  end
 
   -- TODO: should this go here? do all 3 states share it? Should it go before or after the handles below?
   if (playdate.buttonJustPressed(playdate.kButtonB)) then
@@ -80,6 +86,8 @@ function Player:update()
     x, y = self:handleScoring(x, y)
   elseif (self.current_state == PLAYER_STATE.HIT) then
     x, y = self:handleHit(x, y)
+  elseif (self.current_state == PLAYER_STATE.DEAD) then
+    x, y = self:handleDeath(x, y)
   end
 
   self:moveTo(x, y)
@@ -269,6 +277,11 @@ function Player:handleHit(x, y)
   return x, y
 end
 
+function Player:handleDeath(x, y)
+  -- TODO: do cool stuff on death?
+  return x, y
+end
+
 function Player:handleHorizontalMovement(x_pos)
   if (playdate.buttonIsPressed(playdate.kButtonLeft)) then
     x_pos -= CONSTANTS.PLAYER.MOVE_SPEED
@@ -302,7 +315,12 @@ function Player:getCurrentHealth()
   return self.health
 end
 
+-- TODO: gfx update should not be here - should be in ui or smth?
 function Player:takeDamage(amount)
   self.health = math.max(0, self.health - amount)
   gfx.sprite.addDirtyRect(0, 0, CONSTANTS.SCREEN_W, CONSTANTS.HUD_H)
+end
+
+function Player:isDead()
+  return self.current_state == PLAYER_STATE.DEAD
 end

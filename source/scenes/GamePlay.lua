@@ -96,9 +96,9 @@ function GamePlay:update()
     ui.crankIndicator:draw()
   end
 
-  -- if (playdate.buttonJustPressed(playdate.kButtonA)) then
-  --   setScene(SCENE_GAME_OVER)
-  -- end
+  if (self.player:isDead()) then
+    setScene(SCENE_GAME_OVER)
+  end
 end
 
 function GamePlay:leave()
