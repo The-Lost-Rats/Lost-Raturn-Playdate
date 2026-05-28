@@ -11,12 +11,15 @@ local PLAYER_STATE = {
   GROUNDED = 0,
   JUMPING = 1,
   FALLING = 2,
-  CLIMBING = 3
+  CLIMBING = 3,
+  SCORING = 4
 }
 
 class('Player').extends(gfx.sprite)
-function Player:init(vx, vy, direction_x)
+function Player:init(vx, vy, direction_x, game_play_scene)
   Player.super.init(self)
+
+  self.game_play_scene = game_play_scene
 
   self:setImage(image)
   self:setCollideRect(0, 0, self:getSize())
@@ -60,6 +63,7 @@ function Player:update()
   end
 
   -- TODO: get x component of forces (gravity, jump, momentum, etc.)
+  -- TODO: switch statement table thing?
   if (self.current_state == PLAYER_STATE.GROUNDED) then
     x, y = self:handleGrounded(x, y)
   elseif (self.current_state == PLAYER_STATE.JUMPING) then
@@ -68,6 +72,8 @@ function Player:update()
     x, y = self:handleFalling(x, y)
   elseif (self.current_state == PLAYER_STATE.CLIMBING) then
     x, y = self:handleClimbing(x, y)
+  elseif (self.current_state == PLAYER_STATE.SCORING) then
+    x, y = self:handleScoring(x, y)
   end
 
   self:moveTo(x, y)
@@ -201,6 +207,37 @@ function Player:handleClimbing(x, y)
     self.previous_leg_x, self.previous_leg_y = nil, nil
   end
 
+  if (y <= leg_y - (CONSTANTS.SCREEN_H / 2) * 0.80) then
+    self.current_state = PLAYER_STATE.SCORING
+  end
+
+  return x, y
+end
+
+function Player:handleScoring(x, y)
+  -- TODO: temp print
+  print("SCORING")
+  -- TODO: if right item then + 100 and consume item else - 50 and drop item
+  if (self.held_item ~= nil) then
+    -- TODO: clean this up
+    if (self.held_item.item_type == self.attached_leg.item_type) then
+      print("Score! ", self.held_item.item_type, self.attached_leg.item_type)
+      self.game_play_scene:updateScore(100)
+
+      -- TODO: helper drop or something? clean up naming
+      self.held_item:remove()
+      self.held_item = nil
+    else
+      print("Miss! ", self.held_item.item_type, self.attached_leg.item_type)
+      self.game_play_scene:updateScore(-50)
+      self.held_item:release()
+      self.held_item = nil
+    end
+  end
+
+  self.current_state = PLAYER_STATE.JUMPING
+  self.attached_leg = nil
+  self.previous_leg_x, self.previous_leg_y = nil, nil
   return x, y
 end
 

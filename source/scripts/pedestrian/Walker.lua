@@ -9,10 +9,12 @@ class('Walker').extends()
 function Walker:init(walker_type, x_pos, y_pos, vx, vy, direction)
   Walker.super.init(self)
 
+  -- TODO: do we want any leg to accept any item that works?
+  self.item_type = walker_type.item
+
   -- TODO: this feeeels a lil off
   if (math.random() <= CONSTANTS.PEDESTRIANS.ITEM_DROP_CHANCE) then
     self.will_drop_item = true
-    self.item_type = walker_type.item
     self.has_dropped_item = false
     self.drop_at_x = math.random(CONSTANTS.PEDESTRIANS.ITEM_SPAWN_LEFT_BOUND, CONSTANTS.PEDESTRIANS.ITEM_SPAWN_RIGHT_BOUND)
 
@@ -23,7 +25,7 @@ function Walker:init(walker_type, x_pos, y_pos, vx, vy, direction)
   self.vx, self.vy = vx, vy
   self.direction = direction
 
-  self.legs = { Leg(x_pos + CONSTANTS.PEDESTRIANS.LEG_SPACING, y_pos, direction), Leg(x_pos, y_pos, direction) }
+  self.legs = { Leg(x_pos + CONSTANTS.PEDESTRIANS.LEG_SPACING, y_pos, direction, self.item_type), Leg(x_pos, y_pos, direction, self.item_type) }
 
   if (direction == CONSTANTS.PEDESTRIANS.DIRECTION.LEFT) then
     self.active_leg_index = 1

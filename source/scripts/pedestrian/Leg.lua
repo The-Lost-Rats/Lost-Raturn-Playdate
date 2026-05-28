@@ -18,8 +18,10 @@ local MOVEMENT_STATES = {
 }
 
 class('Leg').extends()
-function Leg:init(x_pos, y_pos, direction)
+function Leg:init(x_pos, y_pos, direction, item_type)
   Leg.super.init(self)
+
+  self.item_type = item_type
 
   self.direction = direction
 
@@ -34,6 +36,7 @@ function Leg:init(x_pos, y_pos, direction)
   self.leg_sprite:setCollideRect(0, 0, self.leg_sprite:getSize())
   self.leg_sprite:setGroups({CONSTANTS.GROUPS.CLIMBABLE})
   self.leg_sprite:setTag(CONSTANTS.TAGS.LEG)
+  self.leg_sprite.item_type = item_type
 
   -- Shoe
   self.shoe_sprite = gfx.sprite.new(shoe_image)

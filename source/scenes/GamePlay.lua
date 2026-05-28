@@ -18,7 +18,7 @@ class ('GamePlay').extends(BaseScene)
 function GamePlay:init()
   -- TODO: should i set center of sprites to like bottom center?
   GamePlay.super.init(self)
-  self.player = Player(0, 0, 1)
+  self.player = Player(0, 0, 1, self)
 
   self.walkers = {}
   -- Start with a small number of walkers to let the player get used to the game.
@@ -31,6 +31,7 @@ end
 function GamePlay:enter()
   self.player:reset()
   self.player:add()
+  self.current_score = 0
 
   -- Start the walker spawning process
   self:trySpawnWalker()
@@ -54,7 +55,7 @@ function GamePlay:enter()
     
     gfx.setColor(gfx.kColorWhite)
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-    gfx.drawText("Score: 0", 4, 4) -- TODO: make these constants or something
+    gfx.drawText("Score: " .. self.current_score, 4, 4) -- TODO: make these constants or something
 
     -- TODO: these should not be hard coded - num hears should be here, loop, math to place
     gfx.fillCircleInRect(CONSTANTS.SCREEN_W - 20, 0, 10, CONSTANTS.HUD_H)
@@ -133,4 +134,9 @@ function GamePlay:spawnWalker()
   
   new_walker:add()
   table.insert(self.walkers, new_walker)
+end
+
+function GamePlay:updateScore(points)
+  self.current_score += points
+  gfx.sprite.addDirtyRect(0, 0, CONSTANTS.SCREEN_W, CONSTANTS.HUD_H)
 end

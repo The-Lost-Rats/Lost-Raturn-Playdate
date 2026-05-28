@@ -22,6 +22,7 @@ class('Item').extends(gfx.sprite)
 -- TODO: what else should this take in? x, y, vx, vy?
 function Item:init(item_type)
   Item.super.init(self)
+  self.item_type = item_type
 
   self:setImage(image)
   self:setCollideRect(0, 0, self:getSize())
