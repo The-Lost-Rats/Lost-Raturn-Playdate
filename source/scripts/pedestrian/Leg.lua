@@ -6,9 +6,8 @@ import "scripts/Item"
 
 local gfx <const> = playdate.graphics
 
--- TODO: constants/sprites etc.
-local leg_image = gfx.image.new(16, CONSTANTS.SCREEN_H, gfx.kColorBlack)
-local shoe_image = gfx.image.new(32, 20, gfx.kColorBlack)
+local leg_image = gfx.image.new(CONSTANTS.PEDESTRIANS.LEG_W, CONSTANTS.PEDESTRIANS.LEG_H, gfx.kColorBlack)
+local shoe_image = gfx.image.new(CONSTANTS.PEDESTRIANS.SHOE_W, CONSTANTS.PEDESTRIANS.SHOE_H, gfx.kColorBlack)
 
 -- TODO: maybe change to map to functions? and do switch stmt like lookup
 local MOVEMENT_STATES = {
@@ -58,11 +57,11 @@ function Leg:update()
       self:fall()
     end
   elseif self.current_move_state == MOVEMENT_STATES.FALLING then
-    self.vy = self.vy + CONSTANTS.GRAVITY
+    self.vy = self.vy + CONSTANTS.PHYSICS.GRAVITY
     self:moveBy(0, self.vy)
 
     -- TODO: shoe height
-    if (self.y >= CONSTANTS.FLOOR_Y - 20 / 2) then
+    if (self.y >= CONSTANTS.WORLD.FLOOR_Y - self.shoe_sprite.height / 2) then
       self:land()
     end
   end
@@ -77,12 +76,12 @@ end
 function Leg:fall()
   self.current_move_state = MOVEMENT_STATES.FALLING
   self.vx = 0
-  self.vy = self.vy + CONSTANTS.GRAVITY
+  self.vy = self.vy + CONSTANTS.PHYSICS.GRAVITY
 end
 
 function Leg:land()
   self.current_move_state = MOVEMENT_STATES.GROUNDED
-  self.y = CONSTANTS.FLOOR_Y - 20 / 2
+  self.y = CONSTANTS.WORLD.FLOOR_Y - self.shoe_sprite.height / 2
   self.vx, self.vy = 0, 0
   self:moveTo(self.x, self.y)
 
@@ -107,11 +106,14 @@ end
 function Leg:moveTo(x, y)
   self.x, self.y = x, y
 
+  local leg_w, leg_h = self.leg_sprite:getSize()
+  local shoe_w, shoe_h = self.shoe_sprite:getSize()
+
   self.shoe_sprite:moveTo(x, y)
-  if (self.direction == CONSTANTS.PEDESTRIANS.DIRECTION.LEFT) then
-    self.leg_sprite:moveTo(x + 32 / 2 - 16 / 2, y - 20 /2 - CONSTANTS.SCREEN_H / 2)
+  if (self.direction == CONSTANTS.DIRECTION.LEFT) then
+    self.leg_sprite:moveTo(x + shoe_w / 2 - leg_w / 2, y - shoe_h /2 - leg_h / 2)
   else
-    self.leg_sprite:moveTo(x - 32 / 2 + 16 / 2, y - 20 /2 - CONSTANTS.SCREEN_H / 2)
+    self.leg_sprite:moveTo(x - shoe_w / 2 + leg_w / 2, y - shoe_h /2 - leg_h / 2)
   end
 end
 
@@ -130,7 +132,7 @@ function Leg:isRising()
 end
 
 function Leg:dropItem(item)
-  item:drop(self.x, -10) -- TODO: -10 should be something..
+  item:drop(self.x, CONSTANTS.ITEM.SPAWN_Y)
 end
 
 function Leg:getPosition()

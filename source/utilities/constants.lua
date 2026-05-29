@@ -1,16 +1,46 @@
 local SCREEN_W <const> = playdate.display.getWidth()
 local SCREEN_H <const> = playdate.display.getHeight()
 
+local WALKER_SPAWN_PADDING <const> = 20
+local WALKER_DESPAWN_PADDING <const> = 40
+
+local ITEM_SPAWN_PADDING <const> = 30
+
+local FLOOR_Y_PADDING <const> = 20
+
 CONSTANTS = {
-  SCREEN_W = SCREEN_W,
-  SCREEN_H = SCREEN_H,
+  DISPLAY = {
+    W = SCREEN_W,
+    H = SCREEN_H,
+    W_HALF = SCREEN_W / 2,
+    H_HALF = SCREEN_H / 2,
+    REFRESH_RATE = 30,
+  },
 
-  SCREEN_W_HALF = SCREEN_W / 2,
-  SCREEN_H_HALF = SCREEN_H / 2,
+  WORLD = {
+    FLOOR_Y = SCREEN_H - FLOOR_Y_PADDING,
+  },
 
-  HUD_H = 24,
-  FLOOR_Y = 220,
+  PHYSICS = {
+    GRAVITY = 0.6, -- px/frame^2
+  },
 
+  HUD = {
+    H = 24,
+
+    SCORE_X = 4,
+    SCORE_Y = 4,
+
+    HEART_SPACING = 20,
+    HEART_RADIUS = 10,
+  },
+
+  DIRECTION = {
+    LEFT = 0,
+    RIGHT = 1
+  },
+
+  -- Tags and groups for collision detection
   TAGS = {
     PLAYER = 1,
     ITEM = 2,
@@ -26,75 +56,104 @@ CONSTANTS = {
   },
 
   PLAYER = {
+    W = 16,
+    H = 16,
+
     MOVE_SPEED = 4, -- px/frame
     JUMP_V = -9, -- px/frame
-    MAX_HEALTH = 3
+
+    MAX_HEALTH = 3,
+
+    HELD_ITEM_Y_OFFSET = -10,
   },
 
-  GRAVITY = 0.6, -- px/frame^2
+  CLIMBING = {
+    PIXELS_PER_DEGREE = 0.17,
+    LEG_SCORE_DISTANCE = (SCREEN_H / 2) * 0.80 -- Climb above 80% of top half of leg to enter score range
+  },
 
-  -- TODO: is this the right format for the constants? Should I have walkers be its own?
+  SCORING = {
+    CORRECT_DELIVERY = 100,
+    WRONG_DELIVERY = -50,
+  },
+
+  ITEM = {
+    W = 8,
+    H = 8,
+
+    SPAWN_Y = -10,
+
+    BOB_AMPLITUDE = 15,
+    GRAVITY_MULTIPLIER = 0.60,
+
+    GROUNDED_TIME_MS = 4000,
+    TTL_MS = 2000,
+
+    MAX_BLINK_SPEED_MS = 640,
+    MIN_BLINK_SPEED_MS = 40,
+    BLINK_INTERVAL_DIVISOR = 1.5,
+
+    SPAWN_LEFT_BOUND = ITEM_SPAWN_PADDING,
+    SPAWN_RIGHT_BOUND = SCREEN_W - ITEM_SPAWN_PADDING
+  },
+    
   PEDESTRIANS = {
+    LEG_W = 16,
+    LEG_H = SCREEN_H,
+
+    SHOE_W = 32,
+    SHOE_H = 20,
+
     TYPES = {
       {
         name = "COWBOY",
         item = "SIX_SHOOTER",
-        sprite = "cowboy"
       },
       {
         name= "BUSINESS_MAN",
         item = "WATCH",
-        sprite = "business_man"
       },
       {
         name = "WOMAN",
         item = "RING",
-        sprite = "woman"
       },
       {
         name = "SWIMMER",
         item = "SUNSCREEN",
-        sprite = "swimmer"
       },
       {
         name = "CONSTRUCTION_WORKER",
         item = "WRENCH",
-        sprite = "construction_worker"
       },
       {
         name = "RUNNER",
         item = "PHONE",
-        sprite = "runner"
       }
     },
 
     STEP_LENGTH = 120,
     LEG_SPACING = 40,
 
-    SPAWN_POSITION_LEFT = -20,
-    SPAWN_POSITION_RIGHT = SCREEN_W + 20, -- TODO: 20 should not be hardcoded
-    DESPAWN_BOUND_LEFT = -40,
-    DESPAWN_BOUND_RIGHT = SCREEN_W + 40,
+    SPAWN_POSITION_LEFT = -WALKER_SPAWN_PADDING,
+    SPAWN_POSITION_RIGHT = SCREEN_W + WALKER_SPAWN_PADDING,
+    DESPAWN_BOUND_LEFT = -WALKER_DESPAWN_PADDING,
+    DESPAWN_BOUND_RIGHT = SCREEN_W + WALKER_DESPAWN_PADDING,
 
-    MAX_WALKERS = 6,
     MIN_WALKERS = 2,
+    MAX_WALKERS = 6,
 
     MIN_SPAWN_INTERVAL_MS = 1000,
     MAX_SPAWN_INTERVAL_MS = 8000,
 
-    -- TODO: do i want this?
-    DIRECTION = {
-      LEFT = 0,
-      RIGHT = 1
-    },
+    SPAWN_CAP_RAMP = 0.5,
+    SPAWN_INTERVAL_RAMP_MS = 100,
 
-    -- TODO: do i want an item section?
+    RIGHT_VX = 5,
+    LEFT_VX = -5,
+    VY = -5,
+
     ITEM_DROP_CHANCE = 0.65,
-    ITEM_SPAWN_LEFT_BOUND = 30,
-    ITEM_SPAWN_RIGHT_BOUND = SCREEN_W - 30,
-    ITEM_GROUNDED_TIME_MS = 4000,
-    ITEM_TTL_MS = 2000,
-    ITEM_MAX_BLINK_SPEED_MS = 640,
-    ITEM_MIN_BLINK_SPEED_MS = 40
+
+    STOMP_DAMAGE = 1,
   }
 }

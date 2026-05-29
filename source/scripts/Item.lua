@@ -6,7 +6,7 @@ import "CoreLibs/timer"
 local gfx <const> = playdate.graphics
 local timer <const> = playdate.timer
 
-local image = gfx.image.new(8, 8, gfx.kColorBlack)
+local image = gfx.image.new(CONSTANTS.ITEM.W, CONSTANTS.ITEM.H, gfx.kColorBlack)
 
 -- TODO: maybe change to map to functions? and do switch stmt like lookup
 local ITEM_STATES = {
@@ -42,27 +42,27 @@ function Item:update()
 
   if (self.current_state == ITEM_STATES.FALLING) then
     -- TODO: see if i can move some of this logic out to be shared
-    self.vy = self.vy + CONSTANTS.GRAVITY * 0.60 -- TODO: magic number to fall slower
+    self.vy = self.vy + CONSTANTS.PHYSICS.GRAVITY * CONSTANTS.ITEM.GRAVITY_MULTIPLIER -- Fall slower than player
     y = y + self.vy
     x = x + self.vx
 
     -- TODO: move to func
-    if (y >= CONSTANTS.FLOOR_Y - self.height / 2) then
+    if (y >= CONSTANTS.WORLD.FLOOR_Y - self.height / 2) then
       self.vy = 0
-      y = CONSTANTS.FLOOR_Y - self.height / 2
+      y = CONSTANTS.WORLD.FLOOR_Y - self.height / 2
       self.grounded_start_time_ms = playdate.getCurrentTimeMilliseconds()
       self.current_state = ITEM_STATES.GROUNDED
 
        -- TODO: item should be its own section
-      self.grounded_timer = timer.performAfterDelay(CONSTANTS.PEDESTRIANS.ITEM_GROUNDED_TIME_MS, function() self:startDisappearing() end)
+      self.grounded_timer = timer.performAfterDelay(CONSTANTS.ITEM.GROUNDED_TIME_MS, function() self:startDisappearing() end)
     end
 
     self:moveTo(x, y)
   elseif(self.current_state == ITEM_STATES.GROUNDED) then
     -- TODO: double check my whiteboard math
     local delta_time_s = (playdate.getCurrentTimeMilliseconds() - self.grounded_start_time_ms) / 1000
-    local y_offset = 15 * math.sin(delta_time_s * math.pi) - 15
-    self:moveTo(self.x, CONSTANTS.FLOOR_Y - (self.height / 2) + y_offset)
+    local y_offset = CONSTANTS.ITEM.BOB_AMPLITUDE * math.sin(delta_time_s * math.pi) - CONSTANTS.ITEM.BOB_AMPLITUDE
+    self:moveTo(self.x, CONSTANTS.WORLD.FLOOR_Y - (self.height / 2) + y_offset)
   end
 end
 
@@ -74,8 +74,8 @@ end
 -- TODO: ill keep this as is for now, but I think we should change this to keep the sine motion and add blinking on top
 function Item:startDisappearing()
   self.current_state = ITEM_STATES.DISAPPEARING
-  self.disappear_timer = timer.performAfterDelay(CONSTANTS.PEDESTRIANS.ITEM_TTL_MS, function() self:disappear() end)
-  self:startBlinking(CONSTANTS.PEDESTRIANS.ITEM_MAX_BLINK_SPEED_MS)
+  self.disappear_timer = timer.performAfterDelay(CONSTANTS.ITEM.TTL_MS, function() self:disappear() end)
+  self:startBlinking(CONSTANTS.ITEM.MAX_BLINK_SPEED_MS)
 end
 
 function Item:disappear()
@@ -87,14 +87,14 @@ function Item:disappear()
 end
 
 function Item:startBlinking(duration_ms)
-  local blink_duration_ms = math.max(CONSTANTS.PEDESTRIANS.ITEM_MIN_BLINK_SPEED_MS, duration_ms)
+  local blink_duration_ms = math.max(CONSTANTS.ITEM.MIN_BLINK_SPEED_MS, duration_ms)
   
   -- TODO: toggle visibility
   self.is_visible = not self.is_visible
   self:setVisible(self.is_visible)
 
   -- TODO: make blinking faster as time goes on/or as we get closer to disappaering
-  self.blinking_timer = timer.performAfterDelay(blink_duration_ms, function() self:startBlinking(blink_duration_ms / 1.5) end)
+  self.blinking_timer = timer.performAfterDelay(blink_duration_ms, function() self:startBlinking(blink_duration_ms / CONSTANTS.ITEM.BLINK_INTERVAL_DIVISOR) end)
 end
 
 function Item:pickUp()

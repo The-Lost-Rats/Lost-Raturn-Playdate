@@ -4,11 +4,12 @@ import "CoreLibs/timer"
 import "scenes/GameOver"
 import "scenes/GamePlay"
 import "scenes/Title"
+import "utilities/constants"
 
 local gfx <const> = playdate.graphics
 local timer <const> = playdate.timer
 
-playdate.display.setRefreshRate(30)
+playdate.display.setRefreshRate(CONSTANTS.DISPLAY.REFRESH_RATE)
 
 math.randomseed(playdate.getSecondsSinceEpoch())
 

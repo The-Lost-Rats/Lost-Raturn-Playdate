@@ -4,9 +4,9 @@ import "CoreLibs/sprites"
 
 local gfx <const> = playdate.graphics
 
--- TODO: constants etc.
-local image = gfx.image.new(16, 16, gfx.kColorBlack)
+local image = gfx.image.new(CONSTANTS.PLAYER.W, CONSTANTS.PLAYER.H, gfx.kColorBlack)
 
+-- TODO: remove some of these states and make them state transitions
 local PLAYER_STATE = {
   GROUNDED = 0,
   JUMPING = 1,
@@ -55,7 +55,7 @@ function Player:reset()
   self.current_state = PLAYER_STATE.GROUNDED
 
   -- TODO: should i pass in x and y?
-  self:moveTo(CONSTANTS.SCREEN_W_HALF, CONSTANTS.FLOOR_Y - self.height / 2)
+  self:moveTo(CONSTANTS.DISPLAY.W_HALF, CONSTANTS.WORLD.FLOOR_Y - self.height / 2)
 end
 
 -- TODO: split into functions
@@ -103,7 +103,7 @@ function Player:update()
   self:moveTo(x, y)
 
   if (self.held_item ~= nil) then
-    self.held_item:moveTo(x, y - 10)
+    self.held_item:moveTo(x, y + CONSTANTS.PLAYER.HELD_ITEM_Y_OFFSET)
   end
 end
 
@@ -165,7 +165,7 @@ function Player:handleFalling(x, y)
   end
 
   -- Update position
-  self.vy = self.vy + CONSTANTS.GRAVITY
+  self.vy = self.vy + CONSTANTS.PHYSICS.GRAVITY
 
   x = self:handleHorizontalMovement(x)
 
@@ -174,9 +174,9 @@ function Player:handleFalling(x, y)
   x = x + self.vx
 
    -- Bounds check
-  if (y >= CONSTANTS.FLOOR_Y - self.height / 2) then
+  if (y >= CONSTANTS.WORLD.FLOOR_Y - self.height / 2) then
     self.vy = 0
-    y = CONSTANTS.FLOOR_Y - self.height / 2
+    y = CONSTANTS.WORLD.FLOOR_Y - self.height / 2
     self.current_state = PLAYER_STATE.GROUNDED
   end
 
@@ -206,8 +206,7 @@ function Player:handleClimbing(x, y)
   -- TODO: i need a mapping from degrees to vertical motion up and down the leg
   local change, acceleratedChange = playdate.getCrankChange()
   -- TODO: make this better oh lorde
-  local CLIMB_PIXELS_PER_DEGREE = 0.17
-  local dy = -change * CLIMB_PIXELS_PER_DEGREE
+  local dy = -change * CONSTANTS.CLIMBING.PIXELS_PER_DEGREE
 
 
   -- TODO: I really gotta keep naming consistent and ordering of x and y
@@ -216,17 +215,16 @@ function Player:handleClimbing(x, y)
   x = x + self.vx + leg_dx
 
   -- TODO: handle this better w/ image anchors and get height of leg
-  -- TODO: leg height / 2 - player height / 2
-  if (y < leg_y - CONSTANTS.SCREEN_H / 2 - 16 / 2) then
-    y = leg_y - CONSTANTS.SCREEN_H / 2 - 16 / 2
-  elseif (y > leg_y + CONSTANTS.SCREEN_H / 2 - 16 / 2) then
-    y = leg_y + CONSTANTS.SCREEN_H / 2 - 16 / 2
+  if (y < leg_y - CONSTANTS.PEDESTRIANS.LEG_H / 2 - self.height / 2) then
+    y = leg_y - CONSTANTS.PEDESTRIANS.LEG_H / 2 - self.height / 2
+  elseif (y > leg_y + CONSTANTS.PEDESTRIANS.LEG_H / 2 - self.height / 2) then
+    y = leg_y + CONSTANTS.PEDESTRIANS.LEG_H / 2 - self.height / 2
   end
 
     -- TODO: off screen should be helper? also make drop leg a helper?
     -- TODO: is this unsafe? should I check if the leg exists before using it above?
-  if (x >= CONSTANTS.SCREEN_W - self.width / 2) then
-    x = CONSTANTS.SCREEN_W - self.width / 2
+  if (x >= CONSTANTS.DISPLAY.W - self.width / 2) then
+    x = CONSTANTS.DISPLAY.W - self.width / 2
     self.current_state = PLAYER_STATE.JUMPING
     self.attached_leg = nil
     self.previous_leg_x, self.previous_leg_y = nil, nil
@@ -239,7 +237,7 @@ function Player:handleClimbing(x, y)
     self.previous_leg_x, self.previous_leg_y = nil, nil
   end
 
-  if (y <= leg_y - (CONSTANTS.SCREEN_H / 2) * 0.80) then
+  if (y <= leg_y - CONSTANTS.CLIMBING.LEG_SCORE_DISTANCE) then
     self.current_state = PLAYER_STATE.SCORING
   end
 
@@ -247,21 +245,18 @@ function Player:handleClimbing(x, y)
 end
 
 function Player:handleScoring(x, y)
-  -- TODO: temp print
-  print("SCORING")
-  -- TODO: if right item then + 100 and consume item else - 50 and drop item
   if (self.held_item ~= nil) then
     -- TODO: clean this up
     if (self.held_item.item_type == self.attached_leg.item_type) then
       print("Score! ", self.held_item.item_type, self.attached_leg.item_type)
-      self.game_play_scene:updateScore(100)
+      self.game_play_scene:updateScore(CONSTANTS.SCORING.CORRECT_DELIVERY)
 
       -- TODO: helper drop or something? clean up naming
       self.held_item:remove()
       self.held_item = nil
     else
       print("Miss! ", self.held_item.item_type, self.attached_leg.item_type)
-      self.game_play_scene:updateScore(-50)
+      self.game_play_scene:updateScore(CONSTANTS.SCORING.WRONG_DELIVERY)
       self.held_item:release()
       self.held_item = nil
     end
@@ -282,7 +277,7 @@ function Player:handleHit(x, y)
     self.held_item = nil
   end
 
-  self:takeDamage(1)
+  self:takeDamage(CONSTANTS.PEDESTRIANS.STOMP_DAMAGE)
 
   return x, y
 end
@@ -301,8 +296,8 @@ function Player:handleHorizontalMovement(x_pos)
     x_pos += CONSTANTS.PLAYER.MOVE_SPEED
   end
 
-  if (x_pos >= CONSTANTS.SCREEN_W - self.width / 2) then
-    x_pos = CONSTANTS.SCREEN_W - self.width / 2
+  if (x_pos >= CONSTANTS.DISPLAY.W - self.width / 2) then
+    x_pos = CONSTANTS.DISPLAY.W - self.width / 2
   end
 
   if (x_pos <= self.width / 2) then
@@ -328,7 +323,7 @@ end
 -- TODO: gfx update should not be here - should be in ui or smth?
 function Player:takeDamage(amount)
   self.health = math.max(0, self.health - amount)
-  gfx.sprite.addDirtyRect(0, 0, CONSTANTS.SCREEN_W, CONSTANTS.HUD_H)
+  gfx.sprite.addDirtyRect(0, 0, CONSTANTS.DISPLAY.W, CONSTANTS.HUD.H)
 end
 
 function Player:isDead()

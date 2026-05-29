@@ -12,7 +12,7 @@ local gfx <const> = playdate.graphics
 local timer <const> = playdate.timer
 local ui <const> = playdate.ui
 
--- TODO: should we have itemsbe tracked here?
+-- TODO: should we have itemsbe tracked here? so i can remove items if they are lingering on game over or something?
 class ('GamePlay').extends(BaseScene)
 function GamePlay:init()
   -- TODO: should i set center of sprites to like bottom center?
@@ -43,26 +43,26 @@ function GamePlay:enter()
 
     local display_text = self.className
     local text_w, text_h = gfx.getTextSize(display_text)
-    gfx.drawText(display_text, CONSTANTS.SCREEN_W_HALF - text_w / 2, CONSTANTS.SCREEN_H_HALF - text_h / 2)
+    gfx.drawText(display_text, CONSTANTS.DISPLAY.W_HALF - text_w / 2, CONSTANTS.DISPLAY.H_HALF - text_h / 2)
 
     -- TODO: eventually create UI manager? Make this a sprite maybe?
     -- Floor line
-    gfx.drawLine(0, CONSTANTS.FLOOR_Y, CONSTANTS.SCREEN_W, CONSTANTS.FLOOR_Y)
+    gfx.drawLine(0, CONSTANTS.WORLD.FLOOR_Y, CONSTANTS.DISPLAY.W, CONSTANTS.WORLD.FLOOR_Y)
 
     -- HUD Box
-    gfx.fillRect(0, 0, CONSTANTS.SCREEN_W, CONSTANTS.HUD_H)
+    gfx.fillRect(0, 0, CONSTANTS.DISPLAY.W, CONSTANTS.HUD.H)
     
     gfx.setColor(gfx.kColorWhite)
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-    gfx.drawText("Score: " .. self.current_score, 4, 4) -- TODO: make these constants or something
+    gfx.drawText("Score: " .. self.current_score, CONSTANTS.HUD.SCORE_X, CONSTANTS.HUD.SCORE_Y)
 
     -- TODO: these should not be hard coded - num hears should be here, loop, math to place
     local player_health = self.player:getCurrentHealth()
     for i = 1, CONSTANTS.PLAYER.MAX_HEALTH, 1 do
       if (i <= player_health) then
-        gfx.fillCircleInRect(CONSTANTS.SCREEN_W - 20 * i, 0, 10, CONSTANTS.HUD_H)
+        gfx.fillCircleInRect(CONSTANTS.DISPLAY.W - CONSTANTS.HUD.HEART_SPACING * i, 0, CONSTANTS.HUD.HEART_RADIUS, CONSTANTS.HUD.H)
       else
-        gfx.drawCircleInRect(CONSTANTS.SCREEN_W - 20 * i, 0, 10, CONSTANTS.HUD_H)
+        gfx.drawCircleInRect(CONSTANTS.DISPLAY.W - CONSTANTS.HUD.HEART_SPACING * i, 0, CONSTANTS.HUD.HEART_RADIUS, CONSTANTS.HUD.H)
       end
     end
     
@@ -115,8 +115,8 @@ end
 function GamePlay:trySpawnWalker()
   if (#self.walkers < self.walkers_spawn_cap) then
     self:spawnWalker()
-    self.walkers_spawn_cap = math.min(CONSTANTS.PEDESTRIANS.MAX_WALKERS, self.walkers_spawn_cap + 0.5)
-    self.walkers_spawn_interval_ms = math.max(CONSTANTS.PEDESTRIANS.MIN_SPAWN_INTERVAL_MS, self.walkers_spawn_interval_ms - 100) -- 100 should be tuneable
+    self.walkers_spawn_cap = math.min(CONSTANTS.PEDESTRIANS.MAX_WALKERS, self.walkers_spawn_cap + CONSTANTS.PEDESTRIANS.SPAWN_CAP_RAMP)
+    self.walkers_spawn_interval_ms = math.max(CONSTANTS.PEDESTRIANS.MIN_SPAWN_INTERVAL_MS, self.walkers_spawn_interval_ms - CONSTANTS.PEDESTRIANS.SPAWN_INTERVAL_RAMP_MS)
   end
 
   self.walker_timer = timer.performAfterDelay(self.walkers_spawn_interval_ms, function() self:trySpawnWalker() end)
@@ -130,10 +130,13 @@ function GamePlay:spawnWalker()
   local walker_type_index = math.random(#CONSTANTS.PEDESTRIANS.TYPES)
   local walker_type = CONSTANTS.PEDESTRIANS.TYPES[walker_type_index]
 
+  -- TODO: clean this up so i don't make the whole arg list twice
+  -- TODO: why shift by shoe height / 2 -> can i move this to the walker itself? or change sprite anchors
+  -- TODO: do all these need to be constants? it looks a little ugly
   if (random_float >= 0.5) then
-    new_walker = Walker(walker_type, CONSTANTS.PEDESTRIANS.SPAWN_POSITION_RIGHT, CONSTANTS.FLOOR_Y - 20 / 2, -5, -5, CONSTANTS.PEDESTRIANS.DIRECTION.LEFT)
+    new_walker = Walker(walker_type, CONSTANTS.PEDESTRIANS.SPAWN_POSITION_RIGHT, CONSTANTS.WORLD.FLOOR_Y - CONSTANTS.PEDESTRIANS.SHOE_H / 2, CONSTANTS.PEDESTRIANS.LEFT_VX, CONSTANTS.PEDESTRIANS.VY, CONSTANTS.DIRECTION.LEFT)
   else
-    new_walker = Walker(walker_type, CONSTANTS.PEDESTRIANS.SPAWN_POSITION_LEFT, CONSTANTS.FLOOR_Y - 20 / 2, 5, -5, CONSTANTS.PEDESTRIANS.DIRECTION.RIGHT)
+    new_walker = Walker(walker_type, CONSTANTS.PEDESTRIANS.SPAWN_POSITION_LEFT, CONSTANTS.WORLD.FLOOR_Y - CONSTANTS.PEDESTRIANS.SHOE_H / 2, CONSTANTS.PEDESTRIANS.RIGHT_VX, CONSTANTS.PEDESTRIANS.VY, CONSTANTS.DIRECTION.RIGHT)
   end
   
   new_walker:add()
@@ -144,5 +147,5 @@ end
 -- TODO: make this a sprite too? put in UI manager class?
 function GamePlay:updateScore(points)
   self.current_score += points
-  gfx.sprite.addDirtyRect(0, 0, CONSTANTS.SCREEN_W, CONSTANTS.HUD_H)
+  gfx.sprite.addDirtyRect(0, 0, CONSTANTS.DISPLAY.W, CONSTANTS.HUD.H)
 end

@@ -16,7 +16,7 @@ function Walker:init(walker_type, x_pos, y_pos, vx, vy, direction)
   if (math.random() <= CONSTANTS.PEDESTRIANS.ITEM_DROP_CHANCE) then
     self.will_drop_item = true
     self.has_dropped_item = false
-    self.drop_at_x = math.random(CONSTANTS.PEDESTRIANS.ITEM_SPAWN_LEFT_BOUND, CONSTANTS.PEDESTRIANS.ITEM_SPAWN_RIGHT_BOUND)
+    self.drop_at_x = math.random(CONSTANTS.ITEM.SPAWN_LEFT_BOUND, CONSTANTS.ITEM.SPAWN_RIGHT_BOUND)
 
     -- TODO: temp print
     print("Dropping item ", self.item_type, self.drop_at_x)
@@ -27,7 +27,7 @@ function Walker:init(walker_type, x_pos, y_pos, vx, vy, direction)
 
   self.legs = { Leg(x_pos + CONSTANTS.PEDESTRIANS.LEG_SPACING, y_pos, direction, self.item_type), Leg(x_pos, y_pos, direction, self.item_type) }
 
-  if (direction == CONSTANTS.PEDESTRIANS.DIRECTION.LEFT) then
+  if (direction == CONSTANTS.DIRECTION.LEFT) then
     self.active_leg_index = 1
   else
     self.active_leg_index = 2
@@ -45,8 +45,8 @@ function Walker:update()
   if (self.will_drop_item) then
     local x, _ = self.legs[self.active_leg_index]:getPosition()
     if (not self.has_dropped_item and
-        ((x >= self.drop_at_x and self.direction == CONSTANTS.PEDESTRIANS.DIRECTION.RIGHT) or
-        (x <= self.drop_at_x and self.direction == CONSTANTS.PEDESTRIANS.DIRECTION.LEFT)
+        ((x >= self.drop_at_x and self.direction == CONSTANTS.DIRECTION.RIGHT) or
+        (x <= self.drop_at_x and self.direction == CONSTANTS.DIRECTION.LEFT)
       )) then
       -- TODO: who do i want to own the item? do i pass it around? or do I want the walker to own it?
       self.item = Item(self.item_type)
