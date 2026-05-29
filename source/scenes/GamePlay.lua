@@ -113,7 +113,7 @@ function GamePlay:leave()
 end
 
 function GamePlay:trySpawnWalker()
-  if (#self.walkers < CONSTANTS.PEDESTRIANS.MAX_WALKERS) then
+  if (#self.walkers < self.walkers_spawn_cap) then
     self:spawnWalker()
     self.walkers_spawn_cap = math.min(CONSTANTS.PEDESTRIANS.MAX_WALKERS, self.walkers_spawn_cap + 0.5)
     self.walkers_spawn_interval_ms = math.max(CONSTANTS.PEDESTRIANS.MIN_SPAWN_INTERVAL_MS, self.walkers_spawn_interval_ms - 100) -- 100 should be tuneable
