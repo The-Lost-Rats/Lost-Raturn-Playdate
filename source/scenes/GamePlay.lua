@@ -4,10 +4,9 @@ import "CoreLibs/timer"
 import "CoreLibs/ui"
 
 import "scenes/BaseScene"
+import "scripts/pedestrian/Walker"
 import "scripts/Player"
 import "utilities/constants"
-
-import "scripts/pedestrian/Walker"
 
 local gfx <const> = playdate.graphics
 local timer <const> = playdate.timer
@@ -24,7 +23,7 @@ function GamePlay:init()
   -- Start with a small number of walkers to let the player get used to the game.
   -- And longest spawn interval so they are created really slowly.
   -- Then ramp up slowly.
-  self.walkers_spawn_cap = CONSTANTS.PEDESTRIANS.MIN_WALKERS, CONSTANTS.PEDESTRIANS
+  self.walkers_spawn_cap = CONSTANTS.PEDESTRIANS.MIN_WALKERS
   self.walkers_spawn_interval_ms = CONSTANTS.PEDESTRIANS.MAX_SPAWN_INTERVAL_MS
 end
 
@@ -142,6 +141,7 @@ function GamePlay:spawnWalker()
 end
 
 -- TODO: accessing this with a singleton/shread instance is gross
+-- TODO: make this a sprite too? put in UI manager class?
 function GamePlay:updateScore(points)
   self.current_score += points
   gfx.sprite.addDirtyRect(0, 0, CONSTANTS.SCREEN_W, CONSTANTS.HUD_H)

@@ -22,7 +22,6 @@ function Player:init(vx, vy, direction_x, initial_health, game_play_scene)
   Player.super.init(self)
 
   self.game_play_scene = game_play_scene
-  self.health = initial_health
 
   self:setImage(image)
   self:setCollideRect(0, 0, self:getSize())
@@ -30,21 +29,32 @@ function Player:init(vx, vy, direction_x, initial_health, game_play_scene)
   self:setCollidesWithGroups({CONSTANTS.GROUPS.PICK_UP, CONSTANTS.GROUPS.HAZARD, CONSTANTS.GROUPS.CLIMBABLE})
   self:setTag(CONSTANTS.TAGS.PLAYER)
 
+  self.health = initial_health
+
   self.vx = vx
   self.vy = vy
-  self.direction_x = direction_x
+  self.initial_direction_x = direction_x
+  self.direction_x = self.initial_direction_x
+
   self.held_item = nil
-  self.current_state = PLAYER_STATE.GROUNDED
   self.attached_leg = nil
+
+  self.current_state = PLAYER_STATE.GROUNDED
 end
 
 function Player:reset()
-  self.vx = 0
-  self.vy = 0
-  self.current_state = PLAYER_STATE.GROUNDED
-  -- TODO: should really be whatever the player was initially created with tbh
   self.health = CONSTANTS.PLAYER.MAX_HEALTH
 
+  self.vx = 0
+  self.vy = 0
+  self.direction_x = self.initial_direction_x
+  
+  self.held_item = nil
+  self.attached_leg = nil
+
+  self.current_state = PLAYER_STATE.GROUNDED
+
+  -- TODO: should i pass in x and y?
   self:moveTo(CONSTANTS.SCREEN_W_HALF, CONSTANTS.FLOOR_Y - self.height / 2)
 end
 
