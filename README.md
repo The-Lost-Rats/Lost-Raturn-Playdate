@@ -15,6 +15,10 @@ TODO: penalty for getting squashed points wise?
 TODO: pick ups? (speed? health?)
 TODO: different items give different points?
 TODO: use config passing vs large constants file?
+TODO: unit tests/longevity tests/testing?
+TODO: settings json file?
+TODO: private locals/functiosn + constants
+TODO: named parameters for functions/args?
 
 References:
 https://help.play.date/developer/dev-links/
