@@ -2,6 +2,8 @@ import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/sprites"
 
+import "utilities/math"
+
 local gfx <const> = playdate.graphics
 
 local DISPLAY <const> = CONSTANTS.DISPLAY
@@ -216,8 +218,9 @@ function Player:handleClimbing(x, y)
 
   -- Handle crank motion
   -- TODO: should we use change or accelerated change?
-  local change, acceleratedChange = playdate.getCrankChange()
-  local dy = -change * CLIMBING.PIXELS_PER_DEGREE
+  local _, acceleratedChange = playdate.getCrankChange()
+  local clamped_change = math.clamp(acceleratedChange, -CLIMBING.MAX_ACCELERATED_CHANGE, CLIMBING.MAX_ACCELERATED_CHANGE)
+  local dy = -clamped_change * CLIMBING.PIXELS_PER_DEGREE
 
 
   -- TODO: I really gotta keep naming consistent and ordering of x and y

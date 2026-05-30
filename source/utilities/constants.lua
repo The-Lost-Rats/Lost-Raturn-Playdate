@@ -68,7 +68,8 @@ CONSTANTS = {
   },
 
   CLIMBING = {
-    PIXELS_PER_DEGREE = 0.17,
+    PIXELS_PER_DEGREE = 0.08,
+    MAX_ACCELERATED_CHANGE = 60,
     LEG_SCORE_DISTANCE = (SCREEN_H / 2) * 0.80 -- Climb above 80% of top half of leg to enter score range
   },
 
