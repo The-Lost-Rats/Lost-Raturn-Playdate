@@ -19,6 +19,7 @@ TODO: unit tests/longevity tests/testing?
 TODO: settings json file?
 TODO: private locals/functiosn + constants
 TODO: named parameters for functions/args?
+TODO: temp colours for items and legs to make testing easier?
 
 References:
 https://help.play.date/developer/dev-links/
