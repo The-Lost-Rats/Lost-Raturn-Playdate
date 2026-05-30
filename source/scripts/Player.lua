@@ -221,8 +221,6 @@ function Player:handleClimbing(x, y)
   local clamped_change = math.clamp(acceleratedChange, -CLIMBING.MAX_ACCELERATED_CHANGE, CLIMBING.MAX_ACCELERATED_CHANGE)
   local dy = -clamped_change * CLIMBING.PIXELS_PER_DEGREE
 
-
-  -- TODO: I really gotta keep naming consistent and ordering of x and y
   -- Update position
   y = y + self.vy + leg_dy + dy
   x = x + self.vx + leg_dx
@@ -299,24 +297,24 @@ function Player:handleDeath(x, y)
   return x, y
 end
 
-function Player:handleHorizontalMovement(x_pos)
+function Player:handleHorizontalMovement(x)
   if (playdate.buttonIsPressed(playdate.kButtonLeft)) then
-    x_pos -= PLAYER.MOVE_SPEED
+    x -= PLAYER.MOVE_SPEED
   end
 
   if (playdate.buttonIsPressed(playdate.kButtonRight)) then
-    x_pos += PLAYER.MOVE_SPEED
+    x += PLAYER.MOVE_SPEED
   end
 
-  if (x_pos >= DISPLAY.W - self.width / 2) then
-    x_pos = DISPLAY.W - self.width / 2
+  if (x >= DISPLAY.W - self.width / 2) then
+    x = DISPLAY.W - self.width / 2
   end
 
-  if (x_pos <= self.width / 2) then
-    x_pos = self.width / 2
+  if (x <= self.width / 2) then
+    x = self.width / 2
   end
 
-  return x_pos
+  return x
 end
 
 function Player:pickUpItem(item)

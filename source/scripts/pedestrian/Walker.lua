@@ -11,7 +11,7 @@ local ITEM <const> = CONSTANTS.ITEM
 -- TODO: maybe do some cool callback function stuff where
 -- we get back the uhh active leg htting the ground and know when to switch?
 class('Walker').extends()
-function Walker:init(walker_type, x_pos, y_pos, vx, vy, direction)
+function Walker:init(walker_type, x, y, vx, vy, direction)
   Walker.super.init(self)
 
   -- TODO: do we want any leg to accept any item that works?
@@ -27,7 +27,7 @@ function Walker:init(walker_type, x_pos, y_pos, vx, vy, direction)
   self.vx, self.vy = vx, vy
   self.direction = direction
 
-  self.legs = { Leg(x_pos + PEDESTRIANS.LEG_SPACING, y_pos, direction, self.item_type), Leg(x_pos, y_pos, direction, self.item_type) }
+  self.legs = { Leg(x + PEDESTRIANS.LEG_SPACING, y, direction, self.item_type), Leg(x, y, direction, self.item_type) }
 
   if (direction == DIRECTION.LEFT) then
     self.active_leg_index = 1

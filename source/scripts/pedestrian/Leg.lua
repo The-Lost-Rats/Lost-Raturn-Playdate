@@ -27,7 +27,7 @@ local MOVEMENT_STATES = {
 
 class('Leg').extends()
 -- TODO: taking in item type is kinda gross
-function Leg:init(x_pos, y_pos, direction, item_type)
+function Leg:init(x, y, direction, item_type)
   Leg.super.init(self)
 
   self.item_type = item_type
@@ -55,7 +55,7 @@ function Leg:init(x_pos, y_pos, direction, item_type)
   self.shoe_sprite:setTag(TAGS.SHOE)
   self.shoe_sprite.controller = self
 
-  self:moveTo(x_pos, y_pos)
+  self:moveTo(x, y)
 end
 
 function Leg:update()
