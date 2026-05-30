@@ -141,8 +141,6 @@ function GamePlay:spawnWalker()
   local direction = random_float >= 0.5 and DIRECTION.LEFT or DIRECTION.RIGHT
 
   local new_walker = Walker.spawn(walker_type, direction)
-  
-  new_walker:add()
   table.insert(self.walkers, new_walker)
 end
 

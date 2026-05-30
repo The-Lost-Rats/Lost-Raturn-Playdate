@@ -139,8 +139,10 @@ function Leg:isRising()
   return self.current_move_state == MOVEMENT_STATES.RISING
 end
 
-function Leg:dropItem(item)
-  item:drop(self.x, ITEM.SPAWN_Y)
+function Leg:dropItem(item_type)
+  local item = Item(item_type, self.x, ITEM.SPAWN_Y)
+  item:add()
+  return item
 end
 
 function Leg:getPosition()

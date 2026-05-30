@@ -16,13 +16,10 @@ function Walker:init(walker_type, x_pos, y_pos, vx, vy, direction)
 
   -- TODO: do we want any leg to accept any item that works?
   self.item_type = walker_type.item
-
-  -- TODO: this feeeels a lil off
-  if (math.random() <= PEDESTRIANS.ITEM_DROP_CHANCE) then
-    self.will_drop_item = true
-    self.has_dropped_item = false
+  self.will_drop_item = math.random() <= PEDESTRIANS.ITEM_DROP_CHANCE
+  self.has_dropped_item = false
+  if (self.will_drop_item) then
     self.drop_at_x = math.random(ITEM.SPAWN_LEFT_BOUND, ITEM.SPAWN_RIGHT_BOUND)
-
     -- TODO: temp print
     print("Dropping item ", self.item_type, self.drop_at_x)
   end
@@ -57,10 +54,9 @@ function Walker:update()
         (x <= self.drop_at_x and self.direction == DIRECTION.LEFT)
       )) then
       -- TODO: who do i want to own the item? do i pass it around? or do I want the walker to own it?
-      self.item = Item(self.item_type)
-      self.item:add()
-      active_leg:dropItem(self.item)
+      self.item = active_leg:dropItem(self.item_type)
       self.has_dropped_item = true
+      -- TODO: temp print
       print("DROPPED ITEM: ", self.item_type, x)
     end
   end
@@ -112,5 +108,7 @@ function Walker.spawn(walker_type, direction)
   y = WORLD.FLOOR_Y - PEDESTRIANS.SHOE_H / 2
   vy = PEDESTRIANS.VY
 
-  return Walker(walker_type, x, y, vx, vy, direction)
+  local walker = Walker(walker_type, x, y, vx, vy, direction)
+  walker:add()
+  return walker
 end

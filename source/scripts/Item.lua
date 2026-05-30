@@ -24,21 +24,20 @@ local ITEM_STATES = {
 }
 
 class('Item').extends(gfx.sprite)
--- TODO: what else should this take in? x, y, vx, vy?
-function Item:init(item_type)
+function Item:init(item_type, x, y)
   Item.super.init(self)
-  self.item_type = item_type
 
   self:setImage(image)
   self:setCollideRect(0, 0, self:getSize())
   self:setGroups({GROUPS.PICK_UP})
   self:setTag(TAGS.ITEM)
 
+  self.item_type = item_type
   self.vx, self.vy = 0, 0
-
-  -- TODO: should this be passed in as inital state? ITEM STATES would need to be global/in constants
-  self.current_state = nil
   self.is_visible = true
+
+  self:moveTo(x, y)
+  self.current_state = ITEM_STATES.FALLING
 end
 
 -- TODO: split into functions
@@ -68,11 +67,6 @@ function Item:update()
     local y_offset = ITEM.BOB_AMPLITUDE * math.sin(delta_time_s * math.pi) - ITEM.BOB_AMPLITUDE
     self:moveTo(self.x, WORLD.FLOOR_Y - (self.height / 2) + y_offset)
   end
-end
-
-function Item:drop(x_pos, y_pos)
-  self:moveTo(x_pos, y_pos)
-  self.current_state = ITEM_STATES.FALLING
 end
 
 -- TODO: ill keep this as is for now, but I think we should change this to keep the sine motion and add blinking on top
