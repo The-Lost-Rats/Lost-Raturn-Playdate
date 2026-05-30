@@ -6,8 +6,17 @@ import "scripts/Item"
 
 local gfx <const> = playdate.graphics
 
-local leg_image = gfx.image.new(CONSTANTS.PEDESTRIANS.LEG_W, CONSTANTS.PEDESTRIANS.LEG_H, gfx.kColorBlack)
-local shoe_image = gfx.image.new(CONSTANTS.PEDESTRIANS.SHOE_W, CONSTANTS.PEDESTRIANS.SHOE_H, gfx.kColorBlack)
+local DIRECTION <const> = CONSTANTS.DIRECTION
+local ITEM <const> = CONSTANTS.ITEM
+local PEDESTRIANS <const> = CONSTANTS.PEDESTRIANS
+local PHYSICS <const> = CONSTANTS.PHYSICS
+local WORLD <const> = CONSTANTS.WORLD
+
+local GROUPS <const> = CONSTANTS.GROUPS
+local TAGS <const> = CONSTANTS.TAGS
+
+local leg_image = gfx.image.new(PEDESTRIANS.LEG_W, PEDESTRIANS.LEG_H, gfx.kColorBlack)
+local shoe_image = gfx.image.new(PEDESTRIANS.SHOE_W, PEDESTRIANS.SHOE_H, gfx.kColorBlack)
 
 -- TODO: maybe change to map to functions? and do switch stmt like lookup
 local MOVEMENT_STATES = {
@@ -34,16 +43,16 @@ function Leg:init(x_pos, y_pos, direction, item_type)
   -- Leg
   self.leg_sprite = gfx.sprite.new(leg_image)
   self.leg_sprite:setCollideRect(0, 0, self.leg_sprite:getSize())
-  self.leg_sprite:setGroups({CONSTANTS.GROUPS.CLIMBABLE})
-  self.leg_sprite:setTag(CONSTANTS.TAGS.LEG)
+  self.leg_sprite:setGroups({GROUPS.CLIMBABLE})
+  self.leg_sprite:setTag(TAGS.LEG)
   self.leg_sprite.item_type = item_type
   self.leg_sprite.controller = self
 
   -- Shoe
   self.shoe_sprite = gfx.sprite.new(shoe_image)
   self.shoe_sprite:setCollideRect(0, 0, self.shoe_sprite:getSize())
-  self.shoe_sprite:setGroups({CONSTANTS.GROUPS.HAZARD})
-  self.shoe_sprite:setTag(CONSTANTS.TAGS.SHOE)
+  self.shoe_sprite:setGroups({GROUPS.HAZARD})
+  self.shoe_sprite:setTag(TAGS.SHOE)
   self.shoe_sprite.controller = self
 
   self:moveTo(x_pos, y_pos)
@@ -57,11 +66,11 @@ function Leg:update()
       self:fall()
     end
   elseif self.current_move_state == MOVEMENT_STATES.FALLING then
-    self.vy = self.vy + CONSTANTS.PHYSICS.GRAVITY
+    self.vy = self.vy + PHYSICS.GRAVITY
     self:moveBy(0, self.vy)
 
     -- TODO: shoe height
-    if (self.y >= CONSTANTS.WORLD.FLOOR_Y - self.shoe_sprite.height / 2) then
+    if (self.y >= WORLD.FLOOR_Y - self.shoe_sprite.height / 2) then
       self:land()
     end
   end
@@ -76,12 +85,12 @@ end
 function Leg:fall()
   self.current_move_state = MOVEMENT_STATES.FALLING
   self.vx = 0
-  self.vy = self.vy + CONSTANTS.PHYSICS.GRAVITY
+  self.vy = self.vy + PHYSICS.GRAVITY
 end
 
 function Leg:land()
   self.current_move_state = MOVEMENT_STATES.GROUNDED
-  self.y = CONSTANTS.WORLD.FLOOR_Y - self.shoe_sprite.height / 2
+  self.y = WORLD.FLOOR_Y - self.shoe_sprite.height / 2
   self.vx, self.vy = 0, 0
   self:moveTo(self.x, self.y)
 
@@ -110,7 +119,7 @@ function Leg:moveTo(x, y)
   local shoe_w, shoe_h = self.shoe_sprite:getSize()
 
   self.shoe_sprite:moveTo(x, y)
-  if (self.direction == CONSTANTS.DIRECTION.LEFT) then
+  if (self.direction == DIRECTION.LEFT) then
     self.leg_sprite:moveTo(x + shoe_w / 2 - leg_w / 2, y - shoe_h /2 - leg_h / 2)
   else
     self.leg_sprite:moveTo(x - shoe_w / 2 + leg_w / 2, y - shoe_h /2 - leg_h / 2)
@@ -124,7 +133,7 @@ function Leg:justLanded()
 end
 
 function Leg:isOffScreen()
-  return self.x < CONSTANTS.PEDESTRIANS.DESPAWN_BOUND_LEFT or self.x > CONSTANTS.PEDESTRIANS.DESPAWN_BOUND_RIGHT
+  return self.x < PEDESTRIANS.DESPAWN_BOUND_LEFT or self.x > PEDESTRIANS.DESPAWN_BOUND_RIGHT
 end
 
 function Leg:isRising()
@@ -132,7 +141,7 @@ function Leg:isRising()
 end
 
 function Leg:dropItem(item)
-  item:drop(self.x, CONSTANTS.ITEM.SPAWN_Y)
+  item:drop(self.x, ITEM.SPAWN_Y)
 end
 
 function Leg:getPosition()

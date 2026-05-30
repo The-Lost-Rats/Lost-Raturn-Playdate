@@ -4,7 +4,21 @@ import "CoreLibs/sprites"
 
 local gfx <const> = playdate.graphics
 
-local image = gfx.image.new(CONSTANTS.PLAYER.W, CONSTANTS.PLAYER.H, gfx.kColorBlack)
+local DISPLAY <const> = CONSTANTS.DISPLAY
+local HUD <const> = CONSTANTS.HUD
+
+-- TODO: does player need all this data?
+local CLIMBING <const> = CONSTANTS.CLIMBING
+local SCORING <const> = CONSTANTS.SCORING
+local PEDESTRIANS <const> = CONSTANTS.PEDESTRIANS
+local PHYSICS <const> = CONSTANTS.PHYSICS
+local PLAYER <const> = CONSTANTS.PLAYER
+local WORLD <const> = CONSTANTS.WORLD
+
+local GROUPS <const> = CONSTANTS.GROUPS
+local TAGS <const> = CONSTANTS.TAGS
+
+local image = gfx.image.new(PLAYER.W, PLAYER.H, gfx.kColorBlack)
 
 -- TODO: remove some of these states and make them state transitions
 local PLAYER_STATE = {
@@ -25,9 +39,9 @@ function Player:init(vx, vy, direction_x, initial_health, game_play_scene)
 
   self:setImage(image)
   self:setCollideRect(0, 0, self:getSize())
-  self:setGroups({CONSTANTS.GROUPS.PLAYER})
-  self:setCollidesWithGroups({CONSTANTS.GROUPS.PICK_UP, CONSTANTS.GROUPS.HAZARD, CONSTANTS.GROUPS.CLIMBABLE})
-  self:setTag(CONSTANTS.TAGS.PLAYER)
+  self:setGroups({GROUPS.PLAYER})
+  self:setCollidesWithGroups({GROUPS.PICK_UP, GROUPS.HAZARD, GROUPS.CLIMBABLE})
+  self:setTag(TAGS.PLAYER)
 
   self.health = initial_health
 
@@ -43,7 +57,7 @@ function Player:init(vx, vy, direction_x, initial_health, game_play_scene)
 end
 
 function Player:reset()
-  self.health = CONSTANTS.PLAYER.MAX_HEALTH
+  self.health = PLAYER.MAX_HEALTH
 
   self.vx = 0
   self.vy = 0
@@ -55,7 +69,7 @@ function Player:reset()
   self.current_state = PLAYER_STATE.GROUNDED
 
   -- TODO: should i pass in x and y?
-  self:moveTo(CONSTANTS.DISPLAY.W_HALF, CONSTANTS.WORLD.FLOOR_Y - self.height / 2)
+  self:moveTo(DISPLAY.W_HALF, WORLD.FLOOR_Y - self.height / 2)
 end
 
 -- TODO: split into functions
@@ -71,7 +85,7 @@ function Player:update()
     if (self.held_item == nil) then
       local touched_sprites = self:overlappingSprites()
       for _, other_sprite in ipairs(touched_sprites) do
-        if (other_sprite:getTag() == CONSTANTS.TAGS.ITEM) then
+        if (other_sprite:getTag() == TAGS.ITEM) then
           self:pickUpItem(other_sprite)
         end
       end
@@ -103,7 +117,7 @@ function Player:update()
   self:moveTo(x, y)
 
   if (self.held_item ~= nil) then
-    self.held_item:moveTo(x, y + CONSTANTS.PLAYER.HELD_ITEM_Y_OFFSET)
+    self.held_item:moveTo(x, y + PLAYER.HELD_ITEM_Y_OFFSET)
   end
 end
 
@@ -124,7 +138,7 @@ function Player:handleGrounded(x, y)
   -- TODO: should this be before or after move?
   local touched_sprites = self:overlappingSprites()
   for _, other_sprite in ipairs(touched_sprites) do
-    if (other_sprite:getTag() == CONSTANTS.TAGS.SHOE and other_sprite.controller:isFalling()) then
+    if (other_sprite:getTag() == TAGS.SHOE and other_sprite.controller:isFalling()) then
       self.current_state = PLAYER_STATE.HIT
     end
   end
@@ -134,7 +148,7 @@ end
 
 function Player:handleJumping(x, y)
   -- TODO: should I really be using a bunch of self variables? seems hard to track over explicit returns...
-  self.vy += CONSTANTS.PLAYER.JUMP_V
+  self.vy += PLAYER.JUMP_V
   self.current_state = PLAYER_STATE.FALLING
 
   x = self:handleHorizontalMovement(x)
@@ -152,7 +166,7 @@ function Player:handleFalling(x, y)
   if (playdate.buttonJustPressed(playdate.kButtonA)) then
     local touched_sprites = self:overlappingSprites()
     for _, other_sprite in ipairs(touched_sprites) do
-      if (other_sprite:getTag() == CONSTANTS.TAGS.LEG) then
+      if (other_sprite:getTag() == TAGS.LEG) then
         self.attached_leg = other_sprite
         self.current_state = PLAYER_STATE.CLIMBING
         self.vx, self.vy = 0, 0
@@ -165,7 +179,7 @@ function Player:handleFalling(x, y)
   end
 
   -- Update position
-  self.vy = self.vy + CONSTANTS.PHYSICS.GRAVITY
+  self.vy = self.vy + PHYSICS.GRAVITY
 
   x = self:handleHorizontalMovement(x)
 
@@ -174,9 +188,9 @@ function Player:handleFalling(x, y)
   x = x + self.vx
 
    -- Bounds check
-  if (y >= CONSTANTS.WORLD.FLOOR_Y - self.height / 2) then
+  if (y >= WORLD.FLOOR_Y - self.height / 2) then
     self.vy = 0
-    y = CONSTANTS.WORLD.FLOOR_Y - self.height / 2
+    y = WORLD.FLOOR_Y - self.height / 2
     self.current_state = PLAYER_STATE.GROUNDED
   end
 
@@ -206,7 +220,7 @@ function Player:handleClimbing(x, y)
   -- TODO: i need a mapping from degrees to vertical motion up and down the leg
   local change, acceleratedChange = playdate.getCrankChange()
   -- TODO: make this better oh lorde
-  local dy = -change * CONSTANTS.CLIMBING.PIXELS_PER_DEGREE
+  local dy = -change * CLIMBING.PIXELS_PER_DEGREE
 
 
   -- TODO: I really gotta keep naming consistent and ordering of x and y
@@ -215,16 +229,16 @@ function Player:handleClimbing(x, y)
   x = x + self.vx + leg_dx
 
   -- TODO: handle this better w/ image anchors and get height of leg
-  if (y < leg_y - CONSTANTS.PEDESTRIANS.LEG_H / 2 - self.height / 2) then
-    y = leg_y - CONSTANTS.PEDESTRIANS.LEG_H / 2 - self.height / 2
-  elseif (y > leg_y + CONSTANTS.PEDESTRIANS.LEG_H / 2 - self.height / 2) then
-    y = leg_y + CONSTANTS.PEDESTRIANS.LEG_H / 2 - self.height / 2
+  if (y < leg_y - PEDESTRIANS.LEG_H / 2 - self.height / 2) then
+    y = leg_y - PEDESTRIANS.LEG_H / 2 - self.height / 2
+  elseif (y > leg_y + PEDESTRIANS.LEG_H / 2 - self.height / 2) then
+    y = leg_y + PEDESTRIANS.LEG_H / 2 - self.height / 2
   end
 
     -- TODO: off screen should be helper? also make drop leg a helper?
     -- TODO: is this unsafe? should I check if the leg exists before using it above?
-  if (x >= CONSTANTS.DISPLAY.W - self.width / 2) then
-    x = CONSTANTS.DISPLAY.W - self.width / 2
+  if (x >= DISPLAY.W - self.width / 2) then
+    x = DISPLAY.W - self.width / 2
     self.current_state = PLAYER_STATE.JUMPING
     self.attached_leg = nil
     self.previous_leg_x, self.previous_leg_y = nil, nil
@@ -237,7 +251,7 @@ function Player:handleClimbing(x, y)
     self.previous_leg_x, self.previous_leg_y = nil, nil
   end
 
-  if (y <= leg_y - CONSTANTS.CLIMBING.LEG_SCORE_DISTANCE) then
+  if (y <= leg_y - CLIMBING.LEG_SCORE_DISTANCE) then
     self.current_state = PLAYER_STATE.SCORING
   end
 
@@ -249,14 +263,14 @@ function Player:handleScoring(x, y)
     -- TODO: clean this up
     if (self.held_item.item_type == self.attached_leg.item_type) then
       print("Score! ", self.held_item.item_type, self.attached_leg.item_type)
-      self.game_play_scene:updateScore(CONSTANTS.SCORING.CORRECT_DELIVERY)
+      self.game_play_scene:updateScore(SCORING.CORRECT_DELIVERY)
 
       -- TODO: helper drop or something? clean up naming
       self.held_item:remove()
       self.held_item = nil
     else
       print("Miss! ", self.held_item.item_type, self.attached_leg.item_type)
-      self.game_play_scene:updateScore(CONSTANTS.SCORING.WRONG_DELIVERY)
+      self.game_play_scene:updateScore(SCORING.WRONG_DELIVERY)
       self.held_item:release()
       self.held_item = nil
     end
@@ -269,7 +283,7 @@ function Player:handleScoring(x, y)
 end
 
 function Player:handleHit(x, y)
-  self.vy += CONSTANTS.PLAYER.JUMP_V
+  self.vy += PLAYER.JUMP_V
   self.current_state = PLAYER_STATE.FALLING
 
   if (self.held_item ~= nil) then
@@ -277,7 +291,7 @@ function Player:handleHit(x, y)
     self.held_item = nil
   end
 
-  self:takeDamage(CONSTANTS.PEDESTRIANS.STOMP_DAMAGE)
+  self:takeDamage(PEDESTRIANS.STOMP_DAMAGE)
 
   return x, y
 end
@@ -289,15 +303,15 @@ end
 
 function Player:handleHorizontalMovement(x_pos)
   if (playdate.buttonIsPressed(playdate.kButtonLeft)) then
-    x_pos -= CONSTANTS.PLAYER.MOVE_SPEED
+    x_pos -= PLAYER.MOVE_SPEED
   end
 
   if (playdate.buttonIsPressed(playdate.kButtonRight)) then
-    x_pos += CONSTANTS.PLAYER.MOVE_SPEED
+    x_pos += PLAYER.MOVE_SPEED
   end
 
-  if (x_pos >= CONSTANTS.DISPLAY.W - self.width / 2) then
-    x_pos = CONSTANTS.DISPLAY.W - self.width / 2
+  if (x_pos >= DISPLAY.W - self.width / 2) then
+    x_pos = DISPLAY.W - self.width / 2
   end
 
   if (x_pos <= self.width / 2) then
@@ -323,7 +337,7 @@ end
 -- TODO: gfx update should not be here - should be in ui or smth?
 function Player:takeDamage(amount)
   self.health = math.max(0, self.health - amount)
-  gfx.sprite.addDirtyRect(0, 0, CONSTANTS.DISPLAY.W, CONSTANTS.HUD.H)
+  gfx.sprite.addDirtyRect(0, 0, DISPLAY.W, HUD.H)
 end
 
 function Player:isDead()

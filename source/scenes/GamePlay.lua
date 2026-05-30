@@ -12,22 +12,28 @@ local gfx <const> = playdate.graphics
 local timer <const> = playdate.timer
 local ui <const> = playdate.ui
 
+local DISPLAY <const> = CONSTANTS.DISPLAY
+local HUD <const> = CONSTANTS.HUD
+local WORLD <const> = CONSTANTS.WORLD
+
 local DIRECTION <const> = CONSTANTS.DIRECTION
 local PEDESTRIANS <const> = CONSTANTS.PEDESTRIANS
+local PLAYER <const> = CONSTANTS.PLAYER
+
 
 -- TODO: should we have itemsbe tracked here? so i can remove items if they are lingering on game over or something?
 class ('GamePlay').extends(BaseScene)
 function GamePlay:init()
   -- TODO: should i set center of sprites to like bottom center?
   GamePlay.super.init(self)
-  self.player = Player(0, 0, 1, CONSTANTS.PLAYER.MAX_HEALTH, self)
+  self.player = Player(0, 0, 1, PLAYER.MAX_HEALTH, self)
 
   self.walkers = {}
   -- Start with a small number of walkers to let the player get used to the game.
   -- And longest spawn interval so they are created really slowly.
   -- Then ramp up slowly.
-  self.walkers_spawn_cap = CONSTANTS.PEDESTRIANS.MIN_WALKERS
-  self.walkers_spawn_interval_ms = CONSTANTS.PEDESTRIANS.MAX_SPAWN_INTERVAL_MS
+  self.walkers_spawn_cap = PEDESTRIANS.MIN_WALKERS
+  self.walkers_spawn_interval_ms = PEDESTRIANS.MAX_SPAWN_INTERVAL_MS
 end
 
 function GamePlay:enter()
@@ -46,26 +52,26 @@ function GamePlay:enter()
 
     local display_text = self.className
     local text_w, text_h = gfx.getTextSize(display_text)
-    gfx.drawText(display_text, CONSTANTS.DISPLAY.W_HALF - text_w / 2, CONSTANTS.DISPLAY.H_HALF - text_h / 2)
+    gfx.drawText(display_text, DISPLAY.W_HALF - text_w / 2, DISPLAY.H_HALF - text_h / 2)
 
     -- TODO: eventually create UI manager? Make this a sprite maybe?
     -- Floor line
-    gfx.drawLine(0, CONSTANTS.WORLD.FLOOR_Y, CONSTANTS.DISPLAY.W, CONSTANTS.WORLD.FLOOR_Y)
+    gfx.drawLine(0, WORLD.FLOOR_Y, DISPLAY.W, WORLD.FLOOR_Y)
 
     -- HUD Box
-    gfx.fillRect(0, 0, CONSTANTS.DISPLAY.W, CONSTANTS.HUD.H)
+    gfx.fillRect(0, 0, DISPLAY.W, HUD.H)
     
     gfx.setColor(gfx.kColorWhite)
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-    gfx.drawText("Score: " .. self.current_score, CONSTANTS.HUD.SCORE_X, CONSTANTS.HUD.SCORE_Y)
+    gfx.drawText("Score: " .. self.current_score, HUD.SCORE_X, HUD.SCORE_Y)
 
     local player_health = self.player:getCurrentHealth()
-    for i = 1, CONSTANTS.PLAYER.MAX_HEALTH, 1 do
-      local x = CONSTANTS.DISPLAY.W - CONSTANTS.HUD.HEART_SPACING * i
+    for i = 1, PLAYER.MAX_HEALTH, 1 do
+      local x = DISPLAY.W - HUD.HEART_SPACING * i
       if (i <= player_health) then
-        gfx.fillCircleInRect(x, 0, CONSTANTS.HUD.HEART_RADIUS, CONSTANTS.HUD.H)
+        gfx.fillCircleInRect(x, 0, HUD.HEART_RADIUS, HUD.H)
       else
-        gfx.drawCircleInRect(x, 0, CONSTANTS.HUD.HEART_RADIUS, CONSTANTS.HUD.H)
+        gfx.drawCircleInRect(x, 0, HUD.HEART_RADIUS, HUD.H)
       end
     end
     
@@ -118,8 +124,8 @@ end
 function GamePlay:trySpawnWalker()
   if (#self.walkers < self.walkers_spawn_cap) then
     self:spawnWalker()
-    self.walkers_spawn_cap = math.min(CONSTANTS.PEDESTRIANS.MAX_WALKERS, self.walkers_spawn_cap + CONSTANTS.PEDESTRIANS.SPAWN_CAP_RAMP)
-    self.walkers_spawn_interval_ms = math.max(CONSTANTS.PEDESTRIANS.MIN_SPAWN_INTERVAL_MS, self.walkers_spawn_interval_ms - CONSTANTS.PEDESTRIANS.SPAWN_INTERVAL_RAMP_MS)
+    self.walkers_spawn_cap = math.min(PEDESTRIANS.MAX_WALKERS, self.walkers_spawn_cap + PEDESTRIANS.SPAWN_CAP_RAMP)
+    self.walkers_spawn_interval_ms = math.max(PEDESTRIANS.MIN_SPAWN_INTERVAL_MS, self.walkers_spawn_interval_ms - PEDESTRIANS.SPAWN_INTERVAL_RAMP_MS)
   end
 
   self.walker_timer = timer.performAfterDelay(self.walkers_spawn_interval_ms, function() self:trySpawnWalker() end)
@@ -144,5 +150,5 @@ end
 -- TODO: make this a sprite too? put in UI manager class?
 function GamePlay:updateScore(points)
   self.current_score += points
-  gfx.sprite.addDirtyRect(0, 0, CONSTANTS.DISPLAY.W, CONSTANTS.HUD.H)
+  gfx.sprite.addDirtyRect(0, 0, DISPLAY.W, HUD.H)
 end

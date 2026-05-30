@@ -9,7 +9,9 @@ import "utilities/constants"
 local gfx <const> = playdate.graphics
 local timer <const> = playdate.timer
 
-playdate.display.setRefreshRate(CONSTANTS.DISPLAY.REFRESH_RATE)
+local DISPLAY <const> = CONSTANTS.DISPLAY
+
+playdate.display.setRefreshRate(DISPLAY.REFRESH_RATE)
 
 math.randomseed(playdate.getSecondsSinceEpoch())
 
