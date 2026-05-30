@@ -14,3 +14,21 @@ TODO: time/streak/combo bonus
 TODO: penalty for getting squashed points wise?
 TODO: pick ups? (speed? health?)
 TODO: different items give different points?
+TODO: use config passing vs large constants file?
+
+References:
+https://help.play.date/developer/dev-links/
+https://gitlab.com/RachelWilShaSingh/playdate-tests
+https://github.com/GammaGames/NobleEngine-Example-Project/tree/main
+https://github.com/JohnnyMorganz/StyLua
+https://roblox.github.io/lua-style-guide/
+https://github.com/JohnnyMorganz/StyLua
+https://github.com/andremm/typedlua
+https://github.com/kyleconroy/lua-state-machine/blob/master/README.md
+https://github.com/GammaGames/pd-state-machine
+https://help.play.date/developer/designing-for-playdate/
+https://github.com/Franchovy/Playdate-Guides
+https://github.com/notpeter/playdate-luacats
+PlaydateSDK/Inside%20Playdate.html
+https://github.com/McDevon/taxman-playdate
+https://github.com/Sheep42/prismatic-engine
