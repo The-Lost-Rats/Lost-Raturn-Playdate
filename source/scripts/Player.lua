@@ -217,7 +217,6 @@ function Player:handleClimbing(x, y)
   self.previous_leg_y = leg_y
 
   -- Handle crank motion
-  -- TODO: should we use change or accelerated change?
   local _, acceleratedChange = playdate.getCrankChange()
   local clamped_change = math.clamp(acceleratedChange, -CLIMBING.MAX_ACCELERATED_CHANGE, CLIMBING.MAX_ACCELERATED_CHANGE)
   local dy = -clamped_change * CLIMBING.PIXELS_PER_DEGREE
