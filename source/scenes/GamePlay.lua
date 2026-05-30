@@ -56,13 +56,13 @@ function GamePlay:enter()
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
     gfx.drawText("Score: " .. self.current_score, CONSTANTS.HUD.SCORE_X, CONSTANTS.HUD.SCORE_Y)
 
-    -- TODO: these should not be hard coded - num hears should be here, loop, math to place
     local player_health = self.player:getCurrentHealth()
     for i = 1, CONSTANTS.PLAYER.MAX_HEALTH, 1 do
+      local x = CONSTANTS.DISPLAY.W - CONSTANTS.HUD.HEART_SPACING * i
       if (i <= player_health) then
-        gfx.fillCircleInRect(CONSTANTS.DISPLAY.W - CONSTANTS.HUD.HEART_SPACING * i, 0, CONSTANTS.HUD.HEART_RADIUS, CONSTANTS.HUD.H)
+        gfx.fillCircleInRect(x, 0, CONSTANTS.HUD.HEART_RADIUS, CONSTANTS.HUD.H)
       else
-        gfx.drawCircleInRect(CONSTANTS.DISPLAY.W - CONSTANTS.HUD.HEART_SPACING * i, 0, CONSTANTS.HUD.HEART_RADIUS, CONSTANTS.HUD.H)
+        gfx.drawCircleInRect(x, 0, CONSTANTS.HUD.HEART_RADIUS, CONSTANTS.HUD.H)
       end
     end
     
