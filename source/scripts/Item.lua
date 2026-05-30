@@ -23,9 +23,7 @@ local ITEM_STATES = {
   PICKED_UP = 3
 }
 
--- TODO: do we want the item to convert to a mini item when picked up? or do we want a distinct class?
 class('Item').extends(gfx.sprite)
--- TODO: item type should really change to like sprite/image or something? or maybe keep and redo look up?
 -- TODO: what else should this take in? x, y, vx, vy?
 function Item:init(item_type)
   Item.super.init(self)
@@ -60,13 +58,12 @@ function Item:update()
       self.grounded_start_time_ms = playdate.getCurrentTimeMilliseconds()
       self.current_state = ITEM_STATES.GROUNDED
 
-       -- TODO: item should be its own section
       self.grounded_timer = timer.performAfterDelay(ITEM.GROUNDED_TIME_MS, function() self:startDisappearing() end)
     end
 
     self:moveTo(x, y)
   elseif(self.current_state == ITEM_STATES.GROUNDED) then
-    -- TODO: double check my whiteboard math
+    -- TODO: bug here where item hits ground and then snaps to center of sine wave (need to phase shift to start at ground)
     local delta_time_s = (playdate.getCurrentTimeMilliseconds() - self.grounded_start_time_ms) / 1000
     local y_offset = ITEM.BOB_AMPLITUDE * math.sin(delta_time_s * math.pi) - ITEM.BOB_AMPLITUDE
     self:moveTo(self.x, WORLD.FLOOR_Y - (self.height / 2) + y_offset)
@@ -95,12 +92,10 @@ end
 
 function Item:startBlinking(duration_ms)
   local blink_duration_ms = math.max(ITEM.MIN_BLINK_SPEED_MS, duration_ms)
-  
-  -- TODO: toggle visibility
+
   self.is_visible = not self.is_visible
   self:setVisible(self.is_visible)
 
-  -- TODO: make blinking faster as time goes on/or as we get closer to disappaering
   self.blinking_timer = timer.performAfterDelay(blink_duration_ms, function() self:startBlinking(blink_duration_ms / ITEM.BLINK_INTERVAL_DIVISOR) end)
 end
 

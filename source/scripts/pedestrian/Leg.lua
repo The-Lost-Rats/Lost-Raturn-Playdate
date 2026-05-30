@@ -69,7 +69,6 @@ function Leg:update()
     self.vy = self.vy + PHYSICS.GRAVITY
     self:moveBy(0, self.vy)
 
-    -- TODO: shoe height
     if (self.y >= WORLD.FLOOR_Y - self.shoe_sprite.height / 2) then
       self:land()
     end

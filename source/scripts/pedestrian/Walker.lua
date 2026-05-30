@@ -46,9 +46,12 @@ function Walker:update()
     leg:update()
   end
 
+  -- TODO: maybe function that gets active leg from index? or is that computationally heavy/wasteful?
+  local active_leg = self.legs[self.active_leg_index]
+
    -- TODO: do we want this to be a function?
   if (self.will_drop_item) then
-    local x, _ = self.legs[self.active_leg_index]:getPosition()
+    local x, _ = active_leg:getPosition()
     if (not self.has_dropped_item and
         ((x >= self.drop_at_x and self.direction == DIRECTION.RIGHT) or
         (x <= self.drop_at_x and self.direction == DIRECTION.LEFT)
@@ -56,16 +59,16 @@ function Walker:update()
       -- TODO: who do i want to own the item? do i pass it around? or do I want the walker to own it?
       self.item = Item(self.item_type)
       self.item:add()
-      self.legs[self.active_leg_index]:dropItem(self.item)
+      active_leg:dropItem(self.item)
       self.has_dropped_item = true
       print("DROPPED ITEM: ", self.item_type, x)
     end
   end
 
-  -- TODO: this should be a local :P
-  if (self.legs[self.active_leg_index]:justLanded()) then
+  if (active_leg:justLanded()) then
     self.active_leg_index = (self.active_leg_index % 2) + 1
-    self.legs[self.active_leg_index]:rise(PEDESTRIANS.STEP_LENGTH, self.vx, self.vy)
+    active_leg = self.legs[self.active_leg_index]
+    active_leg:rise(PEDESTRIANS.STEP_LENGTH, self.vx, self.vy)
   end
 end
 

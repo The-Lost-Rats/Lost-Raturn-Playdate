@@ -198,7 +198,6 @@ function Player:handleFalling(x, y)
 end
 
 function Player:handleClimbing(x, y)
-  -- TODO: handle bounds checking
   if (playdate.buttonJustPressed(playdate.kButtonA)) then
     self.current_state = PLAYER_STATE.JUMPING
     self.attached_leg = nil
@@ -217,9 +216,7 @@ function Player:handleClimbing(x, y)
 
   -- Handle crank motion
   -- TODO: should we use change or accelerated change?
-  -- TODO: i need a mapping from degrees to vertical motion up and down the leg
   local change, acceleratedChange = playdate.getCrankChange()
-  -- TODO: make this better oh lorde
   local dy = -change * CLIMBING.PIXELS_PER_DEGREE
 
 
@@ -265,7 +262,6 @@ function Player:handleScoring(x, y)
       print("Score! ", self.held_item.item_type, self.attached_leg.item_type)
       self.game_play_scene:updateScore(SCORING.CORRECT_DELIVERY)
 
-      -- TODO: helper drop or something? clean up naming
       self.held_item:remove()
       self.held_item = nil
     else
