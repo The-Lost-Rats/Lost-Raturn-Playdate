@@ -12,6 +12,9 @@ local gfx <const> = playdate.graphics
 local timer <const> = playdate.timer
 local ui <const> = playdate.ui
 
+local DIRECTION <const> = CONSTANTS.DIRECTION
+local PEDESTRIANS <const> = CONSTANTS.PEDESTRIANS
+
 -- TODO: should we have itemsbe tracked here? so i can remove items if they are lingering on game over or something?
 class ('GamePlay').extends(BaseScene)
 function GamePlay:init()
@@ -125,19 +128,13 @@ end
 function GamePlay:spawnWalker()
   -- TODO: need better way to manage coordinate systems/origin point of legs
   local random_float = math.random()
-  local new_walker
 
-  local walker_type_index = math.random(#CONSTANTS.PEDESTRIANS.TYPES)
-  local walker_type = CONSTANTS.PEDESTRIANS.TYPES[walker_type_index]
+  local walker_type_index = math.random(#PEDESTRIANS.TYPES)
+  local walker_type = PEDESTRIANS.TYPES[walker_type_index]
 
-  -- TODO: clean this up so i don't make the whole arg list twice
-  -- TODO: why shift by shoe height / 2 -> can i move this to the walker itself? or change sprite anchors
-  -- TODO: do all these need to be constants? it looks a little ugly
-  if (random_float >= 0.5) then
-    new_walker = Walker(walker_type, CONSTANTS.PEDESTRIANS.SPAWN_POSITION_RIGHT, CONSTANTS.WORLD.FLOOR_Y - CONSTANTS.PEDESTRIANS.SHOE_H / 2, CONSTANTS.PEDESTRIANS.LEFT_VX, CONSTANTS.PEDESTRIANS.VY, CONSTANTS.DIRECTION.LEFT)
-  else
-    new_walker = Walker(walker_type, CONSTANTS.PEDESTRIANS.SPAWN_POSITION_LEFT, CONSTANTS.WORLD.FLOOR_Y - CONSTANTS.PEDESTRIANS.SHOE_H / 2, CONSTANTS.PEDESTRIANS.RIGHT_VX, CONSTANTS.PEDESTRIANS.VY, CONSTANTS.DIRECTION.RIGHT)
-  end
+  local direction = random_float >= 0.5 and DIRECTION.LEFT or DIRECTION.RIGHT
+
+  local new_walker = Walker.spawn(walker_type, direction)
   
   new_walker:add()
   table.insert(self.walkers, new_walker)

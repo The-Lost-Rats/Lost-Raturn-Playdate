@@ -3,6 +3,11 @@ import "CoreLibs/object"
 import "scripts/Item"
 import "scripts/pedestrian/Leg"
 
+local DIRECTION <const> = CONSTANTS.DIRECTION
+local PEDESTRIANS <const> = CONSTANTS.PEDESTRIANS
+local WORLD <const> = CONSTANTS.WORLD
+local ITEM <const> = CONSTANTS.ITEM
+
 -- TODO: maybe do some cool callback function stuff where
 -- we get back the uhh active leg htting the ground and know when to switch?
 class('Walker').extends()
@@ -13,10 +18,10 @@ function Walker:init(walker_type, x_pos, y_pos, vx, vy, direction)
   self.item_type = walker_type.item
 
   -- TODO: this feeeels a lil off
-  if (math.random() <= CONSTANTS.PEDESTRIANS.ITEM_DROP_CHANCE) then
+  if (math.random() <= PEDESTRIANS.ITEM_DROP_CHANCE) then
     self.will_drop_item = true
     self.has_dropped_item = false
-    self.drop_at_x = math.random(CONSTANTS.ITEM.SPAWN_LEFT_BOUND, CONSTANTS.ITEM.SPAWN_RIGHT_BOUND)
+    self.drop_at_x = math.random(ITEM.SPAWN_LEFT_BOUND, ITEM.SPAWN_RIGHT_BOUND)
 
     -- TODO: temp print
     print("Dropping item ", self.item_type, self.drop_at_x)
@@ -25,15 +30,15 @@ function Walker:init(walker_type, x_pos, y_pos, vx, vy, direction)
   self.vx, self.vy = vx, vy
   self.direction = direction
 
-  self.legs = { Leg(x_pos + CONSTANTS.PEDESTRIANS.LEG_SPACING, y_pos, direction, self.item_type), Leg(x_pos, y_pos, direction, self.item_type) }
+  self.legs = { Leg(x_pos + PEDESTRIANS.LEG_SPACING, y_pos, direction, self.item_type), Leg(x_pos, y_pos, direction, self.item_type) }
 
-  if (direction == CONSTANTS.DIRECTION.LEFT) then
+  if (direction == DIRECTION.LEFT) then
     self.active_leg_index = 1
   else
     self.active_leg_index = 2
   end
 
-  self.legs[self.active_leg_index]:rise(CONSTANTS.PEDESTRIANS.STEP_LENGTH, vx, vy)
+  self.legs[self.active_leg_index]:rise(PEDESTRIANS.STEP_LENGTH, vx, vy)
 end
 
 function Walker:update()
@@ -45,8 +50,8 @@ function Walker:update()
   if (self.will_drop_item) then
     local x, _ = self.legs[self.active_leg_index]:getPosition()
     if (not self.has_dropped_item and
-        ((x >= self.drop_at_x and self.direction == CONSTANTS.DIRECTION.RIGHT) or
-        (x <= self.drop_at_x and self.direction == CONSTANTS.DIRECTION.LEFT)
+        ((x >= self.drop_at_x and self.direction == DIRECTION.RIGHT) or
+        (x <= self.drop_at_x and self.direction == DIRECTION.LEFT)
       )) then
       -- TODO: who do i want to own the item? do i pass it around? or do I want the walker to own it?
       self.item = Item(self.item_type)
@@ -60,7 +65,7 @@ function Walker:update()
   -- TODO: this should be a local :P
   if (self.legs[self.active_leg_index]:justLanded()) then
     self.active_leg_index = (self.active_leg_index % 2) + 1
-    self.legs[self.active_leg_index]:rise(CONSTANTS.PEDESTRIANS.STEP_LENGTH, self.vx, self.vy)
+    self.legs[self.active_leg_index]:rise(PEDESTRIANS.STEP_LENGTH, self.vx, self.vy)
   end
 end
 
@@ -86,4 +91,23 @@ function Walker:isOffScreen()
   end
 
   return true
+end
+
+-- TODO: apply same pattern to item and player and leg init/creation
+function Walker.spawn(walker_type, direction)
+  local x, y, vx, vy
+
+  -- If moving left, spawn on right of screen and move left
+  if (direction == DIRECTION.LEFT) then
+    x = PEDESTRIANS.SPAWN_POSITION_RIGHT
+    vx = PEDESTRIANS.LEFT_VX
+  else
+    x = PEDESTRIANS.SPAWN_POSITION_LEFT
+    vx = PEDESTRIANS.RIGHT_VX
+  end
+
+  y = WORLD.FLOOR_Y - PEDESTRIANS.SHOE_H / 2
+  vy = PEDESTRIANS.VY
+
+  return Walker(walker_type, x, y, vx, vy, direction)
 end
