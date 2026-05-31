@@ -74,8 +74,6 @@ function Walker:remove()
   for _, leg in ipairs(self.legs) do
     leg:remove()
   end
-
-  -- TODO: HOW TO HANDLE ITEM DELETIONS
 end
 
 function Walker:isOffScreen()
