@@ -16,7 +16,6 @@ local GROUPS <const> = CONSTANTS.GROUPS
 local TAGS <const> = CONSTANTS.TAGS
 local LAYERS <const> = CONSTANTS.LAYERS
 
--- TODO: maybe change to map to functions? and do switch stmt like lookup
 local MOVEMENT_STATES = {
   FALLING = 0,
   GROUNDED = 1,

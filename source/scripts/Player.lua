@@ -103,7 +103,6 @@ function Player:update()
   end
 
   -- TODO: get x component of forces (gravity, jump, momentum, etc.)
-  -- TODO: switch statement table thing?
   -- TODO: all these taking in position kinda sux?
   if (self.current_state == PLAYER_STATE.GROUNDED) then
     x, y = self:handleGrounded(x, y)
