@@ -16,9 +16,6 @@ local GROUPS <const> = CONSTANTS.GROUPS
 local TAGS <const> = CONSTANTS.TAGS
 local LAYERS <const> = CONSTANTS.LAYERS
 
-local leg_image = gfx.image.new(PEDESTRIANS.LEG_W, PEDESTRIANS.LEG_H, gfx.kColorBlack)
-local shoe_image = gfx.image.new(PEDESTRIANS.SHOE_W, PEDESTRIANS.SHOE_H, gfx.kColorBlack)
-
 -- TODO: maybe change to map to functions? and do switch stmt like lookup
 local MOVEMENT_STATES = {
   FALLING = 0,
@@ -40,6 +37,20 @@ function Leg:init(x, y, direction, item_type)
   self.x, self.y = 0, 0
 
   self.just_landed = false
+
+  local leg_image = gfx.image.new(PEDESTRIANS.LEG_W, PEDESTRIANS.LEG_H)
+  gfx.pushContext(leg_image)
+    gfx.setColor(gfx.kColorBlack)
+    gfx.setDitherPattern(0.5, gfx.image.kDitherTypeBayer8x8)
+    gfx.fillRect(0, 0, PEDESTRIANS.LEG_W, PEDESTRIANS.LEG_H)
+  gfx.popContext()
+
+  local shoe_image = gfx.image.new(PEDESTRIANS.SHOE_W, PEDESTRIANS.SHOE_H)
+  gfx.pushContext(shoe_image)
+    gfx.setColor(gfx.kColorBlack)
+    gfx.setDitherPattern(0.2, gfx.image.kDitherTypeBayer8x8)
+    gfx.fillRect(0, 0, PEDESTRIANS.SHOE_W, PEDESTRIANS.SHOE_H)
+  gfx.popContext()
 
   -- Leg
   self.leg_sprite = gfx.sprite.new(leg_image)

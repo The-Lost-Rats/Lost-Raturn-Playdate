@@ -28,8 +28,8 @@ CONSTANTS = {
   LAYERS = {
     UI = 2,
     UI_BACKGROUND = 1,
-    PLAYER = 0,
-    ITEM = -1,
+    ITEM = 0,
+    PLAYER = -1,
     WALKER = -2
   },
 

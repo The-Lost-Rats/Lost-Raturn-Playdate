@@ -14,8 +14,6 @@ local GROUPS <const> = CONSTANTS.GROUPS
 local TAGS <const> = CONSTANTS.TAGS
 local LAYERS <const> = CONSTANTS.LAYERS
 
-local image = gfx.image.new(ITEM.W, ITEM.H, gfx.kColorBlack)
-
 -- TODO: maybe change to map to functions? and do switch stmt like lookup
 local ITEM_STATES = {
   FALLING = 0,
@@ -27,6 +25,12 @@ local ITEM_STATES = {
 class('Item').extends(gfx.sprite)
 function Item:init(item_type, x, y)
   Item.super.init(self)
+
+  local image = gfx.image.new(ITEM.W, ITEM.H)
+  gfx.pushContext(image)
+    gfx.setColor(gfx.kColorBlack)
+    gfx.drawRect(0, 0, ITEM.W, ITEM.H)
+  gfx.popContext()
 
   self:setImage(image)
   self:setZIndex(LAYERS.ITEM)
