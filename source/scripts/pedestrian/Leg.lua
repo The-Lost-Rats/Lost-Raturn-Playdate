@@ -55,6 +55,8 @@ function Leg:init(x, y, direction, item_type)
   -- Leg
   self.leg_sprite = gfx.sprite.new(leg_image)
   self.leg_sprite:setZIndex(LAYERS.WALKER)
+  -- Set center of sprite to x: center, y: bottom
+  self.leg_sprite:setCenter(0.5, 1.0)
   self.leg_sprite:setCollideRect(0, 0, self.leg_sprite:getSize())
   self.leg_sprite:setGroups({GROUPS.CLIMBABLE})
   self.leg_sprite:setTag(TAGS.LEG)
@@ -64,6 +66,8 @@ function Leg:init(x, y, direction, item_type)
   -- Shoe
   self.shoe_sprite = gfx.sprite.new(shoe_image)
   self.shoe_sprite:setZIndex(LAYERS.WALKER)
+  -- Set center of sprite to x: center, y: bottom
+  self.shoe_sprite:setCenter(0.5, 1.0)
   self.shoe_sprite:setCollideRect(0, 0, self.shoe_sprite:getSize())
   self.shoe_sprite:setGroups({GROUPS.HAZARD})
   self.shoe_sprite:setTag(TAGS.SHOE)
@@ -83,7 +87,7 @@ function Leg:update()
     self.vy = self.vy + PHYSICS.GRAVITY
     self:moveBy(0, self.vy)
 
-    if (self.y >= WORLD.FLOOR_Y - self.shoe_sprite.height / 2) then
+    if (self.y >= WORLD.FLOOR_Y) then
       self:land()
     end
   end
@@ -103,7 +107,7 @@ end
 
 function Leg:land()
   self.current_move_state = MOVEMENT_STATES.GROUNDED
-  self.y = WORLD.FLOOR_Y - self.shoe_sprite.height / 2
+  self.y = WORLD.FLOOR_Y
   self.vx, self.vy = 0, 0
   self:moveTo(self.x, self.y)
 
@@ -128,14 +132,14 @@ end
 function Leg:moveTo(x, y)
   self.x, self.y = x, y
 
-  local leg_w, leg_h = self.leg_sprite:getSize()
+  local leg_w, _ = self.leg_sprite:getSize()
   local shoe_w, shoe_h = self.shoe_sprite:getSize()
 
   self.shoe_sprite:moveTo(x, y)
   if (self.direction == DIRECTION.LEFT) then
-    self.leg_sprite:moveTo(x + shoe_w / 2 - leg_w / 2, y - shoe_h /2 - leg_h / 2)
+    self.leg_sprite:moveTo(x + shoe_w / 2 - leg_w / 2, y - shoe_h)
   else
-    self.leg_sprite:moveTo(x - shoe_w / 2 + leg_w / 2, y - shoe_h /2 - leg_h / 2)
+    self.leg_sprite:moveTo(x - shoe_w / 2 + leg_w / 2, y - shoe_h)
   end
 end
 

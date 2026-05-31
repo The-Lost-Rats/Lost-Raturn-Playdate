@@ -43,6 +43,8 @@ function Player:init(vx, vy, direction_x, initial_health, game_play_scene)
 
   self:setImage(image)
   self:setZIndex(LAYERS.PLAYER)
+  -- Set center of sprite to x: center, y: bottom
+  self:setCenter(0.5, 1.0)
   self:setCollideRect(0, 0, self:getSize())
   self:setGroups({GROUPS.PLAYER})
   self:setCollidesWithGroups({GROUPS.PICK_UP, GROUPS.HAZARD, GROUPS.CLIMBABLE})
@@ -74,7 +76,7 @@ function Player:reset()
   self.current_state = PLAYER_STATE.GROUNDED
 
   -- TODO: should i pass in x and y?
-  self:moveTo(DISPLAY.W_HALF, WORLD.FLOOR_Y - self.height / 2)
+  self:moveTo(DISPLAY.W_HALF, WORLD.FLOOR_Y)
 end
 
 -- TODO: split into functions
@@ -122,7 +124,7 @@ function Player:update()
   self:moveTo(x, y)
 
   if (self.held_item ~= nil) then
-    self.held_item:moveTo(x, y + PLAYER.HELD_ITEM_Y_OFFSET)
+    self.held_item:moveTo(x, y - self.height - PLAYER.HELD_ITEM_Y_GAP)
   end
 end
 
@@ -193,9 +195,9 @@ function Player:handleFalling(x, y)
   x = x + self.vx
 
    -- Bounds check
-  if (y >= WORLD.FLOOR_Y - self.height / 2) then
+  if (y >= WORLD.FLOOR_Y) then
     self.vy = 0
-    y = WORLD.FLOOR_Y - self.height / 2
+    y = WORLD.FLOOR_Y
     self.current_state = PLAYER_STATE.GROUNDED
   end
 
@@ -228,11 +230,10 @@ function Player:handleClimbing(x, y)
   y = y + self.vy + leg_dy + dy
   x = x + self.vx + leg_dx
 
-  -- TODO: handle this better w/ image anchors and get height of leg
-  if (y < leg_y - PEDESTRIANS.LEG_H / 2 - self.height / 2) then
-    y = leg_y - PEDESTRIANS.LEG_H / 2 - self.height / 2
-  elseif (y > leg_y + PEDESTRIANS.LEG_H / 2 - self.height / 2) then
-    y = leg_y + PEDESTRIANS.LEG_H / 2 - self.height / 2
+  if (y < leg_y - PEDESTRIANS.LEG_H) then
+    y = leg_y - PEDESTRIANS.LEG_H
+  elseif (y > leg_y) then
+    y = leg_y
   end
 
     -- TODO: off screen should be helper? also make drop leg a helper?

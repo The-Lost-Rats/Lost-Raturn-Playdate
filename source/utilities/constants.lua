@@ -8,6 +8,8 @@ local ITEM_SPAWN_PADDING <const> = 30
 
 local FLOOR_Y_PADDING <const> = 20
 
+local LEG_H <const> = SCREEN_H
+
 CONSTANTS = {
   DISPLAY = {
     W = SCREEN_W,
@@ -72,13 +74,13 @@ CONSTANTS = {
 
     MAX_HEALTH = 3,
 
-    HELD_ITEM_Y_OFFSET = -10,
+    HELD_ITEM_Y_GAP = 2,
   },
 
   CLIMBING = {
     PIXELS_PER_DEGREE = 0.08,
     MAX_ACCELERATED_CHANGE = 60,
-    LEG_SCORE_DISTANCE = (SCREEN_H / 2) * 0.80 -- Climb above 80% of top half of leg to enter score range
+    LEG_SCORE_DISTANCE = LEG_H * 0.90 -- Climb above 90% of leg to enter score range
   },
 
   SCORING = {
@@ -108,7 +110,7 @@ CONSTANTS = {
     
   PEDESTRIANS = {
     LEG_W = 16,
-    LEG_H = SCREEN_H,
+    LEG_H = LEG_H,
 
     SHOE_W = 32,
     SHOE_H = 20,

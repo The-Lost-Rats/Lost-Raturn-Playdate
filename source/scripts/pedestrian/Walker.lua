@@ -105,7 +105,7 @@ function Walker.spawn(walker_type, direction)
     vx = PEDESTRIANS.RIGHT_VX
   end
 
-  y = WORLD.FLOOR_Y - PEDESTRIANS.SHOE_H / 2
+  y = WORLD.FLOOR_Y
   vy = PEDESTRIANS.VY
 
   local walker = Walker(walker_type, x, y, vx, vy, direction)
