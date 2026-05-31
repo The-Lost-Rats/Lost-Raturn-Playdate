@@ -259,19 +259,11 @@ end
 
 function Player:handleScoring(x, y)
   if (self.held_item ~= nil) then
-    -- TODO: clean this up
-    if (self.held_item.item_type == self.attached_leg.item_type) then
-      print("Score! ", self.held_item.item_type, self.attached_leg.item_type)
-      self.game_play_scene:updateScore(SCORING.CORRECT_DELIVERY)
+    local score = self.held_item.item_type == self.attached_leg.item_type and SCORING.CORRECT_DELIVERY or SCORING.WRONG_DELIVERY
 
-      self.held_item:remove()
-      self.held_item = nil
-    else
-      print("Miss! ", self.held_item.item_type, self.attached_leg.item_type)
-      self.game_play_scene:updateScore(SCORING.WRONG_DELIVERY)
-      self.held_item:release()
-      self.held_item = nil
-    end
+    self.game_play_scene:updateScore(score)
+    self.held_item:remove()
+    self.held_item = nil
   end
 
   self.current_state = PLAYER_STATE.JUMPING

@@ -20,8 +20,6 @@ function Walker:init(walker_type, x, y, vx, vy, direction)
   self.has_dropped_item = false
   if (self.will_drop_item) then
     self.drop_at_x = math.random(ITEM.SPAWN_LEFT_BOUND, ITEM.SPAWN_RIGHT_BOUND)
-    -- TODO: temp print
-    print("Dropping item ", self.item_type, self.drop_at_x)
   end
 
   self.vx, self.vy = vx, vy
@@ -56,8 +54,6 @@ function Walker:update()
       -- TODO: who do i want to own the item? do i pass it around? or do I want the walker to own it?
       self.item = active_leg:dropItem(self.item_type)
       self.has_dropped_item = true
-      -- TODO: temp print
-      print("DROPPED ITEM: ", self.item_type, x)
     end
   end
 
