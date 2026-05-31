@@ -79,7 +79,6 @@ function Player:reset()
   self:moveTo(DISPLAY.W_HALF, WORLD.FLOOR_Y)
 end
 
--- TODO: split into functions
 function Player:update()
   local x, y = self:getPosition()
 

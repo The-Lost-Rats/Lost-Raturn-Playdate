@@ -45,32 +45,9 @@ function Item:init(item_type, x, y)
   self.current_state = ITEM_STATES.FALLING
 end
 
--- TODO: split into functions
 function Item:update()
-  local x, y = self:getPosition()
-
-  if (self.current_state == ITEM_STATES.FALLING) then
-    -- TODO: see if i can move some of this logic out to be shared
-    self.vy = self.vy + PHYSICS.GRAVITY * ITEM.GRAVITY_MULTIPLIER -- Fall slower than player
-    y = y + self.vy
-    x = x + self.vx
-
-    -- TODO: move to func
-    if (y >= WORLD.FLOOR_Y - self.height / 2) then
-      self.vy = 0
-      y = WORLD.FLOOR_Y - self.height / 2
-      self.grounded_start_time_ms = playdate.getCurrentTimeMilliseconds()
-      self.current_state = ITEM_STATES.GROUNDED
-
-      self.grounded_timer = timer.performAfterDelay(ITEM.GROUNDED_TIME_MS, function() self:startDisappearing() end)
-    end
-
-    self:moveTo(x, y)
-  elseif(self.current_state == ITEM_STATES.GROUNDED) then
-    -- TODO: bug here where item hits ground and then snaps to center of sine wave (need to phase shift to start at ground)
-    local delta_time_s = (playdate.getCurrentTimeMilliseconds() - self.grounded_start_time_ms) / 1000
-    local y_offset = ITEM.BOB_AMPLITUDE * math.sin(delta_time_s * math.pi) - ITEM.BOB_AMPLITUDE
-    self:moveTo(self.x, WORLD.FLOOR_Y - (self.height / 2) + y_offset)
+  if (self.current_state == ITEM_STATES.FALLING) then self:handleFalling()
+  elseif(self.current_state == ITEM_STATES.GROUNDED) then self:handleGrounded()
   end
 end
 
@@ -79,6 +56,32 @@ function Item:startDisappearing()
   self.current_state = ITEM_STATES.DISAPPEARING
   self.disappear_timer = timer.performAfterDelay(ITEM.TTL_MS, function() self:disappear() end)
   self:startBlinking(ITEM.MAX_BLINK_SPEED_MS)
+end
+
+function Item:handleFalling()
+  local x, y = self:getPosition()
+
+  self.vy = self.vy + PHYSICS.GRAVITY * ITEM.GRAVITY_MULTIPLIER -- Fall slower than player
+  y = y + self.vy
+  x = x + self.vx
+
+  if (y >= WORLD.FLOOR_Y - self.height / 2) then
+    self.vy = 0
+    y = WORLD.FLOOR_Y - self.height / 2
+    self.grounded_start_time_ms = playdate.getCurrentTimeMilliseconds()
+    self.current_state = ITEM_STATES.GROUNDED
+
+    self.grounded_timer = timer.performAfterDelay(ITEM.GROUNDED_TIME_MS, function() self:startDisappearing() end)
+  end
+
+  self:moveTo(x, y)
+end
+
+function Item:handleGrounded()
+  -- TODO: bug here where item hits ground and then snaps to center of sine wave (need to phase shift to start at ground)
+  local delta_time_s = (playdate.getCurrentTimeMilliseconds() - self.grounded_start_time_ms) / 1000
+  local y_offset = ITEM.BOB_AMPLITUDE * math.sin(delta_time_s * math.pi) - ITEM.BOB_AMPLITUDE
+  self:moveTo(self.x, WORLD.FLOOR_Y - (self.height / 2) + y_offset)
 end
 
 function Item:disappear()
