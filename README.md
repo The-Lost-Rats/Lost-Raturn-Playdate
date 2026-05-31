@@ -20,6 +20,7 @@ TODO: settings json file?
 TODO: private locals/functiosn + constants
 TODO: named parameters for functions/args?
 TODO: temp colours for items and legs to make testing easier?
+TODO: make things more functional and immutable
 
 References:
 https://help.play.date/developer/dev-links/
