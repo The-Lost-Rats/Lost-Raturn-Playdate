@@ -1,0 +1,41 @@
+import "CoreLibs/graphics"
+import "CoreLibs/object"
+import "CoreLibs/sprites"
+
+import "utilities/constants"
+
+local gfx <const> = playdate.graphics
+
+local HUD <const> = CONSTANTS.HUD
+local LAYERS <const> = CONSTANTS.LAYERS
+
+class('HeartSprite').extends(gfx.sprite)
+function HeartSprite:init(x, y)
+  HeartSprite.super.init(self)
+
+  self:setZIndex(LAYERS.UI)
+  self:setIgnoresDrawOffset(true)
+  self:setCenter(0, 0)
+  self:moveTo(x, y)
+  self:setFilled(true)
+end
+
+function HeartSprite:setFilled(is_filled)
+  if (self.is_filled == is_filled) then return end
+  self.is_filled = is_filled
+
+  local radius <const> = HUD.HEART_RADIUS
+  local height <const> = HUD.H
+
+  local image = gfx.image.new(radius, height)
+  gfx.pushContext(image)
+    gfx.setColor(gfx.kColorWhite)
+    if (is_filled) then
+      gfx.fillCircleInRect(0, 0, radius, height)
+    else
+      gfx.drawCircleInRect(0, 0, radius, height)
+    end
+  gfx.popContext()
+
+  self:setImage(image)
+end

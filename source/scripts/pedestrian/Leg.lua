@@ -14,6 +14,7 @@ local WORLD <const> = CONSTANTS.WORLD
 
 local GROUPS <const> = CONSTANTS.GROUPS
 local TAGS <const> = CONSTANTS.TAGS
+local LAYERS <const> = CONSTANTS.LAYERS
 
 local leg_image = gfx.image.new(PEDESTRIANS.LEG_W, PEDESTRIANS.LEG_H, gfx.kColorBlack)
 local shoe_image = gfx.image.new(PEDESTRIANS.SHOE_W, PEDESTRIANS.SHOE_H, gfx.kColorBlack)
@@ -42,6 +43,7 @@ function Leg:init(x, y, direction, item_type)
 
   -- Leg
   self.leg_sprite = gfx.sprite.new(leg_image)
+  self.leg_sprite:setZIndex(LAYERS.WALKER)
   self.leg_sprite:setCollideRect(0, 0, self.leg_sprite:getSize())
   self.leg_sprite:setGroups({GROUPS.CLIMBABLE})
   self.leg_sprite:setTag(TAGS.LEG)
@@ -50,6 +52,7 @@ function Leg:init(x, y, direction, item_type)
 
   -- Shoe
   self.shoe_sprite = gfx.sprite.new(shoe_image)
+  self.shoe_sprite:setZIndex(LAYERS.WALKER)
   self.shoe_sprite:setCollideRect(0, 0, self.shoe_sprite:getSize())
   self.shoe_sprite:setGroups({GROUPS.HAZARD})
   self.shoe_sprite:setTag(TAGS.SHOE)

@@ -25,6 +25,14 @@ CONSTANTS = {
     GRAVITY = 0.6, -- px/frame^2
   },
 
+  LAYERS = {
+    UI = 2,
+    UI_BACKGROUND = 1,
+    PLAYER = 0,
+    ITEM = -1,
+    WALKER = -2
+  },
+
   HUD = {
     H = 24,
 

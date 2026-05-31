@@ -6,6 +6,7 @@ import "CoreLibs/ui"
 import "scenes/BaseScene"
 import "scripts/pedestrian/Walker"
 import "scripts/Player"
+import "scripts/ui/HUD"
 import "utilities/constants"
 
 local gfx <const> = playdate.graphics
@@ -13,7 +14,6 @@ local timer <const> = playdate.timer
 local ui <const> = playdate.ui
 
 local DISPLAY <const> = CONSTANTS.DISPLAY
-local HUD <const> = CONSTANTS.HUD
 local WORLD <const> = CONSTANTS.WORLD
 
 local DIRECTION <const> = CONSTANTS.DIRECTION
@@ -26,12 +26,15 @@ class ('GamePlay').extends(BaseScene)
 function GamePlay:init()
   -- TODO: should i set center of sprites to like bottom center?
   GamePlay.super.init(self)
+
+  self.hud = HUD()
+
   self.player = Player(0, 0, 1, PLAYER.MAX_HEALTH, self)
 
-  self.walkers = {}
   -- Start with a small number of walkers to let the player get used to the game.
   -- And longest spawn interval so they are created really slowly.
   -- Then ramp up slowly.
+  self.walkers = {}
   self.walkers_spawn_cap = PEDESTRIANS.MIN_WALKERS
   self.walkers_spawn_interval_ms = PEDESTRIANS.MAX_SPAWN_INTERVAL_MS
 end
@@ -41,40 +44,20 @@ function GamePlay:enter()
   self.player:add()
   self.current_score = 0
 
+  self.hud:add()
+  self.hud:setScore(self.current_score)
+  self.hud:setHealth(self.player:getCurrentHealth())
+
   -- Start the walker spawning process
   self:trySpawnWalker()
 
   gfx.sprite.setBackgroundDrawingCallback(function(x, y, w, h)
     -- Redraw background elements and clip to dirty rect
     gfx.pushContext()
+      gfx.setColor(gfx.kColorBlack)
 
-    gfx.setColor(gfx.kColorBlack)
-
-    local display_text = self.className
-    local text_w, text_h = gfx.getTextSize(display_text)
-    gfx.drawText(display_text, DISPLAY.W_HALF - text_w / 2, DISPLAY.H_HALF - text_h / 2)
-
-    -- TODO: eventually create UI manager? Make this a sprite maybe?
-    -- Floor line
-    gfx.drawLine(0, WORLD.FLOOR_Y, DISPLAY.W, WORLD.FLOOR_Y)
-
-    -- HUD Box
-    gfx.fillRect(0, 0, DISPLAY.W, HUD.H)
-    
-    gfx.setColor(gfx.kColorWhite)
-    gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-    gfx.drawText("Score: " .. self.current_score, HUD.SCORE_X, HUD.SCORE_Y)
-
-    local player_health = self.player:getCurrentHealth()
-    for i = 1, PLAYER.MAX_HEALTH, 1 do
-      local x = DISPLAY.W - HUD.HEART_SPACING * i
-      if (i <= player_health) then
-        gfx.fillCircleInRect(x, 0, HUD.HEART_RADIUS, HUD.H)
-      else
-        gfx.drawCircleInRect(x, 0, HUD.HEART_RADIUS, HUD.H)
-      end
-    end
-    
+      -- Floor line
+      gfx.drawLine(0, WORLD.FLOOR_Y, DISPLAY.W, WORLD.FLOOR_Y)
     gfx.popContext()
   end)
 end
@@ -119,6 +102,8 @@ function GamePlay:leave()
   for _, walker in ipairs(self.walkers) do
     walker:remove()
   end
+
+  self.hud:remove()
 end
 
 function GamePlay:trySpawnWalker()
@@ -145,8 +130,7 @@ function GamePlay:spawnWalker()
 end
 
 -- TODO: accessing this with a singleton/shread instance is gross
--- TODO: make this a sprite too? put in UI manager class?
 function GamePlay:updateScore(points)
   self.current_score += points
-  gfx.sprite.addDirtyRect(0, 0, DISPLAY.W, HUD.H)
+  self.hud:setScore(self.current_score)
 end

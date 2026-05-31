@@ -2,20 +2,22 @@ import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/sprites"
 
+-- TODO: make sure all imports are right
+import "utilities/constants"
 import "utilities/math"
 
 local gfx <const> = playdate.graphics
 
 local DISPLAY <const> = CONSTANTS.DISPLAY
-local HUD <const> = CONSTANTS.HUD
 
--- TODO: does player need all this data?
+-- TODO: does player need all this data? Same with other classes
 local CLIMBING <const> = CONSTANTS.CLIMBING
 local SCORING <const> = CONSTANTS.SCORING
 local PEDESTRIANS <const> = CONSTANTS.PEDESTRIANS
 local PHYSICS <const> = CONSTANTS.PHYSICS
 local PLAYER <const> = CONSTANTS.PLAYER
 local WORLD <const> = CONSTANTS.WORLD
+local LAYERS <const> = CONSTANTS.LAYERS
 
 local GROUPS <const> = CONSTANTS.GROUPS
 local TAGS <const> = CONSTANTS.TAGS
@@ -40,6 +42,7 @@ function Player:init(vx, vy, direction_x, initial_health, game_play_scene)
   self.game_play_scene = game_play_scene
 
   self:setImage(image)
+  self:setZIndex(LAYERS.PLAYER)
   self:setCollideRect(0, 0, self:getSize())
   self:setGroups({GROUPS.PLAYER})
   self:setCollidesWithGroups({GROUPS.PICK_UP, GROUPS.HAZARD, GROUPS.CLIMBABLE})
@@ -330,10 +333,10 @@ function Player:getCurrentHealth()
   return self.health
 end
 
--- TODO: gfx update should not be here - should be in ui or smth?
 function Player:takeDamage(amount)
   self.health = math.max(0, self.health - amount)
-  gfx.sprite.addDirtyRect(0, 0, DISPLAY.W, HUD.H)
+  -- TODO: ewwww
+  self.game_play_scene.hud:setHealth(self.health)
 end
 
 function Player:isDead()

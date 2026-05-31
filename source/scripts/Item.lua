@@ -12,6 +12,7 @@ local WORLD <const> = CONSTANTS.WORLD
 
 local GROUPS <const> = CONSTANTS.GROUPS
 local TAGS <const> = CONSTANTS.TAGS
+local LAYERS <const> = CONSTANTS.LAYERS
 
 local image = gfx.image.new(ITEM.W, ITEM.H, gfx.kColorBlack)
 
@@ -28,6 +29,7 @@ function Item:init(item_type, x, y)
   Item.super.init(self)
 
   self:setImage(image)
+  self:setZIndex(LAYERS.ITEM)
   self:setCollideRect(0, 0, self:getSize())
   self:setGroups({GROUPS.PICK_UP})
   self:setTag(TAGS.ITEM)
