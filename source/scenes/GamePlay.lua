@@ -26,7 +26,7 @@ function GamePlay:init()
 
   self.hud = HUD()
 
-  self.player = Player(0, 0, DIRECTION.RIGHT, PLAYER.MAX_HEALTH, self)
+  self.player = Player(0, 0, PLAYER.MAX_HEALTH, self)
 
   -- Start with a small number of walkers to let the player get used to the game.
   -- And longest spawn interval so they are created really slowly.
