@@ -33,6 +33,8 @@ function Item:init(item_type, x, y)
 
   self:setImage(image)
   self:setZIndex(LAYERS.ITEM)
+  -- Set center of sprite to x: center, y: bottom
+  self:setCenter(0.5, 1.0)
   self:setCollideRect(0, 0, self:getSize())
   self:setGroups({GROUPS.PICK_UP})
   self:setTag(TAGS.ITEM)
@@ -64,9 +66,9 @@ function Item:handleFalling()
   y = y + self.vy
   x = x + self.vx
 
-  if (y >= WORLD.FLOOR_Y - self.height / 2) then
+  if (y >= WORLD.FLOOR_Y) then
     self.vy = 0
-    y = WORLD.FLOOR_Y - self.height / 2
+    y = WORLD.FLOOR_Y
     self.grounded_start_time_ms = playdate.getCurrentTimeMilliseconds()
     self.current_state = ITEM_STATES.GROUNDED
 
@@ -79,7 +81,7 @@ end
 function Item:handleGrounded()
   local delta_time_s = (playdate.getCurrentTimeMilliseconds() - self.grounded_start_time_ms) / 1000
   local y_offset = ITEM.BOB_AMPLITUDE * math.sin(delta_time_s * math.pi) - ITEM.BOB_AMPLITUDE
-  self:moveTo(self.x, WORLD.FLOOR_Y - (self.height / 2) + y_offset)
+  self:moveTo(self.x, WORLD.FLOOR_Y + y_offset)
 end
 
 function Item:disappear()
