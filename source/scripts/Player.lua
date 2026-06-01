@@ -2,7 +2,6 @@ import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/sprites"
 
--- TODO: make sure all imports are right
 import "utilities/constants"
 import "utilities/math"
 
@@ -10,7 +9,6 @@ local gfx <const> = playdate.graphics
 
 local DISPLAY <const> = CONSTANTS.DISPLAY
 
--- TODO: does player need all this data? Same with other classes
 local CLIMBING <const> = CONSTANTS.CLIMBING
 local SCORING <const> = CONSTANTS.SCORING
 local PEDESTRIANS <const> = CONSTANTS.PEDESTRIANS
@@ -24,7 +22,6 @@ local TAGS <const> = CONSTANTS.TAGS
 
 local image = gfx.image.new(PLAYER.W, PLAYER.H, gfx.kColorBlack)
 
--- TODO: remove some of these states and make them state transitions
 local PLAYER_STATE = {
   GROUNDED = 0,
   JUMPING = 1,
@@ -133,7 +130,6 @@ function Player:handleGrounded(x, y)
     -- TODO: should this return? will it cause a break in player input?
   end
 
-  -- TODO: these lines seem to be common in all except crank?
   x = self:handleHorizontalMovement(x)
 
   -- Update position
@@ -234,8 +230,6 @@ function Player:handleClimbing(x, y)
     y = leg_y
   end
 
-    -- TODO: off screen should be helper? also make drop leg a helper?
-    -- TODO: is this unsafe? should I check if the leg exists before using it above?
   if (x >= DISPLAY.W - self.width / 2) then
     x = DISPLAY.W - self.width / 2
     self.current_state = PLAYER_STATE.JUMPING
@@ -287,7 +281,6 @@ function Player:handleHit(x, y)
 end
 
 function Player:handleDeath(x, y)
-  -- TODO: do cool stuff on death?
   return x, y
 end
 

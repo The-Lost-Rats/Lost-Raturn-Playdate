@@ -20,16 +20,12 @@ local DIRECTION <const> = CONSTANTS.DIRECTION
 local PEDESTRIANS <const> = CONSTANTS.PEDESTRIANS
 local PLAYER <const> = CONSTANTS.PLAYER
 
-
--- TODO: should we have itemsbe tracked here? so i can remove items if they are lingering on game over or something?
 class ('GamePlay').extends(BaseScene)
 function GamePlay:init()
-  -- TODO: should i set center of sprites to like bottom center?
   GamePlay.super.init(self)
 
   self.hud = HUD()
 
-  -- TODO: should player take in all these args?
   self.player = Player(0, 0, DIRECTION.RIGHT, PLAYER.MAX_HEALTH, self)
 
   -- Start with a small number of walkers to let the player get used to the game.
@@ -69,8 +65,6 @@ function GamePlay:update()
   end
 
   -- Clean up walkers off screen
-  -- TODO: this is not very performant ;-;
-  -- TODO: maybe we can also make this a callback or something? remove when ready...
   for i = #self.walkers, 1, -1 do
     local walker = self.walkers[i]
     if (walker:isOffScreen()) then
@@ -83,7 +77,6 @@ function GamePlay:update()
   gfx.sprite.update()
 
   -- Show crank indicator when climbing and docked
-  -- TODO: should we just show this at the start?
   if (playdate.isCrankDocked() and self.player:isClimbing()) then
     ui.crankIndicator:draw()
   end
@@ -118,7 +111,6 @@ function GamePlay:trySpawnWalker()
 end
 
 function GamePlay:spawnWalker()
-  -- TODO: need better way to manage coordinate systems/origin point of legs
   local random_float = math.random()
 
   local walker_type_index = math.random(#PEDESTRIANS.TYPES)
@@ -130,7 +122,6 @@ function GamePlay:spawnWalker()
   table.insert(self.walkers, new_walker)
 end
 
--- TODO: accessing this with a singleton/shread instance is gross
 function GamePlay:updateScore(points)
   self.current_score += points
   self.hud:setScore(self.current_score)

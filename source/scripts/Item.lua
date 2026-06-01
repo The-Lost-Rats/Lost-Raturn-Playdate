@@ -51,7 +51,6 @@ function Item:update()
   end
 end
 
--- TODO: ill keep this as is for now, but I think we should change this to keep the sine motion and add blinking on top
 function Item:startDisappearing()
   self.current_state = ITEM_STATES.DISAPPEARING
   self.disappear_timer = timer.performAfterDelay(ITEM.TTL_MS, function() self:disappear() end)
@@ -78,7 +77,6 @@ function Item:handleFalling()
 end
 
 function Item:handleGrounded()
-  -- TODO: bug here where item hits ground and then snaps to center of sine wave (need to phase shift to start at ground)
   local delta_time_s = (playdate.getCurrentTimeMilliseconds() - self.grounded_start_time_ms) / 1000
   local y_offset = ITEM.BOB_AMPLITUDE * math.sin(delta_time_s * math.pi) - ITEM.BOB_AMPLITUDE
   self:moveTo(self.x, WORLD.FLOOR_Y - (self.height / 2) + y_offset)

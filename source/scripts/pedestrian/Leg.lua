@@ -23,7 +23,6 @@ local MOVEMENT_STATES = {
 }
 
 class('Leg').extends()
--- TODO: taking in item type is kinda gross
 function Leg:init(x, y, direction, item_type)
   Leg.super.init(self)
 
@@ -127,7 +126,6 @@ function Leg:moveBy(dx, dy)
   self:moveTo(self.x + dx, self.y + dy)
 end
 
--- TODO: this should be private?
 function Leg:moveTo(x, y)
   self.x, self.y = x, y
 
