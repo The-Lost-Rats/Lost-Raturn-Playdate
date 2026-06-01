@@ -33,7 +33,7 @@ local PLAYER_STATE = {
 }
 
 class('Player').extends(gfx.sprite)
-function Player:init(vx, vy, direction_x, initial_health, game_play_scene)
+function Player:init(vx, vy, initial_health, game_play_scene)
   Player.super.init(self)
 
   self.game_play_scene = game_play_scene
@@ -51,8 +51,6 @@ function Player:init(vx, vy, direction_x, initial_health, game_play_scene)
 
   self.vx = vx
   self.vy = vy
-  self.initial_direction_x = direction_x
-  self.direction_x = self.initial_direction_x
 
   self.held_item = nil
   self.attached_leg = nil
@@ -65,7 +63,6 @@ function Player:reset()
 
   self.vx = 0
   self.vy = 0
-  self.direction_x = self.initial_direction_x
   
   self.held_item = nil
   self.attached_leg = nil
