@@ -16,3 +16,10 @@ References:
 - https://github.com/McDevon/taxman-playdate
 - https://github.com/Sheep42/prismatic-engine
 - https://gameprogrammingpatterns.com/contents.html
+
+
+Libraries:
+- https://github.com/mierau/playdate-timeline
+- https://github.com/Whitebrim/AnimatedSprite
+- https://github.com/cadin/panels
+- https://devforum.play.date/t/a-list-of-helpful-libraries-and-code/221
