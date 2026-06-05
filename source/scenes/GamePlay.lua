@@ -26,7 +26,8 @@ function GamePlay:init()
 
   self.hud = HUD()
 
-  self.player = Player(0, 0, PLAYER.MAX_HEALTH, self)
+  -- TODO: change self to call back functions? update score, update health?
+  self.player = Player(DISPLAY.W_HALF, WORLD.FLOOR_Y, PLAYER.MAX_HEALTH, self)
 
   -- Start with a small number of walkers to let the player get used to the game.
   -- And longest spawn interval so they are created really slowly.
@@ -37,7 +38,7 @@ function GamePlay:init()
 end
 
 function GamePlay:enter()
-  self.player:reset()
+  self.player:reset(DISPLAY.W_HALF, WORLD.FLOOR_Y)
   self.player:add()
   self.current_score = 0
 

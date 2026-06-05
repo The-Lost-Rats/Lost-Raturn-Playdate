@@ -24,16 +24,13 @@ local image = gfx.image.new(PLAYER.W, PLAYER.H, gfx.kColorBlack)
 
 local PLAYER_STATE = {
   GROUNDED = 0,
-  JUMPING = 1,
-  FALLING = 2,
-  CLIMBING = 3,
-  SCORING = 4,
-  HIT = 5,
-  DEAD = 6
+  FALLING = 1,
+  CLIMBING = 2,
+  DEAD = 3
 }
 
 class('Player').extends(gfx.sprite)
-function Player:init(vx, vy, initial_health, game_play_scene)
+function Player:init(x, y, initial_health, game_play_scene)
   Player.super.init(self)
 
   self.game_play_scene = game_play_scene
@@ -47,263 +44,250 @@ function Player:init(vx, vy, initial_health, game_play_scene)
   self:setCollidesWithGroups({GROUPS.PICK_UP, GROUPS.HAZARD, GROUPS.CLIMBABLE})
   self:setTag(TAGS.PLAYER)
 
-  self.health = initial_health
-
-  self.vx = vx
-  self.vy = vy
-
-  self.held_item = nil
-  self.attached_leg = nil
-
-  self.current_state = PLAYER_STATE.GROUNDED
+  self.initial_health = initial_health
+  self:reset(x, y)
 end
 
-function Player:reset()
-  self.health = PLAYER.MAX_HEALTH
+function Player:reset(x, y)
+  self.health = self.initial_health
 
   self.vx = 0
   self.vy = 0
-  
+  self.crank_dy = 0
+
   self.held_item = nil
-  self.attached_leg = nil
+  self:dropLeg()
+
+  self.grab_requested = false
+  self.pickup_requested = false
 
   self.current_state = PLAYER_STATE.GROUNDED
 
-  -- TODO: should i pass in x and y?
-  self:moveTo(DISPLAY.W_HALF, WORLD.FLOOR_Y)
+  self:moveTo(x, y)
 end
 
 function Player:update()
+  local state = self.current_state
+
+  if (state == PLAYER_STATE.DEAD) then
+    self:handleDeath()
+    return
+  end
+
+  self:readInput(state)
+
+  self:applyForces(state)
+
   local x, y = self:getPosition()
+  x += self.vx
+  y += self.vy
 
-  if (self.health == 0) then
-    self.current_state = PLAYER_STATE.DEAD
-  end
-
-  -- TODO: should this go here? do all 3 states share it? Should it go before or after the handles below?
-  if (playdate.buttonJustPressed(playdate.kButtonB)) then
-    if (self.held_item == nil) then
-      local touched_sprites = self:overlappingSprites()
-      for _, other_sprite in ipairs(touched_sprites) do
-        if (other_sprite:getTag() == TAGS.ITEM) then
-          self:pickUpItem(other_sprite)
-        end
-      end
-    else
-      self.held_item:release()
-      self.held_item = nil
-    end
-  end
-
-  -- TODO: get x component of forces (gravity, jump, momentum, etc.)
-  -- TODO: all these taking in position kinda sux?
-  if (self.current_state == PLAYER_STATE.GROUNDED) then
-    x, y = self:handleGrounded(x, y)
-  elseif (self.current_state == PLAYER_STATE.JUMPING) then
-    x, y = self:handleJumping(x, y)
-  elseif (self.current_state == PLAYER_STATE.FALLING) then
-    x, y = self:handleFalling(x, y)
-  elseif (self.current_state == PLAYER_STATE.CLIMBING) then
-    x, y = self:handleClimbing(x, y)
-  elseif (self.current_state == PLAYER_STATE.SCORING) then
-    x, y = self:handleScoring(x, y)
-  elseif (self.current_state == PLAYER_STATE.HIT) then
-    x, y = self:handleHit(x, y)
-  elseif (self.current_state == PLAYER_STATE.DEAD) then
-    x, y = self:handleDeath(x, y)
-  end
+  x, y = self:constrain(state, x, y)
 
   self:moveTo(x, y)
 
-  if (self.held_item ~= nil) then
-    self.held_item:moveTo(x, y - self.height - PLAYER.HELD_ITEM_Y_GAP)
+  self:resolveActions(state)
+end
+
+function Player:readInput(state)
+  local a_pressed = playdate.buttonJustPressed(playdate.kButtonA)
+  local b_pressed = playdate.buttonJustPressed(playdate.kButtonB)
+  
+  if (state == PLAYER_STATE.GROUNDED) then
+    if (a_pressed) then self:jump() end
+    self.vx = self:horizontalMovement()
+  elseif (state == PLAYER_STATE.FALLING) then
+    self.vx = self:horizontalMovement()
+  elseif (state == PLAYER_STATE.CLIMBING) then
+    if (a_pressed) then self:jumpOffLeg() end
+    self.crank_dy = self:climb()
+  end
+
+  self.grab_requested = (state == PLAYER_STATE.FALLING) and a_pressed
+  self.pickup_requested = b_pressed
+end
+
+function Player:applyForces(state)
+  if (state == PLAYER_STATE.FALLING) then
+    self.vy += PHYSICS.GRAVITY
+  elseif (state == PLAYER_STATE.CLIMBING and self.attached_leg) then
+    local leg_x, leg_y = self.attached_leg:getPosition()
+
+    self.vx = leg_x - self.previous_leg_x
+    self.vy = (leg_y - self.previous_leg_y) + self.crank_dy
+    self.previous_leg_x, self.previous_leg_y = leg_x, leg_y
   end
 end
 
-function Player:handleGrounded(x, y)
-  -- Handle input
-  if (playdate.buttonJustPressed(playdate.kButtonA)) then
-    self.current_state = PLAYER_STATE.JUMPING
-    -- TODO: should this return? will it cause a break in player input?
-  end
+function Player:constrain(state, x, y)
+  local hit_edge
+  x, hit_edge = self:clampHorizontal(x)
 
-  x = self:handleHorizontalMovement(x)
+  if (state == PLAYER_STATE.FALLING) then
+    if (y >= WORLD.FLOOR_Y) then
+      y = WORLD.FLOOR_Y
+      self.vy = 0
+      self:setState(PLAYER_STATE.GROUNDED)
+    end
+  elseif (state == PLAYER_STATE.CLIMBING and self.attached_leg) then
+    local _, leg_y = self.attached_leg:getPosition()
+    -- TODO: replace with helper in leg class instead of relying on constant
+    y = math.clamp(y, leg_y - PEDESTRIANS.LEG_H, leg_y)
 
-  -- Update position
-  y = y + self.vy
-  x = x + self.vx
-
-  -- TODO: should this be before or after move?
-  local touched_sprites = self:overlappingSprites()
-  for _, other_sprite in ipairs(touched_sprites) do
-    if (other_sprite:getTag() == TAGS.SHOE and other_sprite.controller:isFalling()) then
-      self.current_state = PLAYER_STATE.HIT
+    if (y <= leg_y - CLIMBING.LEG_SCORE_DISTANCE) then
+      self:scoreDelivery()
+    elseif (hit_edge) then
+      self:jumpOffLeg()
     end
   end
 
   return x, y
 end
 
-function Player:handleJumping(x, y)
-  -- TODO: should I really be using a bunch of self variables? seems hard to track over explicit returns...
-  self.vy += PLAYER.JUMP_V
-  self.current_state = PLAYER_STATE.FALLING
-
-  x = self:handleHorizontalMovement(x)
-
-  -- Update position
-  y = y + self.vy
-  x = x + self.vx
-
-  -- TODO: should i handle touching leg here? as well as in falling?
-
-  return x, y
+function Player:resolveActions(state)
+  self:resolveDropItem()
+  self:resolveCollisions(state)
 end
 
-function Player:handleFalling(x, y)
-  if (playdate.buttonJustPressed(playdate.kButtonA)) then
-    local touched_sprites = self:overlappingSprites()
-    for _, other_sprite in ipairs(touched_sprites) do
-      if (other_sprite:getTag() == TAGS.LEG) then
-        self.attached_leg = other_sprite
-        self.current_state = PLAYER_STATE.CLIMBING
-        self.vx, self.vy = 0, 0
-        self.previous_leg_x, self.previous_leg_y = other_sprite:getPosition()
-      end
+function Player:resolveDropItem()
+  if (self.pickup_requested and self.held_item ~= nil) then
+    self:dropItem()
+    self.pickup_requested = false
+  end
+end
+
+function Player:resolveCollisions(state)
+  for _, other in ipairs(self:overlappingSprites()) do
+    local tag = other:getTag()
+
+    if (self.pickup_requested and tag == TAGS.ITEM) then
+      self:pickUp(other)
+    elseif (self.grab_requested and tag == TAGS.LEG) then
+      self:grabLeg(other)
+    elseif (state == PLAYER_STATE.GROUNDED and tag == TAGS.SHOE and other.controller:isFalling()) then
+      self:hit()
     end
-
-    -- TODO: should I return out of this since I don't want the player to keep falling?
-    return x, y
   end
-
-  -- Update position
-  self.vy = self.vy + PHYSICS.GRAVITY
-
-  x = self:handleHorizontalMovement(x)
-
-  -- Update position
-  y = y + self.vy
-  x = x + self.vx
-
-   -- Bounds check
-  if (y >= WORLD.FLOOR_Y) then
-    self.vy = 0
-    y = WORLD.FLOOR_Y
-    self.current_state = PLAYER_STATE.GROUNDED
-  end
-
-  return x, y
 end
 
-function Player:handleClimbing(x, y)
-  if (playdate.buttonJustPressed(playdate.kButtonA)) then
-    self.current_state = PLAYER_STATE.JUMPING
-    self.attached_leg = nil
-    self.previous_leg_x, self.previous_leg_y = nil, nil
-    return x, y
-  end
-
-  -- TODO: should I nil check?
-  -- TODO: delta works in our case cuz the leg is simple and straight - but what if it is more complex? we will need to know how the attach/current leg point moves. How do i get the attach point? Do I need to track it or can collisions get us this?
-  local leg_x, leg_y = self.attached_leg:getPosition()
-  local leg_dx = leg_x - self.previous_leg_x
-  local leg_dy = leg_y - self.previous_leg_y
-
-  self.previous_leg_x = leg_x
-  self.previous_leg_y = leg_y
-
-  -- Handle crank motion
-  local _, acceleratedChange = playdate.getCrankChange()
-  local clamped_change = math.clamp(acceleratedChange, -CLIMBING.MAX_ACCELERATED_CHANGE, CLIMBING.MAX_ACCELERATED_CHANGE)
-  local dy = -clamped_change * CLIMBING.PIXELS_PER_DEGREE
-
-  -- Update position
-  y = y + self.vy + leg_dy + dy
-  x = x + self.vx + leg_dx
-
-  if (y < leg_y - PEDESTRIANS.LEG_H) then
-    y = leg_y - PEDESTRIANS.LEG_H
-  elseif (y > leg_y) then
-    y = leg_y
-  end
-
-  if (x >= DISPLAY.W - self.width / 2) then
-    x = DISPLAY.W - self.width / 2
-    self.current_state = PLAYER_STATE.JUMPING
-    self.attached_leg = nil
-    self.previous_leg_x, self.previous_leg_y = nil, nil
-  end
-
-  if (x <= self.width / 2) then
-    x = self.width / 2
-    self.current_state = PLAYER_STATE.JUMPING
-    self.attached_leg = nil
-    self.previous_leg_x, self.previous_leg_y = nil, nil
-  end
-
-  if (y <= leg_y - CLIMBING.LEG_SCORE_DISTANCE) then
-    self.current_state = PLAYER_STATE.SCORING
-  end
-
-  return x, y
+function Player:setState(next_state)
+  if (next_state == self.current_state) then return end
+  self.current_state = next_state
+  self:onEnter(next_state)
 end
 
-function Player:handleScoring(x, y)
+function Player:onEnter(state)
+  if (state == PLAYER_STATE.CLIMBING) then
+    self.vx, self.vy = 0, 0
+    self.previous_leg_x, self.previous_leg_y = self.attached_leg:getPosition()
+  end
+end
+
+function Player:jump()
+  self.vy = PLAYER.JUMP_V
+  self:setState(PLAYER_STATE.FALLING)
+end
+
+function Player:hit()
+  local next_state
+
+  self.vy = PLAYER.JUMP_V
+  self:dropItem()
+
+  self.health = math.max(0, self.health - PEDESTRIANS.STOMP_DAMAGE)
+  -- TODO: ewwww use callbacks?
+  self.game_play_scene.hud:setHealth(self.health)
+  
+  next_state = self:isDead() and PLAYER_STATE.DEAD or PLAYER_STATE.FALLING
+
+  self:setState(next_state)
+end
+
+function Player:jumpOffLeg()
+  self.vy = PLAYER.JUMP_V
+  self:dropLeg()
+  self:setState(PLAYER_STATE.FALLING)
+end
+
+function Player:dropLeg()
+  self.attached_leg = nil
+  self.previous_leg_x, self.previous_leg_y = nil, nil
+end
+
+function Player:scoreDelivery()
   if (self.held_item ~= nil) then
     local score = self.held_item.item_type == self.attached_leg.item_type and SCORING.CORRECT_DELIVERY or SCORING.WRONG_DELIVERY
 
+    -- TODO: ewwww use callback instead?
     self.game_play_scene:updateScore(score)
     self.held_item:remove()
     self.held_item = nil
   end
 
-  self.current_state = PLAYER_STATE.JUMPING
-  self.attached_leg = nil
-  self.previous_leg_x, self.previous_leg_y = nil, nil
-  return x, y
+  self:jumpOffLeg()
 end
 
-function Player:handleHit(x, y)
-  self.vy += PLAYER.JUMP_V
-  self.current_state = PLAYER_STATE.FALLING
+function Player:grabLeg(leg)
+  self.attached_leg = leg
+  self.grab_requested = false
+  self:setState(PLAYER_STATE.CLIMBING)
+end
 
+function Player:pickUp(item)
+  item:pickUp()
+  self.held_item = item
+  self.pickup_requested = false
+end
+
+function Player:dropItem()
   if (self.held_item ~= nil) then
     self.held_item:release()
     self.held_item = nil
   end
-
-  self:takeDamage(PEDESTRIANS.STOMP_DAMAGE)
-
-  return x, y
 end
 
-function Player:handleDeath(x, y)
-  return x, y
+function Player:climb()
+  local _, accelerated_change = playdate.getCrankChange()
+  local clamped = math.clamp(accelerated_change, -CLIMBING.MAX_ACCELERATED_CHANGE, CLIMBING.MAX_ACCELERATED_CHANGE)
+
+  return -clamped * CLIMBING.PIXELS_PER_DEGREE
 end
 
-function Player:handleHorizontalMovement(x)
-  if (playdate.buttonIsPressed(playdate.kButtonLeft)) then
-    x -= PLAYER.MOVE_SPEED
-  end
+function Player:handleDeath()
+  -- TODO: make badass death animations
+  return
+end
 
-  if (playdate.buttonIsPressed(playdate.kButtonRight)) then
-    x += PLAYER.MOVE_SPEED
-  end
+function Player:horizontalMovement()
+  local vx = 0
+  local left_pressed = playdate.buttonIsPressed(playdate.kButtonLeft)
+  local right_pressed = playdate.buttonIsPressed(playdate.kButtonRight)
+
+  if (left_pressed) then vx -= PLAYER.MOVE_SPEED end
+  if (right_pressed) then vx += PLAYER.MOVE_SPEED end
+
+  return vx
+end
+
+-- TODO: maybe move to util file?
+function Player:clampHorizontal(x)
+  local hit_edge = false
 
   if (x >= DISPLAY.W - self.width / 2) then
     x = DISPLAY.W - self.width / 2
+    hit_edge = true
   end
 
   if (x <= self.width / 2) then
     x = self.width / 2
+    hit_edge = true
   end
 
-  return x
+  return x, hit_edge
 end
 
-function Player:pickUpItem(item)
-  item:pickUp()
-  self.held_item = item
+function Player:isDead()
+  return self.health == 0
 end
 
 function Player:isClimbing()
@@ -314,12 +298,10 @@ function Player:getCurrentHealth()
   return self.health
 end
 
-function Player:takeDamage(amount)
-  self.health = math.max(0, self.health - amount)
-  -- TODO: ewwww
-  self.game_play_scene.hud:setHealth(self.health)
-end
+function Player:moveTo(x, y)
+  Player.super.moveTo(self, x, y)
 
-function Player:isDead()
-  return self.current_state == PLAYER_STATE.DEAD
+  if (self.held_item ~= nil) then
+    self.held_item:moveTo(x, y - self.height - PLAYER.HELD_ITEM_Y_GAP)
+  end
 end
