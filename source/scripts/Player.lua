@@ -30,10 +30,11 @@ local PLAYER_STATE = {
 }
 
 class('Player').extends(gfx.sprite)
-function Player:init(x, y, initial_health, game_play_scene)
+function Player:init(x, y, initial_health, callbacks)
   Player.super.init(self)
 
-  self.game_play_scene = game_play_scene
+  self.on_score = callbacks.on_score
+  self.on_health_changed = callbacks.on_health_changed
 
   self:setImage(image)
   self:setZIndex(LAYERS.PLAYER)
@@ -212,8 +213,7 @@ function Player:scoreDelivery()
   if (self.held_item ~= nil) then
     local score = self.held_item.item_type == self.attached_leg.item_type and SCORING.CORRECT_DELIVERY or SCORING.WRONG_DELIVERY
 
-    -- TODO: ewwww use callback instead?
-    self.game_play_scene:updateScore(score)
+    self.on_score(score)
     self.held_item:remove()
     self.held_item = nil
   end
@@ -282,8 +282,7 @@ end
 
 function Player:takeDamage(amount)
   self.health = math.max(0, self.health - amount)
-  -- TODO: ewwww use callbacks?
-  self.game_play_scene.hud:setHealth(self.health)
+  self.on_health_changed(self.health)
 
   if (self.health == 0) then self:setState(PLAYER_STATE.DEAD) end
 end
