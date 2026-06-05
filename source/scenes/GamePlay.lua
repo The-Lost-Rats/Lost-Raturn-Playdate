@@ -38,7 +38,7 @@ function GamePlay:init()
 end
 
 function GamePlay:enter()
-  self.player:reset(DISPLAY.W_HALF, WORLD.FLOOR_Y)
+  self.player:reset()
   self.player:add()
   self.current_score = 0
 

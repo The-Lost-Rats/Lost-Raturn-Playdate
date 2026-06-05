@@ -45,7 +45,8 @@ function Player:init(x, y, initial_health, game_play_scene)
   self:setTag(TAGS.PLAYER)
 
   self.initial_health = initial_health
-  self:reset(x, y)
+  self.start_x, self.start_y = x, y
+  self:reset()
 end
 
 function Player:reset(x, y)
@@ -63,7 +64,7 @@ function Player:reset(x, y)
 
   self.current_state = PLAYER_STATE.GROUNDED
 
-  self:moveTo(x, y)
+  self:moveTo(self.start_x, self.start_y)
 end
 
 function Player:update()
