@@ -194,10 +194,7 @@ function Player:hit()
 
   self.vy = PLAYER.JUMP_V
   self:dropItem()
-
-  self.health = math.max(0, self.health - PEDESTRIANS.STOMP_DAMAGE)
-  -- TODO: ewwww use callbacks?
-  self.game_play_scene.hud:setHealth(self.health)
+  self:takeDamage(PEDESTRIANS.STOMP_DAMAGE)
   
   next_state = self:isDead() and PLAYER_STATE.DEAD or PLAYER_STATE.FALLING
 
@@ -287,8 +284,16 @@ function Player:clampHorizontal(x)
   return x, hit_edge
 end
 
+function Player:takeDamage(amount)
+  self.health = math.max(0, self.health - amount)
+  -- TODO: ewwww use callbacks?
+  self.game_play_scene.hud:setHealth(self.health)
+
+  if (self.health == 0) then self:setState(PLAYER_STATE.DEAD) end
+end
+
 function Player:isDead()
-  return self.health == 0
+  return self.current_state == PLAYER_STATE.DEAD
 end
 
 function Player:isClimbing()
