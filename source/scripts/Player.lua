@@ -49,7 +49,7 @@ function Player:init(x, y, initial_health, game_play_scene)
   self:reset()
 end
 
-function Player:reset(x, y)
+function Player:reset()
   self.health = self.initial_health
 
   self.vx = 0
@@ -131,11 +131,9 @@ function Player:constrain(state, x, y)
       self:setState(PLAYER_STATE.GROUNDED)
     end
   elseif (state == PLAYER_STATE.CLIMBING and self.attached_leg) then
-    local _, leg_y = self.attached_leg:getPosition()
-    -- TODO: replace with helper in leg class instead of relying on constant
-    y = math.clamp(y, leg_y - PEDESTRIANS.LEG_H, leg_y)
+    y = math.clamp(y, self.attached_leg:getClimbBounds())
 
-    if (y <= leg_y - CLIMBING.LEG_SCORE_DISTANCE) then
+    if (y <= self.attached_leg:getScoreRange()) then
       self:scoreDelivery()
     elseif (hit_edge) then
       self:jumpOffLeg()
@@ -195,10 +193,8 @@ function Player:hit()
   self.vy = PLAYER.JUMP_V
   self:dropItem()
   self:takeDamage(PEDESTRIANS.STOMP_DAMAGE)
-  
-  next_state = self:isDead() and PLAYER_STATE.DEAD or PLAYER_STATE.FALLING
 
-  self:setState(next_state)
+  if (not self:isDead()) then self:setState(PLAYER_STATE.FALLING) end
 end
 
 function Player:jumpOffLeg()
@@ -226,7 +222,7 @@ function Player:scoreDelivery()
 end
 
 function Player:grabLeg(leg)
-  self.attached_leg = leg
+  self.attached_leg = leg.controller
   self.grab_requested = false
   self:setState(PLAYER_STATE.CLIMBING)
 end

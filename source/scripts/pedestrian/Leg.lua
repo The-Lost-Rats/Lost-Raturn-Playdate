@@ -6,6 +6,7 @@ import "scripts/Item"
 
 local gfx <const> = playdate.graphics
 
+local CLIMBING <const> = CONSTANTS.CLIMBING
 local DIRECTION <const> = CONSTANTS.DIRECTION
 local ITEM <const> = CONSTANTS.ITEM
 local PEDESTRIANS <const> = CONSTANTS.PEDESTRIANS
@@ -166,4 +167,17 @@ end
 
 function Leg:isFalling()
   return self.current_move_state == MOVEMENT_STATES.FALLING
+end
+
+function Leg:getClimbBounds()
+  local _, leg_h = self.leg_sprite:getSize()
+  local _, shoe_h = self.shoe_sprite:getSize()
+
+  return self.y - shoe_h - leg_h, self.y - shoe_h
+end
+
+-- TODO: this uses a constant leg score distance - should we recompute?
+function Leg:getScoreRange()
+  local _, shoe_h = self.shoe_sprite:getSize()
+  return self.y - shoe_h - CLIMBING.LEG_SCORE_DISTANCE
 end
