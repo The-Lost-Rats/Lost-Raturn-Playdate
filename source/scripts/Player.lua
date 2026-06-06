@@ -33,7 +33,7 @@ class('Player').extends(gfx.sprite)
 function Player:init(x, y, initial_health, callbacks)
   Player.super.init(self)
 
-  self.on_score = callbacks.on_score
+  self.on_deliver = callbacks.on_deliver
   self.on_health_changed = callbacks.on_health_changed
 
   self:setImage(image)
@@ -211,11 +211,15 @@ end
 
 function Player:scoreDelivery()
   if (self.held_item ~= nil) then
-    local score = self.held_item.item_type == self.attached_leg.item_type and SCORING.CORRECT_DELIVERY or SCORING.WRONG_DELIVERY
+    -- TODO: do something cool on correct or incorrect delivery?
+    local result = self.on_deliver(self.held_item.item_type, self.attached_leg.item_type)
 
-    self.on_score(score)
-    self.held_item:remove()
-    self.held_item = nil
+    if (result.correct) then
+      self.held_item:remove()
+      self.held_item = nil
+    else
+      self:dropItem()
+    end
   end
 
   self:jumpOffLeg()

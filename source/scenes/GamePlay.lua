@@ -6,6 +6,7 @@ import "CoreLibs/ui"
 import "scenes/BaseScene"
 import "scripts/pedestrian/Walker"
 import "scripts/Player"
+import "scripts/ScoreManager"
 import "scripts/ui/HUD"
 import "utilities/constants"
 
@@ -25,10 +26,15 @@ function GamePlay:init()
   GamePlay.super.init(self)
 
   self.hud = HUD()
+  self.score_manager = ScoreManager()
 
-  -- TODO: change self to call back functions? update score, update health?
   self.player = Player(DISPLAY.W_HALF, WORLD.FLOOR_Y, PLAYER.MAX_HEALTH, {
-    on_score = function(score) self:updateScore(score) end,
+    on_deliver = function(item_type, leg_type)
+      local result = self.score_manager:recordDelivery(item_type, leg_type)
+      self.hud:setScore(result.total)
+
+      return result
+    end,
     on_health_changed = function(health) self.hud:setHealth(health) end
   })
 
@@ -43,10 +49,10 @@ end
 function GamePlay:enter()
   self.player:reset()
   self.player:add()
-  self.current_score = 0
 
+  self.score_manager:reset()
   self.hud:add()
-  self.hud:setScore(self.current_score)
+  self.hud:setScore(self.score_manager:getScore())
   self.hud:setHealth(self.player:getCurrentHealth())
 
   -- Start the walker spawning process
@@ -124,9 +130,4 @@ function GamePlay:spawnWalker()
 
   local new_walker = Walker.spawn(walker_type, direction)
   table.insert(self.walkers, new_walker)
-end
-
-function GamePlay:updateScore(points)
-  self.current_score += points
-  self.hud:setScore(self.current_score)
 end
