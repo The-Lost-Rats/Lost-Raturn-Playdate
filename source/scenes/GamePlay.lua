@@ -5,7 +5,7 @@ import "CoreLibs/ui"
 
 import "scenes/BaseScene"
 import "scripts/pedestrian/Walker"
-import "scripts/Player"
+import "scripts/player/Player"
 import "scripts/ScoreManager"
 import "scripts/ui/HUD"
 import "utilities/constants"
