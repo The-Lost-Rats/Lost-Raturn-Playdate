@@ -86,12 +86,12 @@ function GamePlay:update()
   -- Update sprites last to draw at new positions
   gfx.sprite.update()
 
-  -- Show crank indicator when climbing and docked
-  if (playdate.isCrankDocked() and self.player:isClimbing()) then
+  -- Show crank indicator when player needs it and docked
+  if (playdate.isCrankDocked() and self.player:usesCrank()) then
     ui.crankIndicator:draw()
   end
 
-  if (self.player:isDead()) then
+  if (self.player:isDone()) then
     setScene(SCENE_GAME_OVER)
   end
 end

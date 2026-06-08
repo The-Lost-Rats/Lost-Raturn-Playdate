@@ -2,6 +2,12 @@ import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/sprites"
 
+import "scripts/player/states/ClimbingState"
+import "scripts/player/states/DeadState"
+import "scripts/player/states/FallingState"
+import "scripts/player/states/GroundedState"
+import "scripts/player/states/PlayerState"
+
 import "utilities/constants"
 import "utilities/math"
 
@@ -10,11 +16,9 @@ local gfx <const> = playdate.graphics
 local DISPLAY <const> = CONSTANTS.DISPLAY
 
 local CLIMBING <const> = CONSTANTS.CLIMBING
-local SCORING <const> = CONSTANTS.SCORING
 local PEDESTRIANS <const> = CONSTANTS.PEDESTRIANS
-local PHYSICS <const> = CONSTANTS.PHYSICS
 local PLAYER <const> = CONSTANTS.PLAYER
-local WORLD <const> = CONSTANTS.WORLD
+
 local LAYERS <const> = CONSTANTS.LAYERS
 
 local GROUPS <const> = CONSTANTS.GROUPS
@@ -22,11 +26,11 @@ local TAGS <const> = CONSTANTS.TAGS
 
 local image = gfx.image.new(PLAYER.W, PLAYER.H, gfx.kColorBlack)
 
-local PLAYER_STATE = {
-  GROUNDED = 0,
-  FALLING = 1,
-  CLIMBING = 2,
-  DEAD = 3
+local STATES = {
+  GROUNDED = GroundedState(),
+  FALLING = FallingState(),
+  DEAD = DeadState()
+  -- Climbing state is created on demand with knowledge of attached leg
 }
 
 class('Player').extends(gfx.sprite)
@@ -55,36 +59,37 @@ function Player:reset()
 
   self.vx = 0
   self.vy = 0
-  self.crank_dy = 0
 
   self.held_item = nil
-  self:dropLeg()
-
   self.grab_requested = false
   self.pickup_requested = false
 
-  self.current_state = PLAYER_STATE.GROUNDED
-
+  self.current_state = STATES.GROUNDED
   self:moveTo(self.start_x, self.start_y)
 end
 
 function Player:update()
   local state = self.current_state
 
-  if (state == PLAYER_STATE.DEAD) then
-    self:handleDeath()
-    return
-  end
+  if (state:isTerminal()) then return end
 
+  -- Could change state
   self:readInput(state)
 
-  self:applyForces(state)
+  -- Apply forces for state only if it is still active
+  if (self.current_state == state) then state:applyForces(self) end
 
   local x, y = self:getPosition()
   x += self.vx
   y += self.vy
 
-  x, y = self:constrain(state, x, y)
+  local hit_edge
+  x, hit_edge = self:clampHorizontal(x)
+
+  -- Constrain movement only if state is still active
+  if (self.current_state == state) then
+    x, y = state:constrain(self, x, y, hit_edge)
+  end
 
   self:moveTo(x, y)
 
@@ -94,125 +99,76 @@ end
 function Player:readInput(state)
   local a_pressed = playdate.buttonJustPressed(playdate.kButtonA)
   local b_pressed = playdate.buttonJustPressed(playdate.kButtonB)
-  
-  if (state == PLAYER_STATE.GROUNDED) then
-    if (a_pressed) then self:jump() end
-    self.vx = self:horizontalMovement()
-  elseif (state == PLAYER_STATE.FALLING) then
-    self.vx = self:horizontalMovement()
-  elseif (state == PLAYER_STATE.CLIMBING) then
-    if (a_pressed) then self:jumpOffLeg() end
-    self.crank_dy = self:climb()
-  end
 
-  self.grab_requested = (state == PLAYER_STATE.FALLING) and a_pressed
+  -- Reset every frame and allow state to override
+  self.grab_requested = false
   self.pickup_requested = b_pressed
-end
 
-function Player:applyForces(state)
-  if (state == PLAYER_STATE.FALLING) then
-    self.vy += PHYSICS.GRAVITY
-  elseif (state == PLAYER_STATE.CLIMBING and self.attached_leg) then
-    local leg_x, leg_y = self.attached_leg:getPosition()
-
-    self.vx = leg_x - self.previous_leg_x
-    self.vy = (leg_y - self.previous_leg_y) + self.crank_dy
-    self.previous_leg_x, self.previous_leg_y = leg_x, leg_y
-  end
-end
-
-function Player:constrain(state, x, y)
-  local hit_edge
-  x, hit_edge = self:clampHorizontal(x)
-
-  if (state == PLAYER_STATE.FALLING) then
-    if (y >= WORLD.FLOOR_Y) then
-      y = WORLD.FLOOR_Y
-      self.vy = 0
-      self:setState(PLAYER_STATE.GROUNDED)
-    end
-  elseif (state == PLAYER_STATE.CLIMBING and self.attached_leg) then
-    y = math.clamp(y, self.attached_leg:getClimbBounds())
-
-    if (y <= self.attached_leg:getScoreRange()) then
-      self:scoreDelivery()
-    elseif (hit_edge) then
-      self:jumpOffLeg()
-    end
-  end
-
-  return x, y
+  state:readInput(self, a_pressed, b_pressed)
 end
 
 function Player:resolveActions(state)
-  self:resolveDropItem()
-  self:resolveCollisions(state)
-end
-
-function Player:resolveDropItem()
   if (self.pickup_requested and self.held_item ~= nil) then
     self:dropItem()
     self.pickup_requested = false
   end
-end
 
-function Player:resolveCollisions(state)
   for _, other in ipairs(self:overlappingSprites()) do
     local tag = other:getTag()
 
     if (self.pickup_requested and tag == TAGS.ITEM) then
       self:pickUp(other)
-    elseif (self.grab_requested and tag == TAGS.LEG) then
-      self:grabLeg(other)
-    elseif (state == PLAYER_STATE.GROUNDED and tag == TAGS.SHOE and other.controller:isFalling()) then
-      self:hit()
+    else
+      state:resolveOverlap(self, other, tag)
     end
   end
 end
 
-function Player:setState(next_state)
+function Player:transitionTo(next_state)
   if (next_state == self.current_state) then return end
   self.current_state = next_state
-  self:onEnter(next_state)
-end
-
-function Player:onEnter(state)
-  if (state == PLAYER_STATE.CLIMBING) then
-    self.vx, self.vy = 0, 0
-    self.previous_leg_x, self.previous_leg_y = self.attached_leg:getPosition()
-  end
+  next_state:enter(self)
 end
 
 function Player:jump()
   self.vy = PLAYER.JUMP_V
-  self:setState(PLAYER_STATE.FALLING)
+  self:transitionTo(STATES.FALLING)
+end
+
+function Player:land()
+  self.vy = 0
+  self:transitionTo(STATES.GROUNDED)
 end
 
 function Player:hit()
-  local next_state
-
   self.vy = PLAYER.JUMP_V
   self:dropItem()
   self:takeDamage(PEDESTRIANS.STOMP_DAMAGE)
 
-  if (not self:isDead()) then self:setState(PLAYER_STATE.FALLING) end
+  if (not self:isDone()) then self:transitionTo(STATES.FALLING) end
+end
+
+function Player:takeDamage(amount)
+  self.health = math.max(0, self.health - amount)
+  self.on_health_changed(self.health)
+
+  if (self.health == 0) then self:transitionTo(STATES.DEAD) end
+end
+
+function Player:grabLeg(leg_sprite)
+  self.grab_requested = false
+  self:transitionTo(ClimbingState(leg_sprite.controller))
 end
 
 function Player:jumpOffLeg()
   self.vy = PLAYER.JUMP_V
-  self:dropLeg()
-  self:setState(PLAYER_STATE.FALLING)
+  self:transitionTo(STATES.FALLING)
 end
 
-function Player:dropLeg()
-  self.attached_leg = nil
-  self.previous_leg_x, self.previous_leg_y = nil, nil
-end
-
-function Player:scoreDelivery()
+function Player:scoreDelivery(leg)
   if (self.held_item ~= nil) then
     -- TODO: do something cool on correct or incorrect delivery?
-    local result = self.on_deliver(self.held_item.item_type, self.attached_leg.item_type)
+    local result = self.on_deliver(self.held_item.item_type, leg.item_type)
 
     if (result.correct) then
       self.held_item:remove()
@@ -223,12 +179,6 @@ function Player:scoreDelivery()
   end
 
   self:jumpOffLeg()
-end
-
-function Player:grabLeg(leg)
-  self.attached_leg = leg.controller
-  self.grab_requested = false
-  self:setState(PLAYER_STATE.CLIMBING)
 end
 
 function Player:pickUp(item)
@@ -244,18 +194,6 @@ function Player:dropItem()
   end
 end
 
-function Player:climb()
-  local _, accelerated_change = playdate.getCrankChange()
-  local clamped = math.clamp(accelerated_change, -CLIMBING.MAX_ACCELERATED_CHANGE, CLIMBING.MAX_ACCELERATED_CHANGE)
-
-  return -clamped * CLIMBING.PIXELS_PER_DEGREE
-end
-
-function Player:handleDeath()
-  -- TODO: make badass death animations
-  return
-end
-
 function Player:horizontalMovement()
   local vx = 0
   local left_pressed = playdate.buttonIsPressed(playdate.kButtonLeft)
@@ -267,7 +205,13 @@ function Player:horizontalMovement()
   return vx
 end
 
--- TODO: maybe move to util file?
+function Player:climb()
+  local _, accelerated_change = playdate.getCrankChange()
+  local clamped = math.clamp(accelerated_change, -CLIMBING.MAX_ACCELERATED_CHANGE, CLIMBING.MAX_ACCELERATED_CHANGE)
+
+  return -clamped * CLIMBING.PIXELS_PER_DEGREE
+end
+
 function Player:clampHorizontal(x)
   local hit_edge = false
 
@@ -284,19 +228,12 @@ function Player:clampHorizontal(x)
   return x, hit_edge
 end
 
-function Player:takeDamage(amount)
-  self.health = math.max(0, self.health - amount)
-  self.on_health_changed(self.health)
-
-  if (self.health == 0) then self:setState(PLAYER_STATE.DEAD) end
+function Player:usesCrank()
+  return self.current_state:usesCrank()
 end
 
-function Player:isDead()
-  return self.current_state == PLAYER_STATE.DEAD
-end
-
-function Player:isClimbing()
-  return self.current_state == PLAYER_STATE.CLIMBING
+function Player:isDone()
+  return self.current_state:isTerminal()
 end
 
 function Player:getCurrentHealth()

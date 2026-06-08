@@ -4,7 +4,7 @@ class('PlayerState').extends()
 
 function PlayerState:enter(player) end
 
-function PlayerState:readInput(player) end
+function PlayerState:readInput(player, a_pressed, b_pressed) end
 
 function PlayerState:applyForces(player) end
 
