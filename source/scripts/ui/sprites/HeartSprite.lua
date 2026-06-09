@@ -20,7 +20,7 @@ function HeartSprite:setFilled(is_filled)
   if (self.is_filled == is_filled) then return end
   self.is_filled = is_filled
 
-  local radius <const> = HUD.HEART_RADIUS
+  local radius <const> = HUD.HEART_DIAMETER
   local height <const> = HUD.H
 
   local image = gfx.image.new(radius, height)

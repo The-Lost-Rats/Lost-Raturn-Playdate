@@ -44,7 +44,7 @@ CONSTANTS = {
     SCORE_Y = 4,
 
     HEART_SPACING = 20,
-    HEART_RADIUS = 10,
+    HEART_DIAMETER = 10,
   },
 
   DIRECTION = {
