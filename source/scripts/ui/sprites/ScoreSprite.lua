@@ -2,6 +2,7 @@ import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/sprites"
 
+import "scripts/ui/sprites/HUDSprite"
 import "utilities/constants"
 
 local gfx <const> = playdate.graphics
@@ -9,14 +10,9 @@ local gfx <const> = playdate.graphics
 local HUD <const> = CONSTANTS.HUD
 local LAYERS <const> = CONSTANTS.LAYERS
 
-class('ScoreSprite').extends(gfx.sprite)
+class('ScoreSprite').extends(HUDSprite)
 function ScoreSprite:init(x, y)
-  ScoreSprite.super.init(self)
-  
-  self:setZIndex(LAYERS.UI)
-  self:setIgnoresDrawOffset(true)
-  self:setCenter(0, 0)
-  self:moveTo(x, y)
+  ScoreSprite.super.init(self, x, y, LAYERS.UI)
   self:setScore(0)
 end
 

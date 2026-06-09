@@ -2,6 +2,7 @@ import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/sprites"
 
+import "scripts/ui/sprites/HUDSprite"
 import "utilities/constants"
 
 local gfx <const> = playdate.graphics
@@ -9,14 +10,9 @@ local gfx <const> = playdate.graphics
 local HUD <const> = CONSTANTS.HUD
 local LAYERS <const> = CONSTANTS.LAYERS
 
-class('HeartSprite').extends(gfx.sprite)
+class('HeartSprite').extends(HUDSprite)
 function HeartSprite:init(x, y)
-  HeartSprite.super.init(self)
-
-  self:setZIndex(LAYERS.UI)
-  self:setIgnoresDrawOffset(true)
-  self:setCenter(0, 0)
-  self:moveTo(x, y)
+  HeartSprite.super.init(self, x, y, LAYERS.UI)
   self:setFilled(true)
 end
 
