@@ -138,7 +138,7 @@ function Player:land()
 end
 
 function Player:hit(amount)
-  self.vy = PLAYER.JUMP_V
+  self.vy = PLAYER.HIT_KNOCKBACK_V
   self:dropItem()
   self:takeDamage(amount)
 
@@ -158,7 +158,7 @@ function Player:grabLeg(leg_sprite)
 end
 
 function Player:jumpOffLeg()
-  self.vy = PLAYER.JUMP_V
+  self.vy = PLAYER.DISMOUNT_V
   self:transitionTo(STATES.FALLING)
 end
 

@@ -70,8 +70,11 @@ CONSTANTS = {
     W = 16,
     H = 16,
 
-    MOVE_SPEED = 4, -- px/frame
-    JUMP_V = -9, -- px/frame
+    -- px/frame
+    MOVE_SPEED = 4, 
+    JUMP_V = -9,
+    HIT_KNOCKBACK_V = -9,
+    DISMOUNT_V = -9,
 
     MAX_HEALTH = 3,
 
