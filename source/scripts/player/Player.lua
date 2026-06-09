@@ -57,7 +57,7 @@ function Player:reset()
   self.held_item = nil
   self.pickup_requested = false
 
-  self.current_state = STATES.GROUNDED
+  self:transitionTo(STATES.GROUNDED)
   self:moveTo(self.start_x, self.start_y)
 end
 
