@@ -12,7 +12,7 @@ local LAYERS <const> = CONSTANTS.LAYERS
 
 class('HUDBackgroundSprite').extends(gfx.sprite)
 function HUDBackgroundSprite:init(x, y)
-  ScoreSprite.super.init(self)
+  HUDBackgroundSprite.super.init(self)
   
   self:setZIndex(LAYERS.UI_BACKGROUND)
   self:setIgnoresDrawOffset(true)
