@@ -11,16 +11,16 @@ local HUD <const> = CONSTANTS.HUD
 local LAYERS <const> = CONSTANTS.LAYERS
 
 local function buildHeartImage(is_filled)
-  local radius <const> = HUD.HEART_DIAMETER
+  local diameter <const> = HUD.HEART_DIAMETER
   local height <const> = HUD.H
 
-  local image = gfx.image.new(radius, height)
+  local image = gfx.image.new(diameter, height)
   gfx.pushContext(image)
     gfx.setColor(gfx.kColorWhite)
     if (is_filled) then
-      gfx.fillCircleInRect(0, 0, radius, height)
+      gfx.fillCircleInRect(0, 0, diameter, height)
     else
-      gfx.drawCircleInRect(0, 0, radius, height)
+      gfx.drawCircleInRect(0, 0, diameter, height)
     end
   gfx.popContext()
   
