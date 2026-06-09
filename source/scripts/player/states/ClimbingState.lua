@@ -1,6 +1,7 @@
 import "CoreLibs/object"
 
 import "scripts/player/states/PlayerState"
+import "utilities/constants"
 import "utilities/math"
 
 local CLIMBING <const> = CONSTANTS.CLIMBING
