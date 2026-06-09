@@ -21,6 +21,7 @@ CONSTANTS = {
   },
 
   WORLD = {
+    W = SCREEN_W,
     FLOOR_Y = SCREEN_H - FLOOR_Y_PADDING,
   },
 

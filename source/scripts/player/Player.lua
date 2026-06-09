@@ -12,12 +12,9 @@ import "utilities/constants"
 
 local gfx <const> = playdate.graphics
 
-local DISPLAY <const> = CONSTANTS.DISPLAY
-
+local WORLD <const> = CONSTANTS.WORLD
 local PLAYER <const> = CONSTANTS.PLAYER
-
 local LAYERS <const> = CONSTANTS.LAYERS
-
 local GROUPS <const> = CONSTANTS.GROUPS
 local TAGS <const> = CONSTANTS.TAGS
 
@@ -205,8 +202,8 @@ end
 function Player:clampHorizontal(x)
   local hit_edge = false
 
-  if (x >= DISPLAY.W - self.width / 2) then
-    x = DISPLAY.W - self.width / 2
+  if (x >= WORLD.W - self.width / 2) then
+    x = WORLD.W - self.width / 2
     hit_edge = true
   end
 
