@@ -9,14 +9,11 @@ import "scripts/player/states/GroundedState"
 import "scripts/player/states/PlayerState"
 
 import "utilities/constants"
-import "utilities/math"
 
 local gfx <const> = playdate.graphics
 
 local DISPLAY <const> = CONSTANTS.DISPLAY
 
-local CLIMBING <const> = CONSTANTS.CLIMBING
-local PEDESTRIANS <const> = CONSTANTS.PEDESTRIANS
 local PLAYER <const> = CONSTANTS.PLAYER
 
 local LAYERS <const> = CONSTANTS.LAYERS
@@ -140,10 +137,10 @@ function Player:land()
   self:transitionTo(STATES.GROUNDED)
 end
 
-function Player:hit()
+function Player:hit(amount)
   self.vy = PLAYER.JUMP_V
   self:dropItem()
-  self:takeDamage(PEDESTRIANS.STOMP_DAMAGE)
+  self:takeDamage(amount)
 
   if (not self:isDone()) then self:transitionTo(STATES.FALLING) end
 end
@@ -203,13 +200,6 @@ function Player:horizontalMovement()
   if (right_pressed) then vx += PLAYER.MOVE_SPEED end
 
   return vx
-end
-
-function Player:climb()
-  local _, accelerated_change = playdate.getCrankChange()
-  local clamped = math.clamp(accelerated_change, -CLIMBING.MAX_ACCELERATED_CHANGE, CLIMBING.MAX_ACCELERATED_CHANGE)
-
-  return -clamped * CLIMBING.PIXELS_PER_DEGREE
 end
 
 function Player:clampHorizontal(x)

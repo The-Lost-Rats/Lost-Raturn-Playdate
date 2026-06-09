@@ -181,3 +181,7 @@ function Leg:getScoreRange()
   local _, shoe_h = self.shoe_sprite:getSize()
   return self.y - shoe_h - CLIMBING.LEG_SCORE_DISTANCE
 end
+
+function Leg:getDamage()
+  return PEDESTRIANS.STOMP_DAMAGE
+end

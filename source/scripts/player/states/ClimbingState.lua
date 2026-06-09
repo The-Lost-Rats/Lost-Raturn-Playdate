@@ -3,6 +3,15 @@ import "CoreLibs/object"
 import "scripts/player/states/PlayerState"
 import "utilities/math"
 
+local CLIMBING <const> = CONSTANTS.CLIMBING
+
+local function getCrankClimbDelta()
+  local _, accelerated_change = playdate.getCrankChange()
+  local clamped = math.clamp(accelerated_change, -CLIMBING.MAX_ACCELERATED_CHANGE, CLIMBING.MAX_ACCELERATED_CHANGE)
+
+  return -clamped * CLIMBING.PIXELS_PER_DEGREE
+end
+
 class('ClimbingState').extends(PlayerState)
 function ClimbingState:init(leg)
   ClimbingState.super.init(self)
@@ -18,7 +27,7 @@ end
 
 function ClimbingState:readInput(player, a_pressed, b_pressed)
   if (a_pressed) then player:jumpOffLeg() end
-  self.crank_dy = player:climb()
+  self.crank_dy = getCrankClimbDelta()
 end
 
 function ClimbingState:applyForces(player)

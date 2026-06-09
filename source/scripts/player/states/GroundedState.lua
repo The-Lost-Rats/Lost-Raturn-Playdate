@@ -14,6 +14,6 @@ end
 
 function GroundedState:resolveOverlap(player, other, tag)
   if (tag == TAGS.SHOE and other.controller:isFalling()) then
-    player:hit()
+    player:hit(other.controller:getDamage())
   end
 end
