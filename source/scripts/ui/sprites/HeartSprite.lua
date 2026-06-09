@@ -10,16 +10,7 @@ local gfx <const> = playdate.graphics
 local HUD <const> = CONSTANTS.HUD
 local LAYERS <const> = CONSTANTS.LAYERS
 
-class('HeartSprite').extends(HUDSprite)
-function HeartSprite:init(x, y)
-  HeartSprite.super.init(self, x, y, LAYERS.UI)
-  self:setFilled(true)
-end
-
-function HeartSprite:setFilled(is_filled)
-  if (self.is_filled == is_filled) then return end
-  self.is_filled = is_filled
-
+local function buildHeartImage(is_filled)
   local radius <const> = HUD.HEART_DIAMETER
   local height <const> = HUD.H
 
@@ -32,6 +23,21 @@ function HeartSprite:setFilled(is_filled)
       gfx.drawCircleInRect(0, 0, radius, height)
     end
   gfx.popContext()
+  
+  return image
+end
 
-  self:setImage(image)
+local FILLED_IMAGE <const> = buildHeartImage(true)
+local EMPTY_IMAGE <const> = buildHeartImage(false)
+
+class('HeartSprite').extends(HUDSprite)
+function HeartSprite:init(x, y)
+  HeartSprite.super.init(self, x, y, LAYERS.UI)
+  self:setFilled(true)
+end
+
+function HeartSprite:setFilled(is_filled)
+  if (self.is_filled == is_filled) then return end
+  self.is_filled = is_filled
+  self:setImage(self.is_filled and FILLED_IMAGE or EMPTY_IMAGE)
 end
