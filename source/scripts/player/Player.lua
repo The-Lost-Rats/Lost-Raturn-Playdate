@@ -55,7 +55,6 @@ function Player:reset()
   self.vy = 0
 
   self.held_item = nil
-  self.grab_requested = false
   self.pickup_requested = false
 
   self.current_state = STATES.GROUNDED
@@ -94,10 +93,7 @@ function Player:readInput(state)
   local a_pressed = playdate.buttonJustPressed(playdate.kButtonA)
   local b_pressed = playdate.buttonJustPressed(playdate.kButtonB)
 
-  -- Reset every frame and allow state to override
-  self.grab_requested = false
   self.pickup_requested = b_pressed
-
   state:readInput(self, a_pressed, b_pressed)
 end
 
@@ -150,7 +146,6 @@ function Player:takeDamage(amount)
 end
 
 function Player:grabLeg(leg_sprite)
-  self.grab_requested = false
   self:transitionTo(ClimbingState(leg_sprite.controller))
 end
 

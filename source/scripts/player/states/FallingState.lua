@@ -11,7 +11,7 @@ class('FallingState').extends(PlayerState)
 
 function FallingState:readInput(player, a_pressed, b_pressed)
   player.vx = player:horizontalMovement()
-  player.grab_requested = a_pressed
+  self.grab_requested = a_pressed
 end
 
 function FallingState:applyForces(player)
@@ -28,7 +28,7 @@ function FallingState:constrain(player, x, y, hit_edge)
 end
 
 function FallingState:resolveOverlap(player, other, tag)
-  if (player.grab_requested and tag == TAGS.LEG) then
+  if (self.grab_requested and tag == TAGS.LEG) then
     player:grabLeg(other)
   end
 end
