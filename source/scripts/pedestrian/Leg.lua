@@ -36,6 +36,7 @@ function Leg:init(x, y, direction, item_type)
   self.x, self.y = 0, 0
 
   self.just_landed = false
+  self.current_move_state = MOVEMENT_STATES.GROUNDED
 
   local leg_image = gfx.image.new(PEDESTRIANS.LEG_W, PEDESTRIANS.LEG_H)
   gfx.pushContext(leg_image)
@@ -101,7 +102,6 @@ end
 function Leg:fall()
   self.current_move_state = MOVEMENT_STATES.FALLING
   self.vx = 0
-  self.vy = self.vy + PHYSICS.GRAVITY
 end
 
 function Leg:land()

@@ -46,7 +46,6 @@ function Walker:update()
         ((x >= self.drop_at_x and self.direction == DIRECTION.RIGHT) or
         (x <= self.drop_at_x and self.direction == DIRECTION.LEFT)
       )) then
-      self.item = active_leg:dropItem(self.item_type)
       self.has_dropped_item = true
     end
   end
