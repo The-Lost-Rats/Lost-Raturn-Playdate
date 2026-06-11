@@ -10,7 +10,6 @@ local FLOOR_Y_PADDING <const> = 20
 
 local LEG_H <const> = SCREEN_H
 
--- TODO: replace some of this with json files?
 CONSTANTS = {
   DISPLAY = {
     W = SCREEN_W,
@@ -126,7 +125,7 @@ CONSTANTS = {
         item = "SIX_SHOOTER",
       },
       {
-        name= "BUSINESS_MAN",
+        name = "BUSINESS_MAN",
         item = "WATCH",
       },
       {
