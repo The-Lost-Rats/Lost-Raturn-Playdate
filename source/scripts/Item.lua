@@ -84,6 +84,7 @@ function Item:handleGrounded()
   self:moveTo(self.x, WORLD.FLOOR_Y + y_offset)
 end
 
+-- TODO: maybe callback chain up to walker and gameplay to notify delete?
 function Item:disappear()
   if (self.blinking_timer ~= nil) then
     self.blinking_timer:remove()
@@ -106,10 +107,12 @@ function Item:pickUp()
   if (self.disappear_timer ~= nil) then self.disappear_timer:remove() end
   if (self.blinking_timer ~= nil) then self.blinking_timer:remove() end
 
+  self.is_visible = true
   self:setVisible(true)
   self.current_state = ITEM_STATES.PICKED_UP
 end
 
 function Item:release()
+  self.vy = 0
   self.current_state = ITEM_STATES.FALLING
 end
