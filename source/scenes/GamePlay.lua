@@ -38,12 +38,15 @@ function GamePlay:init()
     on_health_changed = function(health) self.hud:setHealth(health) end
   })
 
-  -- Start with a small number of walkers to let the player get used to the game.
-  -- And longest spawn interval so they are created really slowly.
-  -- Then ramp up slowly.
-  self.walkers = {}
-  self.walkers_spawn_cap = PEDESTRIANS.MIN_WALKERS
-  self.walkers_spawn_interval_ms = PEDESTRIANS.MAX_SPAWN_INTERVAL_MS
+  gfx.sprite.setBackgroundDrawingCallback(function(x, y, w, h)
+    -- Redraw background elements and clip to dirty rect
+    gfx.pushContext()
+      gfx.setColor(gfx.kColorBlack)
+
+      -- Floor line
+      gfx.drawLine(0, WORLD.FLOOR_Y, DISPLAY.W, WORLD.FLOOR_Y)
+    gfx.popContext()
+  end)
 end
 
 function GamePlay:enter()
@@ -55,18 +58,15 @@ function GamePlay:enter()
   self.hud:setScore(self.score_manager:getScore())
   self.hud:setHealth(self.player:getCurrentHealth())
 
+  -- Start with a small number of walkers to let the player get used to the game.
+  -- And longest spawn interval so they are created really slowly.
+  -- Then ramp up slowly.
+  self.walkers = {}
+  self.walkers_spawn_cap = PEDESTRIANS.MIN_WALKERS
+  self.walkers_spawn_interval_ms = PEDESTRIANS.MAX_SPAWN_INTERVAL_MS
+
   -- Start the walker spawning process
   self:trySpawnWalker()
-
-  gfx.sprite.setBackgroundDrawingCallback(function(x, y, w, h)
-    -- Redraw background elements and clip to dirty rect
-    gfx.pushContext()
-      gfx.setColor(gfx.kColorBlack)
-
-      -- Floor line
-      gfx.drawLine(0, WORLD.FLOOR_Y, DISPLAY.W, WORLD.FLOOR_Y)
-    gfx.popContext()
-  end)
 end
 
 function GamePlay:update()
