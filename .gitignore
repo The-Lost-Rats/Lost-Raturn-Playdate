@@ -14,12 +14,12 @@
 # Whitelist makefile
 !Makefile
 
-# Whitelist playdate files
-!pdxinfo
-
 # Whitelist source lua files
 !source
 source/**
 
 !source/**/
 !source/**/*.lua
+
+# Whitelist playdate files
+!source/pdxinfo
