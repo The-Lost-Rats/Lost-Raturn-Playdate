@@ -80,7 +80,7 @@ end
 
 function Item:handleGrounded()
   local delta_time_s = (playdate.getCurrentTimeMilliseconds() - self.grounded_start_time_ms) / 1000
-  local y_offset = ITEM.BOB_AMPLITUDE * math.sin(delta_time_s * math.pi) - ITEM.BOB_AMPLITUDE
+  local y_offset = ITEM.BOB_AMPLITUDE * math.cos(delta_time_s * math.pi) - ITEM.BOB_AMPLITUDE
   self:moveTo(self.x, WORLD.FLOOR_Y + y_offset)
 end
 
