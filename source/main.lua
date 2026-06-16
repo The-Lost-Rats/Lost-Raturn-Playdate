@@ -6,7 +6,6 @@ import "scenes/GamePlay"
 import "scenes/Title"
 import "utilities/constants"
 
-local gfx <const> = playdate.graphics
 local timer <const> = playdate.timer
 
 local DISPLAY <const> = CONSTANTS.DISPLAY

@@ -10,6 +10,7 @@ local FLOOR_Y_PADDING <const> = 20
 
 local LEG_H <const> = SCREEN_H
 
+-- TODO: maybe we make this local and use immutable getters
 CONSTANTS = {
   DISPLAY = {
     W = SCREEN_W,
