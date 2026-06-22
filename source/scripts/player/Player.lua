@@ -51,7 +51,7 @@ function Player:init(x, y, initial_health, callbacks)
   self.loops, self.hit_boxes = {}, {}
   for name, def in pairs(ANIMATION_DEFS) do
     local image_table = gfx.imagetable.new(def.path)
-    assert(image_table, "Error - missing image table for animation '" .. name .. "' at " .. def.path)
+    assert(image_table, "Assertion Failed - missing image table for animation '" .. name .. "' at " .. def.path)
 
     -- Set loop to true
     self.loops[name] = gfx.animation.loop.new(def.frame_time, image_table, true)
