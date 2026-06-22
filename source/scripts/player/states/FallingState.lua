@@ -3,6 +3,7 @@ import "CoreLibs/object"
 import "scripts/player/states/PlayerState"
 import "utilities/constants"
 
+local ANIMATION <const> = CONSTANTS.PLAYER.ANIMATION
 local PHYSICS <const> = CONSTANTS.PHYSICS
 local WORLD <const> = CONSTANTS.WORLD
 local TAGS <const> = CONSTANTS.TAGS
@@ -31,4 +32,8 @@ function FallingState:resolveOverlap(player, other, tag)
   if (self.grab_requested and tag == TAGS.LEG) then
     player:grabLeg(other)
   end
+end
+
+function FallingState:animationName(player)
+  return ANIMATION.JUMP
 end

@@ -1,3 +1,4 @@
+import "CoreLibs/animation"
 import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/sprites"
@@ -12,13 +13,26 @@ import "utilities/constants"
 
 local gfx <const> = playdate.graphics
 
+local DIRECTION <const> = CONSTANTS.DIRECTION
 local WORLD <const> = CONSTANTS.WORLD
 local PLAYER <const> = CONSTANTS.PLAYER
 local LAYERS <const> = CONSTANTS.LAYERS
 local GROUPS <const> = CONSTANTS.GROUPS
 local TAGS <const> = CONSTANTS.TAGS
 
-local image = gfx.image.new(PLAYER.W, PLAYER.H, gfx.kColorBlack)
+-- TODO: bigger collision rect for picking up items?
+local ANIMATION <const> = PLAYER.ANIMATION
+local ANIMATION_DEFS <const> = {
+  [ANIMATION.IDLE] = { path = "images/player/run", frame_time = 120, hit_box = {25, 20, 32, 22} },
+  [ANIMATION.RUN] = { path = "images/player/run", frame_time = 120, hit_box = {25, 20, 32, 22} },
+  [ANIMATION.JUMP] = { path = "images/player/run", frame_time = 120, hit_box = {25, 20, 32, 22} },
+  [ANIMATION.CLIMB] = { path = "images/player/run", frame_time = 120, hit_box = {25, 20, 32, 22} }
+}
+
+local FLIP_DIRECTION <const> = {
+  [DIRECTION.LEFT] = gfx.kImageFlippedX,
+  [DIRECTION.RIGHT] = gfx.kImageUnflipped
+}
 
 local STATES = {
   GROUNDED = GroundedState(),
@@ -34,11 +48,19 @@ function Player:init(x, y, initial_health, callbacks)
   self.on_deliver = callbacks.on_deliver
   self.on_health_changed = callbacks.on_health_changed
 
-  self:setImage(image)
+  self.loops, self.hit_boxes = {}, {}
+  for name, def in pairs(ANIMATION_DEFS) do
+    local image_table = gfx.imagetable.new(def.path)
+    assert(image_table, "Error - missing image table for animation '" .. name .. "' at " .. def.path)
+
+    -- Set loop to true
+    self.loops[name] = gfx.animation.loop.new(def.frame_time, image_table, true)
+    self.hit_boxes[name] = def.hit_box
+  end
+
   self:setZIndex(LAYERS.PLAYER)
   -- Set center of sprite to x: center, y: bottom
   self:setCenter(0.5, 1.0)
-  self:setCollideRect(0, 0, self:getSize())
   self:setGroups({GROUPS.PLAYER})
   self:setCollidesWithGroups({GROUPS.PICK_UP, GROUPS.HAZARD, GROUPS.CLIMBABLE})
   self:setTag(TAGS.PLAYER)
@@ -53,6 +75,11 @@ function Player:reset()
 
   self.vx = 0
   self.vy = 0
+
+  -- TODO: maybe take this as param in class?
+  self.current_direction = DIRECTION.RIGHT
+  self:setAnimation(ANIMATION.IDLE)
+  self:updateAnimationFrame()
 
   self.held_item = nil
   self.pickup_requested = false
@@ -87,6 +114,9 @@ function Player:update()
   self:moveTo(x, y)
 
   self:resolveActions(state)
+
+  self:setAnimation(self.current_state:animationName(self))
+  self:updateAnimationFrame()
 end
 
 function Player:readInput(state)
@@ -118,6 +148,26 @@ function Player:transitionTo(next_state)
   if (next_state == self.current_state) then return end
   self.current_state = next_state
   next_state:enter(self)
+end
+
+function Player:setAnimation(name)
+  if (name == self.current_animation) then return end
+  self.current_animation = name
+  -- Start new animation from beginning
+  self.loops[name].frame = self.loops[name].startFrame
+  -- Set current frame to nil so we call setImage
+  self.current_frame = nil
+
+  self:setCollideRect(table.unpack(self.hit_boxes[name]))
+end
+
+function Player:updateAnimationFrame()
+  local loop = self.loops[self.current_animation]
+  local frame = loop.frame
+  if (frame ~= self.current_frame) then
+    self.current_frame = frame
+    self:setImage(loop:image(), FLIP_DIRECTION[self.current_direction])
+  end
 end
 
 function Player:jump()
@@ -188,10 +238,23 @@ function Player:horizontalMovement()
   local left_pressed = playdate.buttonIsPressed(playdate.kButtonLeft)
   local right_pressed = playdate.buttonIsPressed(playdate.kButtonRight)
 
-  if (left_pressed) then vx -= PLAYER.MOVE_SPEED end
-  if (right_pressed) then vx += PLAYER.MOVE_SPEED end
+  if (left_pressed) then
+    vx -= PLAYER.MOVE_SPEED
+    self:setDirection(DIRECTION.LEFT)
+  end
+  if (right_pressed) then
+    vx += PLAYER.MOVE_SPEED
+    self:setDirection(DIRECTION.RIGHT)
+  end
 
   return vx
+end
+
+function Player:setDirection(direction)
+  if (direction == self.current_direction) then return end
+  self.current_direction = direction
+  -- Set current frame to nil to force redraw with setImage
+  self.current_frame = nil
 end
 
 function Player:clampHorizontal(x)
@@ -226,6 +289,6 @@ function Player:moveTo(x, y)
   Player.super.moveTo(self, x, y)
 
   if (self.held_item ~= nil) then
-    self.held_item:moveTo(x, y - self.height - PLAYER.HELD_ITEM_Y_GAP)
+    self.held_item:moveTo(x, y - self:getCollideRect().height - PLAYER.HELD_ITEM_Y_GAP)
   end
 end

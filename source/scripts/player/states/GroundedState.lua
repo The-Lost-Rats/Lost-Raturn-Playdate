@@ -3,6 +3,7 @@ import "CoreLibs/object"
 import "scripts/player/states/PlayerState"
 import "utilities/constants"
 
+local ANIMATION <const> = CONSTANTS.PLAYER.ANIMATION
 local TAGS <const> = CONSTANTS.TAGS
 
 class('GroundedState').extends(PlayerState)
@@ -16,4 +17,8 @@ function GroundedState:resolveOverlap(player, other, tag)
   if (tag == TAGS.SHOE and other.controller:isFalling()) then
     player:hit(other.controller:getDamage())
   end
+end
+
+function GroundedState:animationName(player)
+  return (player.vx == 0) and ANIMATION.IDLE or ANIMATION.RUN
 end

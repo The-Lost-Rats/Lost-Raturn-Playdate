@@ -4,6 +4,7 @@ import "scripts/player/states/PlayerState"
 import "utilities/constants"
 import "utilities/math"
 
+local ANIMATION <const> = CONSTANTS.PLAYER.ANIMATION
 local CLIMBING <const> = CONSTANTS.CLIMBING
 
 local function getCrankClimbDelta()
@@ -53,3 +54,7 @@ function ClimbingState:constrain(player, x, y, hit_edge)
 end
 
 function ClimbingState:usesCrank() return true end
+
+function ClimbingState:animationName(player)
+  return ANIMATION.CLIMB
+end

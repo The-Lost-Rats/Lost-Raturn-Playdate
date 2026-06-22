@@ -1,5 +1,9 @@
 import "CoreLibs/object"
 
+import "utilities/constants"
+
+local ANIMATION <const> = CONSTANTS.PLAYER.ANIMATION
+
 class('PlayerState').extends()
 
 function PlayerState:enter(player) end
@@ -17,3 +21,5 @@ function PlayerState:resolveOverlap(player, other, tag) end
 function PlayerState:isTerminal() return false end
 
 function PlayerState:usesCrank() return false end
+
+function PlayerState:animationName(player) return ANIMATION.IDLE end
