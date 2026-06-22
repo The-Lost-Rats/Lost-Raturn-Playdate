@@ -38,14 +38,13 @@ function GamePlay:init()
     on_health_changed = function(health) self.hud:setHealth(health) end
   })
 
+  local background_image_path = "images/background"
+  local background_image = gfx.image.new(background_image_path)
+  assert(background_image, "Error - could not load image for background at " .. background_image_path)
+
   gfx.sprite.setBackgroundDrawingCallback(function(x, y, w, h)
     -- Redraw background elements and clip to dirty rect
-    gfx.pushContext()
-      gfx.setColor(gfx.kColorBlack)
-
-      -- Floor line
-      gfx.drawLine(0, WORLD.FLOOR_Y, DISPLAY.W, WORLD.FLOOR_Y)
-    gfx.popContext()
+    background_image:draw(0, 0)
   end)
 end
 

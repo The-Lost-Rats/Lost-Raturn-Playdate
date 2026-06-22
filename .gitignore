@@ -21,5 +21,9 @@ source/**
 !source/**/
 !source/**/*.lua
 
+# Whitelist assets
+!source/images/**/
+!source/images/**/*.png
+
 # Whitelist playdate files
 !source/pdxinfo
