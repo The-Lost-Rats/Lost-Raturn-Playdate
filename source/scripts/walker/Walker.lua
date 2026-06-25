@@ -13,7 +13,7 @@ local WORLD <const> = CONSTANTS.WORLD
 local WALKERS <const> = WALKER_CONSTANTS
 local ITEM <const> = ITEM_CONSTANTS
 
----@class Walker
+---@class Walker: _Object
 ---@field walker_type table
 ---@field x integer
 ---@field y integer

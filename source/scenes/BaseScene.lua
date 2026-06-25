@@ -1,6 +1,6 @@
 import "CoreLibs/object"
 
----@class BaseScene
+---@class BaseScene: _Object
 BaseScene = class ('BaseScene').extends() or BaseScene
 function BaseScene:enter() end
 function BaseScene:leave() end

@@ -27,7 +27,7 @@ local MOVEMENT_STATES = {
   RISING = 2
 }
 
----@class Leg
+---@class Leg: _Object
 ---@field x integer
 ---@field y integer
 ---@field direction integer

@@ -4,7 +4,7 @@ import "scripts/player/playerConstants"
 
 local ANIMATION <const> = PLAYER_CONSTANTS.ANIMATION
 
----@class PlayerState
+---@class PlayerState: _Object
 PlayerState = class('PlayerState').extends() or PlayerState
 
 function PlayerState:enter(player) end

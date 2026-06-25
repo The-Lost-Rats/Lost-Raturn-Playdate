@@ -5,7 +5,7 @@ local SCORING <const> = {
     WRONG_DELIVERY = -50
 }
 
----@class ScoreManager
+---@class ScoreManager: _Object
 ScoreManager = class('ScoreManager').extends() or ScoreManager
 function ScoreManager:init()
   self:reset()

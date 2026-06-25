@@ -10,7 +10,7 @@ import "utilities/constants"
 local DISPLAY <const> = CONSTANTS.DISPLAY
 local HUD_CONSTANTS <const> = UI_CONSTANTS.HUD
 
----@class HUD
+---@class HUD: _Object
 ---@field max_health integer
 ---@overload fun(max_health: integer): HUD
 HUD = class ('HUD').extends() or HUD
