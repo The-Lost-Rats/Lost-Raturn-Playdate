@@ -10,7 +10,15 @@ local FLOOR_Y_PADDING <const> = 20
 
 local LEG_H <const> = SCREEN_H
 
--- TODO: maybe we make this local and use immutable getters
+local ITEMS <const> = {
+  SIX_SHOOTER = { name = "Six Shooter", sprite = "images/items/sunscreen" },
+  WATCH = { name = "Watch", sprite = "images/items/sunscreen" },
+  RING = { name = "Ring", sprite = "images/items/sunscreen" },
+  SUNSCREEN = { name = "Sunscreen", sprite = "images/items/sunscreen" },
+  WRENCH = { name = "Wrench", sprite = "images/items/sunscreen" },
+  PHONE = { name = "Phone", sprite = "images/items/sunscreen" }
+}
+
 CONSTANTS = {
   DISPLAY = {
     W = SCREEN_W,
@@ -116,7 +124,9 @@ CONSTANTS = {
     SPAWN_LEFT_BOUND = ITEM_SPAWN_PADDING,
     SPAWN_RIGHT_BOUND = SCREEN_W - ITEM_SPAWN_PADDING
   },
-    
+
+  ITEMS = ITEMS,
+
   PEDESTRIANS = {
     LEG_W = 16,
     LEG_H = LEG_H,
@@ -127,27 +137,27 @@ CONSTANTS = {
     TYPES = {
       {
         name = "COWBOY",
-        item = "SIX_SHOOTER",
+        item = ITEMS.SIX_SHOOTER
       },
       {
         name = "BUSINESS_MAN",
-        item = "WATCH",
+        item = ITEMS.WATCH
       },
       {
         name = "WOMAN",
-        item = "RING",
+        item = ITEMS.RING
       },
       {
         name = "SWIMMER",
-        item = "SUNSCREEN",
+        item = ITEMS.SUNSCREEN
       },
       {
         name = "CONSTRUCTION_WORKER",
-        item = "WRENCH",
+        item = ITEMS.WRENCH
       },
       {
         name = "RUNNER",
-        item = "PHONE",
+        item = ITEMS.PHONE
       }
     },
 

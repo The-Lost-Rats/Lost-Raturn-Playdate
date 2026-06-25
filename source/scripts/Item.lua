@@ -25,13 +25,11 @@ class('Item').extends(gfx.sprite)
 function Item:init(item_type, x, y)
   Item.super.init(self)
 
-  local image = gfx.image.new(ITEM.W, ITEM.H)
-  gfx.pushContext(image)
-    gfx.setColor(gfx.kColorBlack)
-    gfx.drawRect(0, 0, ITEM.W, ITEM.H)
-  gfx.popContext()
+  local item_image_path = item_type.sprite
+  local item_image = gfx.image.new(item_image_path)
+  assert(item_image, "Assertion Failed - could not load image for item at " .. item_image_path)
 
-  self:setImage(image)
+  self:setImage(item_image)
   self:setZIndex(LAYERS.ITEM)
   -- Set center of sprite to x: center, y: bottom
   self:setCenter(0.5, 1.0)
