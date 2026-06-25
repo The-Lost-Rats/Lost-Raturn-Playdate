@@ -30,7 +30,7 @@ class ('GamePlay').extends(BaseScene)
 function GamePlay:init()
   GamePlay.super.init(self)
 
-  self.hud = HUD()
+  self.hud = HUD(PLAYER.MAX_HEALTH)
   self.score_manager = ScoreManager()
 
   self.player = Player(DISPLAY.W_HALF, WORLD.FLOOR_Y, PLAYER.MAX_HEALTH, {

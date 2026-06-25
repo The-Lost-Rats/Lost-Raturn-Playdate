@@ -4,21 +4,19 @@ import "scripts/ui/sprites/HUDBackgroundSprite"
 import "scripts/ui/sprites/HeartSprite"
 import "scripts/ui/sprites/ScoreSprite"
 
-import "scripts/player/playerConstants"
 import "scripts/ui/uiConstants"
 import "utilities/constants"
 
-local PLAYER <const> = PLAYER_CONSTANTS
 local DISPLAY <const> = CONSTANTS.DISPLAY
 local HUD_CONSTANTS <const> = UI_CONSTANTS.HUD
 
 class ('HUD').extends()
-function HUD:init()
+function HUD:init(max_health)
   self.hud_background_sprite = HUDBackgroundSprite(0, 0)
   self.score_sprite = ScoreSprite(HUD_CONSTANTS.SCORE_X, HUD_CONSTANTS.SCORE_Y)
   self.heart_sprites = {}
 
-  for i = 1, PLAYER.MAX_HEALTH do
+  for i = 1, max_health do
     local x = DISPLAY.W - HUD_CONSTANTS.HEART_SPACING * i
     self.heart_sprites[i] = HeartSprite(x, 0)
   end
