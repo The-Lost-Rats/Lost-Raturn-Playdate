@@ -27,6 +27,19 @@ local MOVEMENT_STATES = {
   RISING = 2
 }
 
+local function buildDitheredImage(w, h, dither_alpha, dither_type)
+  local image = gfx.image.new(w, h)
+  gfx.pushContext(image)
+    gfx.setDitherPattern(dither_alpha, dither_type)
+    gfx.fillRect(0, 0, w, h)
+  gfx.popContext()
+
+  return image
+end
+
+local LEG_IMAGE <const> = buildDitheredImage(WALKERS.LEG_W, WALKERS.LEG_H, 0.5, gfx.image.kDitherTypeBayer8x8)
+local SHOE_IMAGE <const> = buildDitheredImage(WALKERS.SHOE_W, WALKERS.SHOE_H, 0.2, gfx.image.kDitherTypeBayer8x8)
+
 ---@class Leg: _Object
 ---@field x integer
 ---@field y integer
@@ -47,24 +60,10 @@ function Leg:init(x, y, direction, item_type)
   self.just_landed = false
   self.current_move_state = MOVEMENT_STATES.GROUNDED
 
-  local leg_image = gfx.image.new(WALKERS.LEG_W, WALKERS.LEG_H)
-  gfx.pushContext(leg_image)
-    gfx.setColor(gfx.kColorBlack)
-    gfx.setDitherPattern(0.5, gfx.image.kDitherTypeBayer8x8)
-    gfx.fillRect(0, 0, WALKERS.LEG_W, WALKERS.LEG_H)
-  gfx.popContext()
-
-  local shoe_image = gfx.image.new(WALKERS.SHOE_W, WALKERS.SHOE_H)
-  gfx.pushContext(shoe_image)
-    gfx.setColor(gfx.kColorBlack)
-    gfx.setDitherPattern(0.2, gfx.image.kDitherTypeBayer8x8)
-    gfx.fillRect(0, 0, WALKERS.SHOE_W, WALKERS.SHOE_H)
-  gfx.popContext()
-
   ---@class LegSprite: _Sprite
   ---@field controller Leg
   ---@field item_type table
-  self.leg_sprite = gfx.sprite.new(leg_image)
+  self.leg_sprite = gfx.sprite.new(LEG_IMAGE)
   self.leg_sprite:setZIndex(LAYERS.WALKER)
   -- Set center of sprite to x: center, y: bottom
   self.leg_sprite:setCenter(0.5, 1.0)
@@ -76,7 +75,7 @@ function Leg:init(x, y, direction, item_type)
 
   ---@class ShoeSprite: _Sprite
   ---@field controller Leg
-  self.shoe_sprite = gfx.sprite.new(shoe_image)
+  self.shoe_sprite = gfx.sprite.new(SHOE_IMAGE)
   self.shoe_sprite:setZIndex(LAYERS.WALKER)
   -- Set center of sprite to x: center, y: bottom
   self.shoe_sprite:setCenter(0.5, 1.0)
