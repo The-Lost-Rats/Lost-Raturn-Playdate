@@ -143,7 +143,7 @@ function Player:resolveActions(state)
     self.pickup_requested = false
   end
 
-  for _, other in ipairs(self:overlappingSprites()) do
+  for _, other in ipairs(self:overlappingSprites() or {}) do
     local tag = other:getTag()
 
     if (self.pickup_requested and tag == TAGS.ITEM) then

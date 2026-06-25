@@ -36,7 +36,7 @@ local EMPTY_IMAGE <const> = buildHeartImage(false)
 ---@field x integer
 ---@field y integer
 ---@overload fun(x: integer, y: integer): HeartSprite
-HeartSprite = class('HeartSprite').extends(HUDSprite) or HeartSprite
+HeartSprite = class('HeartSprite').extends(HUDSprite --[[@as table]]) or HeartSprite
 function HeartSprite:init(x, y)
   HeartSprite.super.init(self, x, y, LAYERS.UI)
   self:setFilled(true)

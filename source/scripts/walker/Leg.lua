@@ -62,7 +62,9 @@ function Leg:init(x, y, direction, item_type)
     gfx.fillRect(0, 0, WALKERS.SHOE_W, WALKERS.SHOE_H)
   gfx.popContext()
 
-  -- Leg
+  ---@class LegSprite: _Sprite
+  ---@field controller Leg
+  ---@field item_type table
   self.leg_sprite = gfx.sprite.new(leg_image)
   self.leg_sprite:setZIndex(LAYERS.WALKER)
   -- Set center of sprite to x: center, y: bottom
@@ -73,7 +75,8 @@ function Leg:init(x, y, direction, item_type)
   self.leg_sprite.item_type = item_type
   self.leg_sprite.controller = self
 
-  -- Shoe
+  ---@class ShoeSprite: _Sprite
+  ---@field controller Leg
   self.shoe_sprite = gfx.sprite.new(shoe_image)
   self.shoe_sprite:setZIndex(LAYERS.WALKER)
   -- Set center of sprite to x: center, y: bottom

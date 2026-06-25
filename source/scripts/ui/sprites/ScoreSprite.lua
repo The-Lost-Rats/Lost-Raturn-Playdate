@@ -15,7 +15,7 @@ local LAYERS <const> = CONSTANTS.LAYERS
 ---@field x integer
 ---@field y integer
 ---@overload fun(x: integer, y: integer): ScoreSprite
-ScoreSprite = class('ScoreSprite').extends(HUDSprite) or ScoreSprite
+ScoreSprite = class('ScoreSprite').extends(HUDSprite --[[@as table]]) or ScoreSprite
 function ScoreSprite:init(x, y)
   ScoreSprite.super.init(self, x, y, LAYERS.UI)
   self:setScore(0)
