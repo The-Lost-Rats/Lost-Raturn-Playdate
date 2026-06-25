@@ -9,7 +9,7 @@ import "scripts/player/states/FallingState"
 import "scripts/player/states/GroundedState"
 import "scripts/player/states/PlayerState"
 
-import "scripts/player/PlayerConstants"
+import "scripts/player/playerConstants"
 import "utilities/constants"
 
 local gfx <const> = playdate.graphics

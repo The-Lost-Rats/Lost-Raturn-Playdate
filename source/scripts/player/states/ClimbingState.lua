@@ -1,8 +1,9 @@
 import "CoreLibs/object"
 
 import "scripts/player/states/PlayerState"
-import "scripts/player/PlayerConstants"
-import "scripts/walker/WalkerConstants"
+
+import "scripts/player/playerConstants"
+import "scripts/walker/walkerConstants"
 
 import "utilities/math"
 

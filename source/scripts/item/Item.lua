@@ -3,7 +3,7 @@ import "CoreLibs/object"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
-import "scripts/item/ItemConstants"
+import "scripts/item/itemConstants"
 import "utilities/constants"
 
 local gfx <const> = playdate.graphics

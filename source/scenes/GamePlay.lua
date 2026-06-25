@@ -6,12 +6,12 @@ import "CoreLibs/ui"
 import "scenes/BaseScene"
 
 import "scripts/walker/Walker"
-import "scripts/walker/WalkerConstants"
 import "scripts/player/Player"
-import "scripts/player/PlayerConstants"
 import "scripts/ScoreManager"
 import "scripts/ui/HUD"
 
+import "scripts/player/playerConstants"
+import "scripts/walker/walkerConstants"
 import "utilities/constants"
 
 local gfx <const> = playdate.graphics

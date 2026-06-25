@@ -1,6 +1,6 @@
 import "CoreLibs/object"
 
-import "scripts/player/PlayerConstants"
+import "scripts/player/playerConstants"
 
 local ANIMATION <const> = PLAYER_CONSTANTS.ANIMATION
 

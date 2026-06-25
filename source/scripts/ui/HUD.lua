@@ -4,9 +4,8 @@ import "scripts/ui/sprites/HUDBackgroundSprite"
 import "scripts/ui/sprites/HeartSprite"
 import "scripts/ui/sprites/ScoreSprite"
 
-import "scripts/player/PlayerConstants"
-
-import "scripts/ui/UIConstants"
+import "scripts/player/playerConstants"
+import "scripts/ui/uiConstants"
 import "utilities/constants"
 
 local PLAYER <const> = PLAYER_CONSTANTS

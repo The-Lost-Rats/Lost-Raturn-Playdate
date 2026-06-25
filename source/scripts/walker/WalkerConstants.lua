@@ -1,5 +1,5 @@
 import "utilities/constants"
-import "scripts/item/ItemConstants"
+import "scripts/item/itemConstants"
 
 local ITEM_TYPES <const> = ITEM_CONSTANTS.TYPES
 

@@ -4,7 +4,7 @@ import "CoreLibs/sprites"
 
 import "scripts/ui/sprites/HUDSprite"
 
-import "scripts/ui/UIConstants"
+import "scripts/ui/uiConstants"
 import "utilities/constants"
 
 local gfx <const> = playdate.graphics

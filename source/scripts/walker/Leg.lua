@@ -4,8 +4,8 @@ import "CoreLibs/sprites"
 
 import "scripts/item/Item"
 
-import "scripts/item/ItemConstants"
-import "scripts/walker/WalkerConstants"
+import "scripts/item/itemConstants"
+import "scripts/walker/walkerConstants"
 import "utilities/constants"
 
 local gfx <const> = playdate.graphics
