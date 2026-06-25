@@ -8,7 +8,8 @@ local gfx <const> = playdate.graphics
 
 local DISPLAY <const> = CONSTANTS.DISPLAY
 
-class('Title').extends(BaseScene)
+---@class Title: BaseScene
+Title = class('Title').extends(BaseScene) or Title
 function Title:update()
   local display_text = self.className
   local text_w, text_h = gfx.getTextSize(display_text)

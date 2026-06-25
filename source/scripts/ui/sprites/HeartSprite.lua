@@ -9,12 +9,12 @@ import "utilities/constants"
 
 local gfx <const> = playdate.graphics
 
-local HUD <const> = UI_CONSTANTS.HUD
+local HUD_CONSTANTS <const> = UI_CONSTANTS.HUD
 local LAYERS <const> = CONSTANTS.LAYERS
 
 local function buildHeartImage(is_filled)
-  local diameter <const> = HUD.HEART_DIAMETER
-  local height <const> = HUD.H
+  local diameter <const> = HUD_CONSTANTS.HEART_DIAMETER
+  local height <const> = HUD_CONSTANTS.H
 
   local image = gfx.image.new(diameter, height)
   gfx.pushContext(image)
@@ -32,7 +32,11 @@ end
 local FILLED_IMAGE <const> = buildHeartImage(true)
 local EMPTY_IMAGE <const> = buildHeartImage(false)
 
-class('HeartSprite').extends(HUDSprite)
+---@class HeartSprite: HUDSprite
+---@field x: integer
+---@field y: integer
+---@overload fun(x: integer, y: integer): HeartSprite
+HeartSprite = class('HeartSprite').extends(HUDSprite) or HeartSprite
 function HeartSprite:init(x, y)
   HeartSprite.super.init(self, x, y, LAYERS.UI)
   self:setFilled(true)

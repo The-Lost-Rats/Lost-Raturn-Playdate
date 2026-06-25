@@ -18,7 +18,8 @@ local function getCrankClimbDelta()
   return -clamped * CLIMBING.PIXELS_PER_DEGREE
 end
 
-class('ClimbingState').extends(PlayerState)
+---@class ClimbingState: PlayerState
+ClimbingState = class('ClimbingState').extends(PlayerState) or ClimbingState
 function ClimbingState:init(leg)
   ClimbingState.super.init(self)
 

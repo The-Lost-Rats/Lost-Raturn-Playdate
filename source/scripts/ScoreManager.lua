@@ -1,13 +1,12 @@
 import "CoreLibs/object"
 
-import "utilities/constants"
-
 local SCORING <const> = {
     CORRECT_DELIVERY = 100,
     WRONG_DELIVERY = -50
 }
 
-class('ScoreManager').extends()
+---@class ScoreManager
+ScoreManager = class('ScoreManager').extends() or ScoreManager
 function ScoreManager:init()
   self:reset()
 end

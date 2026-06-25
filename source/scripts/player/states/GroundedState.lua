@@ -8,7 +8,8 @@ import "utilities/constants"
 local ANIMATION <const> = PLAYER_CONSTANTS.ANIMATION
 local TAGS <const> = CONSTANTS.TAGS
 
-class('GroundedState').extends(PlayerState)
+---@class GroundedState: PlayerState
+GroundedState = class('GroundedState').extends(PlayerState) or GroundedState
 
 function GroundedState:readInput(player, a_pressed, b_pressed)
   if (a_pressed) then player:jump() end

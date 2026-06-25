@@ -10,7 +10,8 @@ local PHYSICS <const> = CONSTANTS.PHYSICS
 local WORLD <const> = CONSTANTS.WORLD
 local TAGS <const> = CONSTANTS.TAGS
 
-class('FallingState').extends(PlayerState)
+---@class FallingState: PlayerState
+FallingState = class('FallingState').extends(PlayerState) or FallingState
 
 function FallingState:readInput(player, a_pressed, b_pressed)
   player.vx = player:horizontalMovement()

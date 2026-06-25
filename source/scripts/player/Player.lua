@@ -44,7 +44,14 @@ local STATES = {
   -- Climbing state is created on demand with knowledge of attached leg
 }
 
-class('Player').extends(gfx.sprite)
+-- TODO: move from callbacks to event system?
+---@class Player: _Sprite
+---@field x: integer
+---@field y: integer
+---@field initial_health: integer
+---@field callbacks: table
+---@overload fun(x: integer, y: integer, initial_health: integer, callbacks: table): Player
+Player = class('Player').extends(gfx.sprite) or Player
 function Player:init(x, y, initial_health, callbacks)
   Player.super.init(self)
 

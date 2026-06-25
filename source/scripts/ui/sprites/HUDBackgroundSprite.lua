@@ -12,12 +12,16 @@ local gfx <const> = playdate.graphics
 local DISPLAY <const> = CONSTANTS.DISPLAY
 local LAYERS <const> = CONSTANTS.LAYERS
 
-local HUD <const> = UI_CONSTANTS.HUD
+local HUD_CONSTANTS <const> = UI_CONSTANTS.HUD
 
-class('HUDBackgroundSprite').extends(HUDSprite)
+---@class HUDBackgroundSprite: HUDSprite
+---@field x: integer
+---@field y: integer
+---@overload fun(x: integer, y: integer): HUDBackgroundSprite
+HUDBackgroundSprite = class('HUDBackgroundSprite').extends(HUDSprite) or HUDBackgroundSprite
 function HUDBackgroundSprite:init(x, y)
   HUDBackgroundSprite.super.init(self, x, y, LAYERS.UI_BACKGROUND)
 
-  local image = gfx.image.new(DISPLAY.W, HUD.H, gfx.kColorBlack)
+  local image = gfx.image.new(DISPLAY.W, HUD_CONSTANTS.H, gfx.kColorBlack)
   self:setImage(image)
 end

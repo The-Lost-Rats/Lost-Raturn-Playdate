@@ -8,7 +8,8 @@ local gfx <const> = playdate.graphics
 
 local DISPLAY <const> = CONSTANTS.DISPLAY
 
-class('GameOver').extends(BaseScene)
+---@class GameOver: BaseScene
+GameOver = class('GameOver').extends(BaseScene) or GameOver
 function GameOver:update()
   local display_text = self.className
   local text_w, text_h = gfx.getTextSize(display_text)

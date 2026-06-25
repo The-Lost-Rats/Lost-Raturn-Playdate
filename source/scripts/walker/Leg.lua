@@ -29,7 +29,13 @@ local MOVEMENT_STATES = {
   RISING = 2
 }
 
-class('Leg').extends()
+---@class Leg
+---@field x: integer
+---@field y: integer
+---@field direction: integer
+---@field item_type: table
+---@overload fun(x: integer, y: integer, direction: integer, item_type: table): Leg
+Leg = class('Leg').extends() or Leg
 function Leg:init(x, y, direction, item_type)
   Leg.super.init(self)
 

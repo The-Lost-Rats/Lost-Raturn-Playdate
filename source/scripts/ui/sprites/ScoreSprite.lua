@@ -9,10 +9,13 @@ import "utilities/constants"
 
 local gfx <const> = playdate.graphics
 
-local HUD <const> = UI_CONSTANTS.HUD
 local LAYERS <const> = CONSTANTS.LAYERS
 
-class('ScoreSprite').extends(HUDSprite)
+---@class ScoreSprite: HUDSprite
+---@field x: integer
+---@field y: integer
+---@overload fun(x: integer, y: integer): ScoreSprite
+ScoreSprite = class('ScoreSprite').extends(HUDSprite) or ScoreSprite
 function ScoreSprite:init(x, y)
   ScoreSprite.super.init(self, x, y, LAYERS.UI)
   self:setScore(0)
