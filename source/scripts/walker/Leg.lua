@@ -43,7 +43,6 @@ function Leg:init(x, y, direction, item_type)
 
   self.dx_remaining = 0
   self.vx, self.vy = 0, 0
-  self.x, self.y = 0, 0
 
   self.just_landed = false
   self.current_move_state = MOVEMENT_STATES.GROUNDED
