@@ -2,20 +2,26 @@ import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/sprites"
 
-import "scripts/Item"
+import "scripts/item/Item"
+
+import "scripts/item/ItemConstants"
+import "scripts/walker/WalkerConstants"
+import "utilities/constants"
 
 local gfx <const> = playdate.graphics
 
-local CLIMBING <const> = CONSTANTS.CLIMBING
 local DIRECTION <const> = CONSTANTS.DIRECTION
-local ITEM <const> = CONSTANTS.ITEM
-local PEDESTRIANS <const> = CONSTANTS.PEDESTRIANS
 local PHYSICS <const> = CONSTANTS.PHYSICS
 local WORLD <const> = CONSTANTS.WORLD
 
 local GROUPS <const> = CONSTANTS.GROUPS
 local TAGS <const> = CONSTANTS.TAGS
 local LAYERS <const> = CONSTANTS.LAYERS
+
+local CLIMBING <const> = WALKER_CONSTANTS.CLIMBING
+
+local ITEM <const> = ITEM_CONSTANTS
+local WALKERS <const> = WALKER_CONSTANTS
 
 local MOVEMENT_STATES = {
   FALLING = 0,
@@ -38,18 +44,18 @@ function Leg:init(x, y, direction, item_type)
   self.just_landed = false
   self.current_move_state = MOVEMENT_STATES.GROUNDED
 
-  local leg_image = gfx.image.new(PEDESTRIANS.LEG_W, PEDESTRIANS.LEG_H)
+  local leg_image = gfx.image.new(WALKERS.LEG_W, WALKERS.LEG_H)
   gfx.pushContext(leg_image)
     gfx.setColor(gfx.kColorBlack)
     gfx.setDitherPattern(0.5, gfx.image.kDitherTypeBayer8x8)
-    gfx.fillRect(0, 0, PEDESTRIANS.LEG_W, PEDESTRIANS.LEG_H)
+    gfx.fillRect(0, 0, WALKERS.LEG_W, WALKERS.LEG_H)
   gfx.popContext()
 
-  local shoe_image = gfx.image.new(PEDESTRIANS.SHOE_W, PEDESTRIANS.SHOE_H)
+  local shoe_image = gfx.image.new(WALKERS.SHOE_W, WALKERS.SHOE_H)
   gfx.pushContext(shoe_image)
     gfx.setColor(gfx.kColorBlack)
     gfx.setDitherPattern(0.2, gfx.image.kDitherTypeBayer8x8)
-    gfx.fillRect(0, 0, PEDESTRIANS.SHOE_W, PEDESTRIANS.SHOE_H)
+    gfx.fillRect(0, 0, WALKERS.SHOE_W, WALKERS.SHOE_H)
   gfx.popContext()
 
   -- Leg
@@ -148,7 +154,7 @@ function Leg:justLanded()
 end
 
 function Leg:isOffScreen()
-  return self.x < PEDESTRIANS.DESPAWN_BOUND_LEFT or self.x > PEDESTRIANS.DESPAWN_BOUND_RIGHT
+  return self.x < WALKERS.DESPAWN_BOUND_LEFT or self.x > WALKERS.DESPAWN_BOUND_RIGHT
 end
 
 function Leg:isRising()
@@ -183,5 +189,5 @@ function Leg:getScoreRange()
 end
 
 function Leg:getDamage()
-  return PEDESTRIANS.STOMP_DAMAGE
+  return WALKERS.STOMP_DAMAGE
 end

@@ -1,8 +1,8 @@
 import "CoreLibs/object"
 
-import "utilities/constants"
+import "scripts/player/PlayerConstants"
 
-local ANIMATION <const> = CONSTANTS.PLAYER.ANIMATION
+local ANIMATION <const> = PLAYER_CONSTANTS.ANIMATION
 
 class('PlayerState').extends()
 

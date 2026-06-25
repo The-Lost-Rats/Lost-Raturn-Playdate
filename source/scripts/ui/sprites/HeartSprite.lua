@@ -3,11 +3,13 @@ import "CoreLibs/object"
 import "CoreLibs/sprites"
 
 import "scripts/ui/sprites/HUDSprite"
+
+import "scripts/ui/UIConstants"
 import "utilities/constants"
 
 local gfx <const> = playdate.graphics
 
-local HUD <const> = CONSTANTS.HUD
+local HUD <const> = UI_CONSTANTS.HUD
 local LAYERS <const> = CONSTANTS.LAYERS
 
 local function buildHeartImage(is_filled)

@@ -3,13 +3,16 @@ import "CoreLibs/object"
 import "CoreLibs/sprites"
 
 import "scripts/ui/sprites/HUDSprite"
+
+import "scripts/ui/UIConstants"
 import "utilities/constants"
 
 local gfx <const> = playdate.graphics
 
 local DISPLAY <const> = CONSTANTS.DISPLAY
-local HUD <const> = CONSTANTS.HUD
 local LAYERS <const> = CONSTANTS.LAYERS
+
+local HUD <const> = UI_CONSTANTS.HUD
 
 class('HUDBackgroundSprite').extends(HUDSprite)
 function HUDBackgroundSprite:init(x, y)

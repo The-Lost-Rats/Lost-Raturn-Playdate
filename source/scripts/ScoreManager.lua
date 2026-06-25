@@ -2,7 +2,10 @@ import "CoreLibs/object"
 
 import "utilities/constants"
 
-local SCORING <const> = CONSTANTS.SCORING
+local SCORING <const> = {
+    CORRECT_DELIVERY = 100,
+    WRONG_DELIVERY = -50
+}
 
 class('ScoreManager').extends()
 function ScoreManager:init()

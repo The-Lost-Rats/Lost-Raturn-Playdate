@@ -3,10 +3,13 @@ import "CoreLibs/object"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
+import "scripts/item/ItemConstants"
+import "utilities/constants"
+
 local gfx <const> = playdate.graphics
 local timer <const> = playdate.timer
 
-local ITEM <const> = CONSTANTS.ITEM
+local ITEM <const> = ITEM_CONSTANTS
 local PHYSICS <const> = CONSTANTS.PHYSICS
 local WORLD <const> = CONSTANTS.WORLD
 

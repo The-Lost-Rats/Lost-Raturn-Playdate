@@ -1,9 +1,10 @@
 import "CoreLibs/object"
 
 import "scripts/player/states/PlayerState"
+import "scripts/player/PlayerConstants"
 import "utilities/constants"
 
-local ANIMATION <const> = CONSTANTS.PLAYER.ANIMATION
+local ANIMATION <const> = PLAYER_CONSTANTS.ANIMATION
 local TAGS <const> = CONSTANTS.TAGS
 
 class('GroundedState').extends(PlayerState)

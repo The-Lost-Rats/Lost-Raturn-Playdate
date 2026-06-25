@@ -1,11 +1,14 @@
 import "CoreLibs/object"
 
 import "scripts/player/states/PlayerState"
-import "utilities/constants"
+import "scripts/player/PlayerConstants"
+import "scripts/walker/WalkerConstants"
+
 import "utilities/math"
 
-local ANIMATION <const> = CONSTANTS.PLAYER.ANIMATION
-local CLIMBING <const> = CONSTANTS.CLIMBING
+local ANIMATION <const> = PLAYER_CONSTANTS.ANIMATION
+-- TODO: this seems wrong...
+local CLIMBING <const> = WALKER_CONSTANTS.CLIMBING
 
 local function getCrankClimbDelta()
   local _, accelerated_change = playdate.getCrankChange()

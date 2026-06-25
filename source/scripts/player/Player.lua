@@ -9,18 +9,21 @@ import "scripts/player/states/FallingState"
 import "scripts/player/states/GroundedState"
 import "scripts/player/states/PlayerState"
 
+import "scripts/player/PlayerConstants"
 import "utilities/constants"
 
 local gfx <const> = playdate.graphics
 
 local DIRECTION <const> = CONSTANTS.DIRECTION
 local WORLD <const> = CONSTANTS.WORLD
-local PLAYER <const> = CONSTANTS.PLAYER
 local LAYERS <const> = CONSTANTS.LAYERS
 local GROUPS <const> = CONSTANTS.GROUPS
 local TAGS <const> = CONSTANTS.TAGS
 
+local PLAYER <const> = PLAYER_CONSTANTS
+
 -- TODO: bigger collision rect for picking up items?
+-- TODO: should this be in constants?
 local ANIMATION <const> = PLAYER.ANIMATION
 local ANIMATION_DEFS <const> = {
   [ANIMATION.IDLE] = { path = "images/player/run", frame_time = 120, hit_box = {25, 20, 32, 22} },
