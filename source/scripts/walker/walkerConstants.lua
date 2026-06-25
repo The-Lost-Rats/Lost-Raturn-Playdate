@@ -10,11 +10,7 @@ local WALKER_SPAWN_PADDING <const> = 20
 local WALKER_DESPAWN_PADDING <const> = 40
 
 WALKER_CONSTANTS = {
-  CLIMBING = {
-    PIXELS_PER_DEGREE = 0.08,
-    MAX_ACCELERATED_CHANGE = 60,
-    LEG_SCORE_DISTANCE = LEG_H * 0.90 -- Climb above 90% of leg to enter score range
-  },
+  LEG_SCORE_PERCENT = 0.90, -- Climb above 90% of leg to enter score range
 
   LEG_W = 16,
   LEG_H = LEG_H,

@@ -18,8 +18,6 @@ local GROUPS <const> = CONSTANTS.GROUPS
 local TAGS <const> = CONSTANTS.TAGS
 local LAYERS <const> = CONSTANTS.LAYERS
 
-local CLIMBING <const> = WALKER_CONSTANTS.CLIMBING
-
 local ITEM <const> = ITEM_CONSTANTS
 local WALKERS <const> = WALKER_CONSTANTS
 
@@ -188,10 +186,10 @@ function Leg:getClimbBounds()
   return self.y - shoe_h - leg_h, self.y - shoe_h
 end
 
--- TODO: this uses a constant leg score distance - should we recompute?
 function Leg:getScoreRange()
+  local _, leg_h = self.leg_sprite:getSize()
   local _, shoe_h = self.shoe_sprite:getSize()
-  return self.y - shoe_h - CLIMBING.LEG_SCORE_DISTANCE
+  return self.y - shoe_h - leg_h * WALKERS.LEG_SCORE_PERCENT
 end
 
 function Leg:getDamage()
