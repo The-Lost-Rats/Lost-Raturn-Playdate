@@ -5,7 +5,17 @@
 
 # Whitelist git files
 !.gitignore
+!.gitmodules
 !.github/
+
+# Whitelist editor config
+!.vscode/
+.vscode/**
+
+!.vscode/launch.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/extensions.json
 
 # Whitelist documentation
 !README.md
@@ -21,9 +31,15 @@ source/**
 !source/**/
 !source/**/*.lua
 
+# Whitelist library files
+!library/
+
 # Whitelist assets
 !source/images/**/
 !source/images/**/*.png
 
 # Whitelist playdate files
 !source/pdxinfo
+
+# Whitelist luarc file
+!.luarc.json
