@@ -189,7 +189,7 @@ function Leg:getClimbBounds()
   return self.y - shoe_h - leg_h, self.y - shoe_h
 end
 
-function Leg:getScoreRange()
+function Leg:getScoreThreshold()
   local _, leg_h = self.leg_sprite:getSize()
   local _, shoe_h = self.shoe_sprite:getSize()
   return self.y - shoe_h - leg_h * WALKERS.LEG_SCORE_PERCENT

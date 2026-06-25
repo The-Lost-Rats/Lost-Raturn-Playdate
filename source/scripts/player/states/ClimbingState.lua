@@ -47,7 +47,7 @@ end
 function ClimbingState:constrain(player, x, y, hit_edge)
   y = math.clamp(y, self.leg:getClimbBounds())
 
-  if (y <= self.leg:getScoreRange()) then
+  if (y <= self.leg:getScoreThreshold()) then
     player:scoreDelivery(self.leg)
   elseif (hit_edge) then
     player:jumpOffLeg()
