@@ -14,12 +14,12 @@ local WALKERS <const> = WALKER_CONSTANTS
 local ITEM <const> = ITEM_CONSTANTS
 
 ---@class Walker
----@field walker_type: table
----@field x: integer
----@field y: integer
----@field vx: integer
----@field vy: integer
----@field direction: integer
+---@field walker_type table
+---@field x integer
+---@field y integer
+---@field vx integer
+---@field vy integer
+---@field direction integer
 ---@overload fun(walker_type: table, x: integer, y: integer, vx: integer, vy: integer, direction: integer): Walker
 Walker = class('Walker').extends() or Walker
 function Walker:init(walker_type, x, y, vx, vy, direction)

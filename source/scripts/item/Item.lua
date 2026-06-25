@@ -25,9 +25,9 @@ local ITEM_STATES = {
 }
 
 ---@class Item: _Sprite
----@field item_type: table
----@field x: integer
----@field y: integer
+---@field item_type table
+---@field x integer
+---@field y integer
 ---@overload fun(item_type: tbale, x: integer, y: integer): Item
 Item = class('Item').extends(gfx.sprite) or Item
 function Item:init(item_type, x, y)

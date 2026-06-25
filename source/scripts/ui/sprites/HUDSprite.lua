@@ -4,9 +4,9 @@ import "CoreLibs/sprites"
 local gfx <const> = playdate.graphics
 
 ---@class HUDSprite: _Sprite
----@field x: integer
----@field y: integer
----@field z_index: integer
+---@field x integer
+---@field y integer
+---@field z_index integer
 ---@overload fun(x: integer, y: integer, z_index: integer): HUDSprite
 HUDSprite = class('HUDSprite').extends(gfx.sprite) or HUDSprite
 function HUDSprite:init(x, y, z_index)

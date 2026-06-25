@@ -1,6 +1,5 @@
 import "CoreLibs/object"
 
--- TODO: should this be BaseScene: nil?
 ---@class BaseScene
 BaseScene = class ('BaseScene').extends() or BaseScene
 function BaseScene:enter() end

@@ -11,7 +11,7 @@ local DISPLAY <const> = CONSTANTS.DISPLAY
 local HUD_CONSTANTS <const> = UI_CONSTANTS.HUD
 
 ---@class HUD
----@field max_health: integer
+---@field max_health integer
 ---@overload fun(max_health: integer): HUD
 HUD = class ('HUD').extends() or HUD
 function HUD:init(max_health)

@@ -15,8 +15,8 @@ local LAYERS <const> = CONSTANTS.LAYERS
 local HUD_CONSTANTS <const> = UI_CONSTANTS.HUD
 
 ---@class HUDBackgroundSprite: HUDSprite
----@field x: integer
----@field y: integer
+---@field x integer
+---@field y integer
 ---@overload fun(x: integer, y: integer): HUDBackgroundSprite
 HUDBackgroundSprite = class('HUDBackgroundSprite').extends(HUDSprite) or HUDBackgroundSprite
 function HUDBackgroundSprite:init(x, y)

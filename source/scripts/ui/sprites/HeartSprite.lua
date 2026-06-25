@@ -33,8 +33,8 @@ local FILLED_IMAGE <const> = buildHeartImage(true)
 local EMPTY_IMAGE <const> = buildHeartImage(false)
 
 ---@class HeartSprite: HUDSprite
----@field x: integer
----@field y: integer
+---@field x integer
+---@field y integer
 ---@overload fun(x: integer, y: integer): HeartSprite
 HeartSprite = class('HeartSprite').extends(HUDSprite) or HeartSprite
 function HeartSprite:init(x, y)

@@ -12,8 +12,8 @@ local gfx <const> = playdate.graphics
 local LAYERS <const> = CONSTANTS.LAYERS
 
 ---@class ScoreSprite: HUDSprite
----@field x: integer
----@field y: integer
+---@field x integer
+---@field y integer
 ---@overload fun(x: integer, y: integer): ScoreSprite
 ScoreSprite = class('ScoreSprite').extends(HUDSprite) or ScoreSprite
 function ScoreSprite:init(x, y)
