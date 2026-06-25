@@ -13,7 +13,7 @@ local HUD_CONSTANTS <const> = UI_CONSTANTS.HUD
 ---@class HUD: _Object
 ---@field max_health integer
 ---@overload fun(max_health: integer): HUD
-HUD = class ('HUD').extends() or HUD
+HUD = class('HUD').extends() or HUD
 function HUD:init(max_health)
   self.hud_background_sprite = HUDBackgroundSprite(0, 0)
   self.score_sprite = ScoreSprite(HUD_CONSTANTS.SCORE_X, HUD_CONSTANTS.SCORE_Y)

@@ -27,7 +27,7 @@ local WALKERS <const> = WALKER_CONSTANTS
 local PLAYER <const> = PLAYER_CONSTANTS
 
 ---@class GamePlay: BaseScene
-GamePlay = class ('GamePlay').extends(BaseScene) or GamePlay
+GamePlay = class('GamePlay').extends(BaseScene) or GamePlay
 function GamePlay:init()
   GamePlay.super.init(self)
 
