@@ -9,5 +9,5 @@
   "runtime.version": "Lua 5.4",
   "workspace.preloadFileSize": 1000,
   "workspace.useGitIgnore": false,
-  "workspace.library": ["library/playdate-luacats", "$PLAYDATE_SDK_PATH/CoreLibs"]
+  "workspace.library": ["library/playdate-luacats"]
 }
