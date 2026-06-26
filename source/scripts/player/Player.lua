@@ -22,19 +22,17 @@ local TAGS <const> = CONSTANTS.TAGS
 
 local PLAYER <const> = PLAYER_CONSTANTS
 
----@alias HitBox [integer, integer, integer, integer]
+---@alias HitBox [integer, integer, integer, integer] -- {x, y, w, h}
 
 -- TODO: bigger collision rect for picking up items?
--- TODO: should this be in constants?
 local ANIMATION <const> = PLAYER.ANIMATION
 local ANIMATION_DEFS <const> = {
-  [ANIMATION.IDLE] = { path = "images/player/run", frame_time = 120, hit_box = {25, 20, 32, 22} },
-  [ANIMATION.RUN] = { path = "images/player/run", frame_time = 120, hit_box = {25, 20, 32, 22} },
-  [ANIMATION.JUMP] = { path = "images/player/run", frame_time = 120, hit_box = {25, 20, 32, 22} },
-  [ANIMATION.CLIMB] = { path = "images/player/run", frame_time = 120, hit_box = {25, 20, 32, 22} }
+  [ANIMATION.IDLE] = { path = "images/player/run", frame_time_ms = 120, hit_box = {25, 20, 32, 22} },
+  [ANIMATION.RUN] = { path = "images/player/run", frame_time_ms = 120, hit_box = {25, 20, 32, 22} },
+  [ANIMATION.JUMP] = { path = "images/player/run", frame_time_ms = 120, hit_box = {25, 20, 32, 22} },
+  [ANIMATION.CLIMB] = { path = "images/player/run", frame_time_ms = 120, hit_box = {25, 20, 32, 22} }
 }
 
--- TODO: should this be in constants?
 local FLIP_DIRECTION <const> = {
   [DIRECTION.LEFT] = gfx.kImageFlippedX,
   [DIRECTION.RIGHT] = gfx.kImageUnflipped
@@ -86,7 +84,7 @@ function Player:init(x, y, initial_health, callbacks)
     assert(image_table, "Assertion Failed - missing image table for animation '" .. name .. "' at " .. def.path)
 
     -- Set loop to true
-    self.loops[name] = gfx.animation.loop.new(def.frame_time, image_table, true)
+    self.loops[name] = gfx.animation.loop.new(def.frame_time_ms, image_table, true)
     self.hit_boxes[name] = def.hit_box
   end
 
@@ -350,6 +348,12 @@ end
 ---@return integer
 function Player:getCurrentHealth()
   return self.health
+end
+
+---@nodiscard
+---@return boolean
+function Player:isMovingHorizontally()
+  return self.vx ~= 0
 end
 
 ---@param x number

@@ -30,5 +30,5 @@ function GroundedState:resolveOverlap(player, other, tag)
 end
 
 function GroundedState:animationName(player)
-  return (player.vx == 0) and ANIMATION.IDLE or ANIMATION.RUN
+  return player:isMovingHorizontally() and ANIMATION.RUN or ANIMATION.IDLE
 end

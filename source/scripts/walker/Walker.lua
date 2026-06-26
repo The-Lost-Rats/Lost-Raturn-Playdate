@@ -68,7 +68,8 @@ function Walker:update()
   end
 
   if (active_leg:justLanded()) then
-    self.active_leg_index = (self.active_leg_index % 2) + 1
+    -- Alternate between legs (lists are 1 indexed)
+    self.active_leg_index = (self.active_leg_index % #self.legs) + 1
     active_leg = self.legs[self.active_leg_index]
     active_leg:rise(WALKERS.STEP_LENGTH, self.vx, self.vy)
   end
