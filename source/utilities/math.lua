@@ -1,4 +1,9 @@
 -- Lua and the Playdate SDK have no built-in clamp
+---@nodiscard
+---@param value number
+---@param min number
+---@param max number
+---@return number
 function math.clamp(value, min, max)
   if min > max then
     error(string.format("Error - clamp: min (%s) must be less than max (%s)", min, max), 2)

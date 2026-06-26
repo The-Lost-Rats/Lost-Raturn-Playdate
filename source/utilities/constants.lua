@@ -21,6 +21,7 @@ CONSTANTS = {
     GRAVITY = 0.6, -- px/frame^2
   },
 
+  ---@enum Layer
   LAYERS = {
     UI = 2,
     UI_BACKGROUND = 1,
@@ -30,6 +31,7 @@ CONSTANTS = {
   },
 
   -- Tags and groups for collision detection
+  ---@enum Tag
   TAGS = {
     PLAYER = 1,
     ITEM = 2,
@@ -37,6 +39,7 @@ CONSTANTS = {
     SHOE = 4
   },
 
+  ---@enum Group
   GROUPS = {
     PLAYER = 1,
     PICK_UP = 2,
@@ -44,6 +47,7 @@ CONSTANTS = {
     CLIMBABLE = 4
   },
 
+  ---@enum Direction
   DIRECTION = {
     LEFT = 0,
     RIGHT = 1

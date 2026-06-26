@@ -9,6 +9,7 @@ local ANIMATION <const> = PLAYER_CONSTANTS.ANIMATION
 local TAGS <const> = CONSTANTS.TAGS
 
 ---@class GroundedState: PlayerState
+---@overload fun(): GroundedState
 GroundedState = class('GroundedState').extends(PlayerState) or GroundedState
 
 function GroundedState:readInput(player, a_pressed, b_pressed)
@@ -16,6 +17,9 @@ function GroundedState:readInput(player, a_pressed, b_pressed)
   player.vx = player:horizontalMovement()
 end
 
+---@param player Player
+---@param other LegSprite|ShoeSprite
+---@param tag integer
 function GroundedState:resolveOverlap(player, other, tag)
   if (tag == TAGS.SHOE and other.controller:isFalling()) then
     player:hit(other.controller:getDamage())

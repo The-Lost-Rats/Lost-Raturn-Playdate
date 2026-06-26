@@ -1,10 +1,15 @@
 import "utilities/constants"
 
+---@class ItemType
+---@field name string
+---@field sprite string
+
 local DISPLAY <const> = CONSTANTS.DISPLAY
 
 local ITEM_SPAWN_PADDING <const> = 30
 
 ITEM_CONSTANTS = {
+  ---@type table<string, ItemType>
   TYPES = {
     SIX_SHOOTER = { name = "Six Shooter", sprite = "images/items/sunscreen" },
     WATCH = { name = "Watch", sprite = "images/items/sunscreen" },

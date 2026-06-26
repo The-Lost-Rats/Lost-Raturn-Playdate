@@ -11,6 +11,8 @@ local WORLD <const> = CONSTANTS.WORLD
 local TAGS <const> = CONSTANTS.TAGS
 
 ---@class FallingState: PlayerState
+---@field private grab_requested boolean
+---@overload fun(): FallingState
 FallingState = class('FallingState').extends(PlayerState) or FallingState
 
 function FallingState:readInput(player, a_pressed, b_pressed)
@@ -31,6 +33,9 @@ function FallingState:constrain(player, x, y, hit_edge)
   return x, y
 end
 
+---@param player Player
+---@param other LegSprite
+---@param tag integer
 function FallingState:resolveOverlap(player, other, tag)
   if (self.grab_requested and tag == TAGS.LEG) then
     player:grabLeg(other)

@@ -14,13 +14,16 @@ local WALKERS <const> = WALKER_CONSTANTS
 local ITEM <const> = ITEM_CONSTANTS
 
 ---@class Walker: _Object
----@field walker_type table
----@field x integer
----@field y integer
----@field vx integer
----@field vy integer
----@field direction integer
----@overload fun(walker_type: table, x: integer, y: integer, vx: integer, vy: integer, direction: integer): Walker
+---@field private item_type ItemType
+---@field private will_drop_item boolean
+---@field private has_dropped_item boolean
+---@field private drop_at_x? number
+---@field private vx number
+---@field private vy number
+---@field private direction Direction
+---@field private legs Leg[]
+---@field private active_leg_index integer
+---@overload fun(walker_type: WalkerType, x: number, y: number, vx: number, vy: number, direction: integer): Walker
 Walker = class('Walker').extends() or Walker
 function Walker:init(walker_type, x, y, vx, vy, direction)
   Walker.super.init(self)
@@ -83,6 +86,8 @@ function Walker:remove()
   end
 end
 
+---@nodiscard
+---@return boolean
 function Walker:isOffScreen()
   for _, leg in ipairs(self.legs) do
     if (not leg:isOffScreen()) then
@@ -93,6 +98,10 @@ function Walker:isOffScreen()
   return true
 end
 
+---@nodiscard
+---@param walker_type WalkerType
+---@param direction Direction
+---@return Walker
 function Walker.spawn(walker_type, direction)
   local x, y, vx, vy
 

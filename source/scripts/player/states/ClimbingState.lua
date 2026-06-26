@@ -9,6 +9,8 @@ import "utilities/math"
 local ANIMATION <const> = PLAYER_CONSTANTS.ANIMATION
 local CLIMBING <const> = PLAYER_CONSTANTS.CLIMBING
 
+---@nodiscard
+---@return number
 local function getCrankClimbDelta()
   local _, accelerated_change = playdate.getCrankChange()
   local clamped = math.clamp(accelerated_change, -CLIMBING.MAX_ACCELERATED_CHANGE, CLIMBING.MAX_ACCELERATED_CHANGE)
@@ -17,6 +19,11 @@ local function getCrankClimbDelta()
 end
 
 ---@class ClimbingState: PlayerState
+---@field private leg Leg
+---@field private crank_dy number
+---@field private prev_leg_x number
+---@field private prev_leg_y number
+---@overload fun(leg: Leg): ClimbingState
 ClimbingState = class('ClimbingState').extends(PlayerState) or ClimbingState
 function ClimbingState:init(leg)
   ClimbingState.super.init(self)

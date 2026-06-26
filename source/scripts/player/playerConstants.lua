@@ -14,6 +14,7 @@ PLAYER_CONSTANTS = {
 
   HELD_ITEM_Y_GAP = 4,
 
+  ---@enum AnimationState
   ANIMATION = {
     IDLE = "idle",
     RUN = "run",

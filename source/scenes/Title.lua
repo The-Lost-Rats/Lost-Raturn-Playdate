@@ -9,6 +9,7 @@ local gfx <const> = playdate.graphics
 local DISPLAY <const> = CONSTANTS.DISPLAY
 
 ---@class Title: BaseScene
+---@overload fun(): Title
 Title = class('Title').extends(BaseScene) or Title
 function Title:update()
   local display_text = self.className

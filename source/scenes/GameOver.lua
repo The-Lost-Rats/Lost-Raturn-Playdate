@@ -9,6 +9,7 @@ local gfx <const> = playdate.graphics
 local DISPLAY <const> = CONSTANTS.DISPLAY
 
 ---@class GameOver: BaseScene
+---@overload fun(): GameOver
 GameOver = class('GameOver').extends(BaseScene) or GameOver
 function GameOver:update()
   local display_text = self.className

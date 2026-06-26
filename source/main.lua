@@ -18,9 +18,11 @@ SCENE_TITLE = Title()
 SCENE_GAME_PLAY = GamePlay()
 SCENE_GAME_OVER = GameOver()
 
+---@type BaseScene
 local current_game_scene = SCENE_TITLE
 current_game_scene:enter()
 
+---@param new_state BaseScene
 function setScene(new_state)
   current_game_scene:leave()
   current_game_scene = new_state

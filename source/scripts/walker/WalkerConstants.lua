@@ -1,6 +1,10 @@
 import "utilities/constants"
 import "scripts/item/itemConstants"
 
+---@class WalkerType
+---@field name string
+---@field item ItemType
+
 local ITEM_TYPES <const> = ITEM_CONSTANTS.TYPES
 
 local DISPLAY <const> = CONSTANTS.DISPLAY
@@ -18,6 +22,7 @@ WALKER_CONSTANTS = {
   SHOE_W = 32,
   SHOE_H = 20,
 
+  ---@type WalkerType[]
   TYPES = {
     {
       name = "COWBOY",

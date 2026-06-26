@@ -27,6 +27,14 @@ local WALKERS <const> = WALKER_CONSTANTS
 local PLAYER <const> = PLAYER_CONSTANTS
 
 ---@class GamePlay: BaseScene
+---@field hud HUD
+---@field score_manager ScoreManager
+---@field player Player
+---@field walkers Walker[]
+---@field walkers_spawn_cap number
+---@field walkers_spawn_interval_ms number
+---@field walker_timer? _Timer
+---@overload fun(): GamePlay
 GamePlay = class('GamePlay').extends(BaseScene) or GamePlay
 function GamePlay:init()
   GamePlay.super.init(self)

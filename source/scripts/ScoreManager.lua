@@ -6,6 +6,8 @@ local SCORING <const> = {
 }
 
 ---@class ScoreManager: _Object
+---@field private total integer
+---@field private streak integer
 ScoreManager = class('ScoreManager').extends() or ScoreManager
 function ScoreManager:init()
   self:reset()
@@ -16,6 +18,16 @@ function ScoreManager:reset()
   self.streak = 0
 end
 
+---@class ScoreResult
+---@field correct boolean
+---@field points integer
+---@field total integer
+---@field streak integer
+
+---@nodiscard
+---@param item_type ItemType
+---@param leg_type ItemType
+---@return ScoreResult
 function ScoreManager:recordDelivery(item_type, leg_type)
   local correct_delivery = item_type == leg_type
 
@@ -33,6 +45,8 @@ function ScoreManager:recordDelivery(item_type, leg_type)
   return { correct = correct_delivery, points = points, total = self.total, streak = self.streak }
 end
 
+---@nodiscard
+---@return integer
 function ScoreManager:getScore()
   return self.total
 end

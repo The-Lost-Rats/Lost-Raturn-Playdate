@@ -11,7 +11,9 @@ local DISPLAY <const> = CONSTANTS.DISPLAY
 local HUD_CONSTANTS <const> = UI_CONSTANTS.HUD
 
 ---@class HUD: _Object
----@field max_health integer
+---@field private hud_background_sprite HUDBackgroundSprite
+---@field private score_sprite ScoreSprite
+---@field private heart_sprites HeartSprite[]
 ---@overload fun(max_health: integer): HUD
 HUD = class('HUD').extends() or HUD
 function HUD:init(max_health)

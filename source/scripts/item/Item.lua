@@ -17,6 +17,7 @@ local GROUPS <const> = CONSTANTS.GROUPS
 local TAGS <const> = CONSTANTS.TAGS
 local LAYERS <const> = CONSTANTS.LAYERS
 
+---@enum ItemState
 local ITEM_STATES = {
   FALLING = 0,
   GROUNDED = 1,
@@ -25,10 +26,16 @@ local ITEM_STATES = {
 }
 
 ---@class Item: _Sprite
----@field item_type table
----@field x integer
----@field y integer
----@overload fun(item_type: table, x: integer, y: integer): Item
+---@field item_type ItemType
+---@field private vx number
+---@field private vy number
+---@field private is_visible boolean
+---@field private current_state ItemState
+---@field private disappear_timer? _Timer
+---@field private grounded_start_time_ms number
+---@field private grounded_timer? _Timer
+---@field private blinking_timer? _Timer
+---@overload fun(item_type: ItemType, x: number, y: number): Item
 Item = class('Item').extends(gfx.sprite) or Item
 function Item:init(item_type, x, y)
   Item.super.init(self)
@@ -59,12 +66,14 @@ function Item:update()
   end
 end
 
+---@private
 function Item:startDisappearing()
   self.current_state = ITEM_STATES.DISAPPEARING
   self.disappear_timer = timer.performAfterDelay(ITEM.TTL_MS, function() self:disappear() end)
   self:startBlinking(ITEM.MAX_BLINK_SPEED_MS)
 end
 
+---@private
 function Item:handleFalling()
   local x, y = self:getPosition()
 
@@ -84,6 +93,7 @@ function Item:handleFalling()
   self:moveTo(x, y)
 end
 
+---@private
 function Item:handleGrounded()
   local delta_time_s = (playdate.getCurrentTimeMilliseconds() - self.grounded_start_time_ms) / 1000
   local y_offset = ITEM.BOB_AMPLITUDE * math.cos(delta_time_s * math.pi) - ITEM.BOB_AMPLITUDE
@@ -91,6 +101,7 @@ function Item:handleGrounded()
 end
 
 -- TODO: maybe callback chain up to walker and gameplay to notify delete?
+---@private
 function Item:disappear()
   if (self.blinking_timer ~= nil) then
     self.blinking_timer:remove()
@@ -99,6 +110,7 @@ function Item:disappear()
   self:remove()
 end
 
+---@private
 function Item:startBlinking(duration_ms)
   local blink_duration_ms = math.max(ITEM.MIN_BLINK_SPEED_MS, duration_ms)
 
@@ -119,6 +131,7 @@ function Item:pickUp()
 end
 
 function Item:release()
+  -- TODO: do we need to zero this out? wouldn't it be more realistic physics wise to just switch states? Do we want drag in x and y also?
   self.vy = 0
   self.current_state = ITEM_STATES.FALLING
 end

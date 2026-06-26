@@ -22,6 +22,8 @@ local TAGS <const> = CONSTANTS.TAGS
 
 local PLAYER <const> = PLAYER_CONSTANTS
 
+---@alias HitBox [integer, integer, integer, integer]
+
 -- TODO: bigger collision rect for picking up items?
 -- TODO: should this be in constants?
 local ANIMATION <const> = PLAYER.ANIMATION
@@ -32,6 +34,7 @@ local ANIMATION_DEFS <const> = {
   [ANIMATION.CLIMB] = { path = "images/player/run", frame_time = 120, hit_box = {25, 20, 32, 22} }
 }
 
+-- TODO: should this be in constants?
 local FLIP_DIRECTION <const> = {
   [DIRECTION.LEFT] = gfx.kImageFlippedX,
   [DIRECTION.RIGHT] = gfx.kImageUnflipped
@@ -44,13 +47,32 @@ local STATES = {
   -- Climbing state is created on demand with knowledge of attached leg
 }
 
+---@alias OnDeliver fun(item_type: ItemType, leg_type: ItemType): ScoreResult
+---@alias OnHealthChanged fun(health: integer)
+
+---@class PlayerCallbacks
+---@field on_deliver OnDeliver
+---@field on_health_changed OnHealthChanged
+
 -- TODO: move from callbacks to event system?
 ---@class Player: _Sprite
----@field x integer
----@field y integer
----@field initial_health integer
----@field callbacks table
----@overload fun(x: integer, y: integer, initial_health: integer, callbacks: table): Player
+---@field private on_deliver OnDeliver
+---@field private on_health_changed OnHealthChanged
+---@field private loops table<AnimationState, _AnimationLoop>
+---@field private hit_boxes table<AnimationState, HitBox>
+---@field private initial_health integer
+---@field private start_x number
+---@field private start_y number
+---@field private health integer
+---@field vx number
+---@field vy number
+---@field private current_direction Direction
+---@field private held_item? Item
+---@field private pickup_requested boolean
+---@field private current_state PlayerState
+---@field private current_animation AnimationState
+---@field private current_frame? integer
+---@overload fun(x: number, y: number, initial_health: integer, callbacks: PlayerCallbacks): Player
 Player = class('Player').extends(gfx.sprite) or Player
 function Player:init(x, y, initial_health, callbacks)
   Player.super.init(self)
@@ -129,6 +151,8 @@ function Player:update()
   self:updateAnimationFrame()
 end
 
+---@private
+---@param state PlayerState
 function Player:readInput(state)
   local a_pressed = playdate.buttonJustPressed(playdate.kButtonA)
   local b_pressed = playdate.buttonJustPressed(playdate.kButtonB)
@@ -137,6 +161,8 @@ function Player:readInput(state)
   state:readInput(self, a_pressed, b_pressed)
 end
 
+---@private
+---@param state PlayerState
 function Player:resolveActions(state)
   if (self.pickup_requested and self.held_item ~= nil) then
     self:dropItem()
@@ -154,12 +180,16 @@ function Player:resolveActions(state)
   end
 end
 
+---@private
+---@param next_state PlayerState
 function Player:transitionTo(next_state)
   if (next_state == self.current_state) then return end
   self.current_state = next_state
   next_state:enter(self)
 end
 
+---@private
+---@param name AnimationState
 function Player:setAnimation(name)
   if (name == self.current_animation) then return end
   self.current_animation = name
@@ -171,6 +201,7 @@ function Player:setAnimation(name)
   self:setCollideRect(table.unpack(self.hit_boxes[name]))
 end
 
+---@private
 function Player:updateAnimationFrame()
   local loop = self.loops[self.current_animation]
   local frame = loop.frame
@@ -190,6 +221,7 @@ function Player:land()
   self:transitionTo(STATES.GROUNDED)
 end
 
+---@param amount integer
 function Player:hit(amount)
   self.vy = PLAYER.HIT_KNOCKBACK_V
   self:dropItem()
@@ -198,6 +230,8 @@ function Player:hit(amount)
   if (not self:isDone()) then self:transitionTo(STATES.FALLING) end
 end
 
+---@private
+---@param amount integer
 function Player:takeDamage(amount)
   self.health = math.max(0, self.health - amount)
   self.on_health_changed(self.health)
@@ -205,6 +239,7 @@ function Player:takeDamage(amount)
   if (self.health == 0) then self:transitionTo(STATES.DEAD) end
 end
 
+---@param leg_sprite LegSprite
 function Player:grabLeg(leg_sprite)
   self:transitionTo(ClimbingState(leg_sprite.controller))
 end
@@ -214,6 +249,7 @@ function Player:jumpOffLeg()
   self:transitionTo(STATES.FALLING)
 end
 
+---@param leg Leg
 function Player:scoreDelivery(leg)
   if (self.held_item ~= nil) then
     -- TODO: do something cool on correct or incorrect delivery?
@@ -230,12 +266,15 @@ function Player:scoreDelivery(leg)
   self:jumpOffLeg()
 end
 
+---@private
+---@param item Item
 function Player:pickUp(item)
   item:pickUp()
   self.held_item = item
   self.pickup_requested = false
 end
 
+---@private
 function Player:dropItem()
   if (self.held_item ~= nil) then
     self.held_item:release()
@@ -243,6 +282,8 @@ function Player:dropItem()
   end
 end
 
+---@nodiscard
+---@return number
 function Player:horizontalMovement()
   local vx = 0
   local left_pressed = playdate.buttonIsPressed(playdate.kButtonLeft)
@@ -260,6 +301,8 @@ function Player:horizontalMovement()
   return vx
 end
 
+---@private
+---@param direction Direction
 function Player:setDirection(direction)
   if (direction == self.current_direction) then return end
   self.current_direction = direction
@@ -267,6 +310,11 @@ function Player:setDirection(direction)
   self.current_frame = nil
 end
 
+---@private
+---@nodiscard
+---@param x number
+---@return number
+---@return boolean
 function Player:clampHorizontal(x)
   local hit_edge = false
 
@@ -283,18 +331,26 @@ function Player:clampHorizontal(x)
   return x, hit_edge
 end
 
+---@nodiscard
+---@return boolean
 function Player:usesCrank()
   return self.current_state:usesCrank()
 end
 
+---@nodiscard
+---@return boolean
 function Player:isDone()
   return self.current_state:isTerminal()
 end
 
+---@nodiscard
+---@return integer
 function Player:getCurrentHealth()
   return self.health
 end
 
+---@param x number
+---@param y number
 function Player:moveTo(x, y)
   Player.super.moveTo(self, x, y)
 
