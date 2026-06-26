@@ -10,6 +10,7 @@ local SCORING <const> = {
 ---@field private streak integer
 ScoreManager = class('ScoreManager').extends() or ScoreManager
 function ScoreManager:init()
+  ScoreManager.super.init(self)
   self:reset()
 end
 

@@ -17,6 +17,8 @@ local HUD_CONSTANTS <const> = UI_CONSTANTS.HUD
 ---@overload fun(max_health: integer): HUD
 HUD = class('HUD').extends() or HUD
 function HUD:init(max_health)
+  HUD.super.init(self)
+
   self.hud_background_sprite = HUDBackgroundSprite(0, 0)
   self.score_sprite = ScoreSprite(HUD_CONSTANTS.SCORE_X, HUD_CONSTANTS.SCORE_Y)
   self.heart_sprites = {}
