@@ -14,7 +14,10 @@ GroundedState = class('GroundedState').extends(PlayerState) or GroundedState
 
 function GroundedState:readInput(player, a_pressed, b_pressed)
   if (a_pressed) then player:jump() end
-  player.vx = player:horizontalMovement()
+end
+
+function GroundedState:applyForces(player, vx, vy)
+  return player:horizontalMovement(), 0
 end
 
 ---@param player Player

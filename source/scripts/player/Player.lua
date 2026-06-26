@@ -64,8 +64,8 @@ local STATES = {
 ---@field private start_x number
 ---@field private start_y number
 ---@field private health integer
----@field vx number
----@field vy number
+---@field private vx number
+---@field private vy number
 ---@field private current_direction Direction
 ---@field private held_item? Item
 ---@field private pickup_requested boolean
@@ -129,7 +129,9 @@ function Player:update()
   self:readInput(state)
 
   -- Apply forces for state only if it is still active
-  if (self.current_state == state) then state:applyForces(self) end
+  if (self.current_state == state) then
+    self.vx, self.vy = state:applyForces(self, self.vx, self.vy)
+  end
 
   local x, y = self:getPosition()
   x += self.vx
@@ -241,6 +243,7 @@ end
 
 ---@param leg_sprite LegSprite
 function Player:grabLeg(leg_sprite)
+  self.vx, self.vy = 0, 0
   self:transitionTo(ClimbingState(leg_sprite.controller))
 end
 

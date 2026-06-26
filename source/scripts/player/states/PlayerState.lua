@@ -15,8 +15,13 @@ function PlayerState:enter(player) end
 ---@param b_pressed boolean
 function PlayerState:readInput(player, a_pressed, b_pressed) end
 
+---@nodiscard
 ---@param player Player
-function PlayerState:applyForces(player) end
+---@param vx number
+---@param vy number
+---@return number
+---@return number
+function PlayerState:applyForces(player, vx, vy) return vx, vy end
 
 ---@nodiscard
 ---@param player Player

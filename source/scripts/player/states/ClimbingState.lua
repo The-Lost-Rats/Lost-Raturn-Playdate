@@ -33,7 +33,6 @@ function ClimbingState:init(leg)
 end
 
 function ClimbingState:enter(player)
-  player.vx, player.vy = 0, 0
   self.prev_leg_x, self.prev_leg_y = self.leg:getPosition()
 end
 
@@ -42,13 +41,15 @@ function ClimbingState:readInput(player, a_pressed, b_pressed)
   self.crank_dy = getCrankClimbDelta()
 end
 
-function ClimbingState:applyForces(player)
+function ClimbingState:applyForces(player, vx, vy)
   local leg_x, leg_y = self.leg:getPosition()
 
-  player.vx = leg_x - self.prev_leg_x
-  player.vy = (leg_y - self.prev_leg_y) + self.crank_dy
+  local new_vx = leg_x - self.prev_leg_x
+  local new_vy = (leg_y - self.prev_leg_y) + self.crank_dy
 
   self.prev_leg_x, self.prev_leg_y = leg_x, leg_y
+
+  return new_vx, new_vy
 end
 
 function ClimbingState:constrain(player, x, y, hit_edge)

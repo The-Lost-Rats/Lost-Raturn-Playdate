@@ -16,12 +16,11 @@ local TAGS <const> = CONSTANTS.TAGS
 FallingState = class('FallingState').extends(PlayerState) or FallingState
 
 function FallingState:readInput(player, a_pressed, b_pressed)
-  player.vx = player:horizontalMovement()
   self.grab_requested = a_pressed
 end
 
-function FallingState:applyForces(player)
-  player.vy += PHYSICS.GRAVITY
+function FallingState:applyForces(player, vx, vy)
+  return player:horizontalMovement(), vy + PHYSICS.GRAVITY
 end
 
 function FallingState:constrain(player, x, y, hit_edge)
