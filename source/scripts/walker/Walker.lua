@@ -23,7 +23,7 @@ local ITEM <const> = ITEM_CONSTANTS
 ---@field private direction Direction
 ---@field private legs Leg[]
 ---@field private active_leg_index integer
----@overload fun(walker_type: WalkerType, x: number, y: number, vx: number, vy: number, direction: integer): Walker
+---@overload fun(walker_type: WalkerType, x: number, y: number, vx: number, vy: number, direction: Direction): Walker
 Walker = class('Walker').extends() or Walker
 function Walker:init(walker_type, x, y, vx, vy, direction)
   Walker.super.init(self)

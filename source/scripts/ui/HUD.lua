@@ -45,10 +45,12 @@ function HUD:remove()
   end
 end
 
+---@param score integer
 function HUD:setScore(score)
   self.score_sprite:setScore(score)
 end
 
+---@param health integer
 function HUD:setHealth(health)
   for i, sprite in ipairs(self.heart_sprites) do
     sprite:setFilled(i <= health)

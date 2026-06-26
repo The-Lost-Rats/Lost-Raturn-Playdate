@@ -32,7 +32,7 @@ local ITEM_STATES = {
 ---@field private is_visible boolean
 ---@field private current_state ItemState
 ---@field private disappear_timer? _Timer
----@field private grounded_start_time_ms number
+---@field private grounded_start_time_ms? number
 ---@field private grounded_timer? _Timer
 ---@field private blinking_timer? _Timer
 ---@overload fun(item_type: ItemType, x: number, y: number): Item
@@ -111,6 +111,7 @@ function Item:disappear()
 end
 
 ---@private
+---@param duration_ms number
 function Item:startBlinking(duration_ms)
   local blink_duration_ms = math.max(ITEM.MIN_BLINK_SPEED_MS, duration_ms)
 

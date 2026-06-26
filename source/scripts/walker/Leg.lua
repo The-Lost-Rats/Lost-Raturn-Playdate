@@ -61,7 +61,7 @@ local SHOE_IMAGE <const> = buildDitheredImage(WALKERS.SHOE_W, WALKERS.SHOE_H, 0.
 ---@field private current_move_state MovementState
 ---@field private leg_sprite LegSprite
 ---@field private shoe_sprite ShoeSprite
----@overload fun(x: number, y: number, direction: integer, item_type: ItemType): Leg
+---@overload fun(x: number, y: number, direction: Direction, item_type: ItemType): Leg
 Leg = class('Leg').extends() or Leg
 function Leg:init(x, y, direction, item_type)
   Leg.super.init(self)
