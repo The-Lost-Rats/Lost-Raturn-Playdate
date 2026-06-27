@@ -189,6 +189,7 @@ function Player:resolveActions(state)
     local tag = other:getTag()
 
     if (self.pickup_requested and tag == TAGS.ITEM) then
+      ---@cast other Item -- Tag guarantees we are an item
       self:pickUp(other)
     else
       state:resolveOverlap(self, other, tag)
