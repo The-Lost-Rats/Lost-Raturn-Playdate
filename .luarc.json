@@ -1,5 +1,4 @@
 {
-  "$schema": "https://raw.githubusercontent.com/sumneko/vscode-lua/master/setting/schema.json",
   "diagnostics.disable": ["lowercase-global"],
   "diagnostics.globals": ["playdate", "import", "json"],
   "diagnostics.severity": { "duplicate-set-field": "Hint" },
