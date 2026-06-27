@@ -1,9 +1,7 @@
 {
-	// See https://go.microsoft.com/fwlink/?LinkId=827846
-	// for the documentation about the extensions.json format
 	"recommendations": [
-    "midouest.playdate-debug",
-    "sumneko.lua",
-    "jep-a.lua-plus"
+		"midouest.playdate-debug",
+		"sumneko.lua",
+		"jep-a.lua-plus"
 	]
 }
