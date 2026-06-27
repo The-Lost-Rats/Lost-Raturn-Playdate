@@ -1,3 +1,7 @@
+-- walkerConstants.lua
+-- Tuning values for walker behaviour and walker registry (type -> item, sprite etc.)
+--
+
 import "utilities/constants"
 import "scripts/item/itemConstants"
 

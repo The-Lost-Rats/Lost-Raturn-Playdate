@@ -1,3 +1,7 @@
+-- Title.lua
+-- Title screen. Temp for now. Switches to GamePlay on button press.
+--
+
 import "CoreLibs/graphics"
 import "CoreLibs/object"
 

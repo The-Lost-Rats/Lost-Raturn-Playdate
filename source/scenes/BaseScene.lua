@@ -1,3 +1,8 @@
+-- BaseScene.lua
+-- Abstract scene base class. Subclasses override enter/leave/update.
+-- Update must be implemented - default update throws error if not overriden.
+--
+
 import "CoreLibs/object"
 
 ---@class BaseScene: _Object

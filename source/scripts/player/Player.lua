@@ -1,3 +1,7 @@
+-- Player.lua
+-- Handles input, physics, animation and finite state machine for player.
+--
+
 import "CoreLibs/animation"
 import "CoreLibs/graphics"
 import "CoreLibs/object"
@@ -56,22 +60,25 @@ local STATES = {
 ---@class Player: _Sprite
 ---@field private on_deliver OnDeliver
 ---@field private on_health_changed OnHealthChanged
----@field private loops table<AnimationState, _AnimationLoop>
----@field private hit_boxes table<AnimationState, HitBox>
+---@field private loops table<AnimationState, _AnimationLoop> One loop animation per animation state
+---@field private hit_boxes table<AnimationState, HitBox> Collide rect per animation
 ---@field private initial_health integer
----@field private start_x number
----@field private start_y number
 ---@field private health integer
+---@field private start_x number spawn x, restored on reset
+---@field private start_y number spawn y, restored on reset
 ---@field private vx number
 ---@field private vy number
 ---@field private current_direction Direction
----@field private held_item? Item
+---@field private held_item? Item item the player is carrying; can be nil
 ---@field private pickup_requested boolean
 ---@field private current_state PlayerState
 ---@field private current_animation AnimationState
----@field private current_frame? integer
+---@field private current_frame? integer last animation frame the sprite was on; nil forces a redraw
 ---@overload fun(x: number, y: number, initial_health: integer, callbacks: PlayerCallbacks): Player
 Player = class('Player').extends(gfx.sprite) or Player
+
+--#region _____________________________  Init/Reset  _____________________________
+
 function Player:init(x, y, initial_health, callbacks)
   Player.super.init(self)
 
@@ -83,7 +90,7 @@ function Player:init(x, y, initial_health, callbacks)
     local image_table = gfx.imagetable.new(def.path)
     assert(image_table, "Assertion Failed - missing image table for animation '" .. name .. "' at " .. def.path)
 
-    -- Set loop to true
+    -- Set loop to true so animation repeats at end
     self.loops[name] = gfx.animation.loop.new(def.frame_time_ms, image_table, true)
     self.hit_boxes[name] = def.hit_box
   end
@@ -117,7 +124,13 @@ function Player:reset()
   self:transitionTo(STATES.GROUNDED)
   self:moveTo(self.start_x, self.start_y)
 end
+--#endregion
 
+--#region _____________________________  Update  _____________________________
+
+--- Per frame: read input (may switch state), let the active state compute 
+--- velocity, integrate position, constrain position, resolve collisions, 
+--- and then advance animation.
 function Player:update()
   local state = self.current_state
 
@@ -150,6 +163,9 @@ function Player:update()
   self:setAnimation(self.current_state:animationName(self))
   self:updateAnimationFrame()
 end
+--#endregion
+
+--#region _____________________________  Input Handling  _____________________________
 
 ---@private
 ---@param state PlayerState
@@ -179,6 +195,9 @@ function Player:resolveActions(state)
     end
   end
 end
+--#endregion
+
+--#region _____________________________  State Transitions  _____________________________
 
 ---@private
 ---@param next_state PlayerState
@@ -186,29 +205,6 @@ function Player:transitionTo(next_state)
   if (next_state == self.current_state) then return end
   self.current_state = next_state
   next_state:enter(self)
-end
-
----@private
----@param name AnimationState
-function Player:setAnimation(name)
-  if (name == self.current_animation) then return end
-  self.current_animation = name
-  -- Start new animation from beginning
-  self.loops[name].frame = self.loops[name].startFrame
-  -- Set current frame to nil so we call setImage
-  self.current_frame = nil
-
-  self:setCollideRect(table.unpack(self.hit_boxes[name]))
-end
-
----@private
-function Player:updateAnimationFrame()
-  local loop = self.loops[self.current_animation]
-  local frame = loop.frame
-  if (frame ~= self.current_frame) then
-    self.current_frame = frame
-    self:setImage(loop:image(), FLIP_DIRECTION[self.current_direction])
-  end
 end
 
 function Player:jump()
@@ -249,6 +245,25 @@ function Player:jumpOffLeg()
   self.vy = PLAYER.DISMOUNT_V
   self:transitionTo(STATES.FALLING)
 end
+--#endregion
+
+--#region _____________________________  Item Handling  _____________________________
+
+---@private
+---@param item Item
+function Player:pickUp(item)
+  item:pickUp()
+  self.held_item = item
+  self.pickup_requested = false
+end
+
+---@private
+function Player:dropItem()
+  if (self.held_item ~= nil) then
+    self.held_item:release()
+    self.held_item = nil
+  end
+end
 
 ---@param leg Leg
 function Player:scoreDelivery(leg)
@@ -267,22 +282,48 @@ function Player:scoreDelivery(leg)
   self:jumpOffLeg()
 end
 
+--#endregion
+
+--#region _____________________________  Animation Handling  _____________________________
+
+--- Switches the active animation. Starts animation from beginning and updates hitbox.
 ---@private
----@param item Item
-function Player:pickUp(item)
-  item:pickUp()
-  self.held_item = item
-  self.pickup_requested = false
+---@param name AnimationState
+function Player:setAnimation(name)
+  if (name == self.current_animation) then return end
+  self.current_animation = name
+  self.loops[name].frame = self.loops[name].startFrame
+  -- Set current frame to nil so we call setImage
+  self.current_frame = nil
+
+  self:setCollideRect(table.unpack(self.hit_boxes[name]))
 end
 
+--- Updates animation sprite only when the frame actually changes.
 ---@private
-function Player:dropItem()
-  if (self.held_item ~= nil) then
-    self.held_item:release()
-    self.held_item = nil
+function Player:updateAnimationFrame()
+  local loop = self.loops[self.current_animation]
+  local frame = loop.frame
+  if (frame ~= self.current_frame) then
+    self.current_frame = frame
+    self:setImage(loop:image(), FLIP_DIRECTION[self.current_direction])
   end
 end
 
+---@private
+---@param direction Direction
+function Player:setDirection(direction)
+  if (direction == self.current_direction) then return end
+  self.current_direction = direction
+  -- Set current frame to nil to force redraw with setImage
+  self.current_frame = nil
+end
+--#endregion
+
+--#region _____________________________  Movement  _____________________________
+
+--- Returns horizontal velocity based on left right button press. 
+--- Also sets player direction.
 ---@nodiscard
 ---@return number
 function Player:horizontalMovement()
@@ -302,15 +343,8 @@ function Player:horizontalMovement()
   return vx
 end
 
----@private
----@param direction Direction
-function Player:setDirection(direction)
-  if (direction == self.current_direction) then return end
-  self.current_direction = direction
-  -- Set current frame to nil to force redraw with setImage
-  self.current_frame = nil
-end
-
+--- Clamps x to keep the player on the screen. 
+--- Uses sprite size which may not match hit box.
 ---@private
 ---@nodiscard
 ---@param x number
@@ -331,6 +365,19 @@ function Player:clampHorizontal(x)
 
   return x, hit_edge
 end
+
+---@param x number
+---@param y number
+function Player:moveTo(x, y)
+  Player.super.moveTo(self, x, y)
+
+  if (self.held_item ~= nil) then
+    self.held_item:moveTo(x, y - self:getCollideRect().height - PLAYER.HELD_ITEM_Y_GAP)
+  end
+end
+--#endregion
+
+--#region _____________________________  Getters  _____________________________
 
 ---@nodiscard
 ---@return boolean
@@ -355,13 +402,4 @@ end
 function Player:isMovingHorizontally()
   return self.vx ~= 0
 end
-
----@param x number
----@param y number
-function Player:moveTo(x, y)
-  Player.super.moveTo(self, x, y)
-
-  if (self.held_item ~= nil) then
-    self.held_item:moveTo(x, y - self:getCollideRect().height - PLAYER.HELD_ITEM_Y_GAP)
-  end
-end
+--#endregion

@@ -1,3 +1,8 @@
+-- Item.lua
+-- Manages item lifecycle: drop to ground -> bob up and down -> blink faster and faster 
+-- till it disappears.
+--
+
 import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/sprites"
@@ -32,11 +37,14 @@ local ITEM_STATES = {
 ---@field private is_visible boolean
 ---@field private current_state ItemState
 ---@field private disappear_timer? _Timer
----@field private grounded_start_time_ms? number
+---@field private grounded_start_time_ms? number Used for item bob sine wave. Set when item hits the gound.
 ---@field private grounded_timer? _Timer
 ---@field private blinking_timer? _Timer
 ---@overload fun(item_type: ItemType, x: number, y: number): Item
 Item = class('Item').extends(gfx.sprite) or Item
+
+--#region _____________________________  Init  _____________________________
+
 function Item:init(item_type, x, y)
   Item.super.init(self)
 
@@ -59,20 +67,21 @@ function Item:init(item_type, x, y)
   self:moveTo(x, y)
   self.current_state = ITEM_STATES.FALLING
 end
+--#endregion
+
+--#region _____________________________  Update  _____________________________
 
 function Item:update()
   if (self.current_state == ITEM_STATES.FALLING) then self:handleFalling()
   elseif(self.current_state == ITEM_STATES.GROUNDED) then self:handleGrounded()
   end
 end
+--#endregion
 
----@private
-function Item:startDisappearing()
-  self.current_state = ITEM_STATES.DISAPPEARING
-  self.disappear_timer = timer.performAfterDelay(ITEM.TTL_MS, function() self:disappear() end)
-  self:startBlinking(ITEM.MAX_BLINK_SPEED_MS)
-end
+--#region _____________________________  Falling  _____________________________
 
+--- Falls with dampened gravity. When item hits the floor switch to grounded state 
+--- and timer to move to disappearing state.
 ---@private
 function Item:handleFalling()
   local x, y = self:getPosition()
@@ -92,12 +101,26 @@ function Item:handleFalling()
 
   self:moveTo(x, y)
 end
+--#endregion
+
+--#region _____________________________  Grounded  _____________________________
 
 ---@private
 function Item:handleGrounded()
   local delta_time_s = (playdate.getCurrentTimeMilliseconds() - self.grounded_start_time_ms) / 1000
   local y_offset = ITEM.BOB_AMPLITUDE * math.cos(delta_time_s * math.pi) - ITEM.BOB_AMPLITUDE
   self:moveTo(self.x, WORLD.FLOOR_Y + y_offset)
+end
+--#endregion
+
+--#region _____________________________  Disappearing  _____________________________
+
+--- Start the timer to disappear an item and make the item start blinking.
+---@private
+function Item:startDisappearing()
+  self.current_state = ITEM_STATES.DISAPPEARING
+  self.disappear_timer = timer.performAfterDelay(ITEM.TTL_MS, function() self:disappear() end)
+  self:startBlinking(ITEM.MAX_BLINK_SPEED_MS)
 end
 
 -- TODO: maybe callback chain up to walker and gameplay to notify delete?
@@ -110,6 +133,7 @@ function Item:disappear()
   self:remove()
 end
 
+--- Toggle item visibility at faster and faster rates (floored to MIN_BLINK_SPEED_MS).
 ---@private
 ---@param duration_ms number
 function Item:startBlinking(duration_ms)
@@ -120,6 +144,9 @@ function Item:startBlinking(duration_ms)
 
   self.blinking_timer = timer.performAfterDelay(blink_duration_ms, function() self:startBlinking(blink_duration_ms / ITEM.BLINK_INTERVAL_DIVISOR) end)
 end
+--#endregion
+
+--#region _____________________________  Pick up and drop  _____________________________
 
 function Item:pickUp()
   if (self.grounded_timer ~= nil) then self.grounded_timer:remove() end
@@ -136,3 +163,4 @@ function Item:release()
   self.vy = 0
   self.current_state = ITEM_STATES.FALLING
 end
+--#endregion

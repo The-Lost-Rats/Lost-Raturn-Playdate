@@ -1,3 +1,7 @@
+-- Walker.lua
+-- Controls pedestrian walking across the screen and if they drop an item.
+--
+
 import "CoreLibs/object"
 
 import "scripts/item/Item"
@@ -15,16 +19,19 @@ local ITEM <const> = ITEM_CONSTANTS
 
 ---@class Walker: _Object
 ---@field private item_type ItemType
----@field private will_drop_item boolean
+---@field private will_drop_item boolean Random change walker drops item
 ---@field private has_dropped_item boolean
----@field private drop_at_x? number
+---@field private drop_at_x? number x value of where to drop item if will_drop_item is true
 ---@field private vx number
 ---@field private vy number
 ---@field private direction Direction
 ---@field private legs Leg[]
----@field private active_leg_index integer
+---@field private active_leg_index integer which leg is moving
 ---@overload fun(walker_type: WalkerType, x: number, y: number, vx: number, vy: number, direction: Direction): Walker
 Walker = class('Walker').extends() or Walker
+
+--#region _____________________________  Init  _____________________________
+
 function Walker:init(walker_type, x, y, vx, vy, direction)
   Walker.super.init(self)
 
@@ -48,7 +55,11 @@ function Walker:init(walker_type, x, y, vx, vy, direction)
 
   self.legs[self.active_leg_index]:rise(WALKERS.STEP_LENGTH, vx, vy)
 end
+--#endregion
 
+--#region _____________________________  Update  _____________________________
+
+--- Alternate moving legs and handle dropping item
 function Walker:update()
   for _, leg in ipairs(self.legs) do
     leg:update()
@@ -74,6 +85,9 @@ function Walker:update()
     active_leg:rise(WALKERS.STEP_LENGTH, self.vx, self.vy)
   end
 end
+--#endregion
+
+--#region _____________________________  Sprite Management  _____________________________
 
 function Walker:add()
   for _, leg in ipairs(self.legs) do
@@ -86,6 +100,9 @@ function Walker:remove()
     leg:remove()
   end
 end
+--#endregion
+
+--#region _____________________________  Queries  _____________________________
 
 ---@nodiscard
 ---@return boolean
@@ -98,7 +115,11 @@ function Walker:isOffScreen()
 
   return true
 end
+--#endregion
 
+--#region _____________________________  Spawning Factory  _____________________________
+
+--- Spawn a walker offscreen
 ---@nodiscard
 ---@param walker_type WalkerType
 ---@param direction Direction
@@ -122,3 +143,4 @@ function Walker.spawn(walker_type, direction)
   walker:add()
   return walker
 end
+--#endregion

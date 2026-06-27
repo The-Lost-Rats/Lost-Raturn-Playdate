@@ -1,3 +1,7 @@
+-- FallingState.lua
+-- Handles player falling and grabbing a leg.
+--
+
 import "CoreLibs/object"
 
 import "scripts/player/states/PlayerState"

@@ -1,3 +1,7 @@
+-- HeartSprite.lua
+-- A single heart (filled or empty).
+--
+
 import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/sprites"
@@ -12,6 +16,7 @@ local gfx <const> = playdate.graphics
 local HUD_CONSTANTS <const> = UI_CONSTANTS.HUD
 local LAYERS <const> = CONSTANTS.LAYERS
 
+--- Temporary helper to build heart images.
 ---@param is_filled boolean
 ---@nodiscard
 ---@return _Image

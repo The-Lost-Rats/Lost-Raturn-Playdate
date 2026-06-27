@@ -1,3 +1,7 @@
+-- GameOver.lua
+-- Game over screen. Temp for now. Switches to Title scene on button press.
+--
+
 import "CoreLibs/graphics"
 import "CoreLibs/object"
 

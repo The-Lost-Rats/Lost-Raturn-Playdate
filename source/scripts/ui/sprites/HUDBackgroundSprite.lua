@@ -1,3 +1,7 @@
+-- HUDBackgroundSprite.lua
+-- Solid black bar behind the HUD.
+--
+
 import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/sprites"

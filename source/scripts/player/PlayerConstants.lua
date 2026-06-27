@@ -1,3 +1,7 @@
+-- playerConstants.lua
+-- Player tuning: movement/jump velocity, climbing, health, animation states.
+--
+
 PLAYER_CONSTANTS = {
   -- px/frame
   MOVE_SPEED = 5,
@@ -6,8 +10,8 @@ PLAYER_CONSTANTS = {
   DISMOUNT_V = -9,
 
   CLIMBING = {
-    PIXELS_PER_DEGREE = 0.08,
-    MAX_ACCELERATED_CHANGE = 60
+    PIXELS_PER_DEGREE = 0.08, -- crank delta to pixels (crank sensitivity)
+    MAX_ACCELERATED_CHANGE = 60 -- crank cap so player cannot go super fast
   },
 
   MAX_HEALTH = 3,

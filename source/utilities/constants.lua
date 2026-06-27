@@ -1,3 +1,7 @@
+-- constants.lua
+-- Common values used across the system. Enables quick tuning of cross-cutting values.
+--
+
 local SCREEN_W <const> = playdate.display.getWidth()
 local SCREEN_H <const> = playdate.display.getHeight()
 
@@ -21,6 +25,7 @@ CONSTANTS = {
     GRAVITY = 0.6, -- px/frame^2
   },
 
+  -- Higher values draw on top of lower ones.
   ---@enum Layer
   LAYERS = {
     UI = 2,

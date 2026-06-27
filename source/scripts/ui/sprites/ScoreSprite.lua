@@ -1,3 +1,7 @@
+-- ScoreSprite.lua
+-- Render score on screen as "Score: XXX".
+--
+
 import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/sprites"

@@ -1,3 +1,7 @@
+-- ClimbingState.lua
+-- Handles player climbing a leg as well as dismount and scoring.
+--
+
 import "CoreLibs/object"
 
 import "scripts/player/states/PlayerState"
@@ -9,6 +13,7 @@ import "utilities/math"
 local ANIMATION <const> = PLAYER_CONSTANTS.ANIMATION
 local CLIMBING <const> = PLAYER_CONSTANTS.CLIMBING
 
+--- Get crank change (delta) and convert to player pixel movement.
 ---@nodiscard
 ---@return number
 local function getCrankClimbDelta()
@@ -32,6 +37,8 @@ function ClimbingState:init(leg)
   self.crank_dy = 0
 end
 
+--- Snapshot the previous leg position so player can track leg delta and move
+--- with the leg.
 function ClimbingState:enter(player)
   self.prev_leg_x, self.prev_leg_y = self.leg:getPosition()
 end
@@ -41,6 +48,8 @@ function ClimbingState:readInput(player, a_pressed, b_pressed)
   self.crank_dy = getCrankClimbDelta()
 end
 
+--- Compute velocity based on leg movement.
+--- Add crank delta to y velocity so player moves up or down the leg.
 function ClimbingState:applyForces(player, vx, vy)
   local leg_x, leg_y = self.leg:getPosition()
 
@@ -52,6 +61,9 @@ function ClimbingState:applyForces(player, vx, vy)
   return new_vx, new_vy
 end
 
+--- Constrain the player to the leg region when climbing.
+--- If the player reaches score range - try and deliver an item.
+--- If the player reaches the edge of the screen while on a leg - dismount.
 function ClimbingState:constrain(player, x, y, hit_edge)
   y = math.clamp(y, self.leg:getClimbBounds())
 

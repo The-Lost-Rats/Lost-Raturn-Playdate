@@ -1,3 +1,8 @@
+-- Leg.lua
+-- One leg of a walker. Has two sprites: 1) leg, 2) shoe.
+-- Controls leg lifecycle (rise, fall, land).
+--
+
 import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/sprites"
@@ -28,6 +33,7 @@ local MOVEMENT_STATES = {
   RISING = 2
 }
 
+--- Temporary function to build dithered sprite for leg.
 ---@nodiscard
 ---@param w integer
 ---@param h integer
@@ -52,17 +58,20 @@ local SHOE_IMAGE <const> = buildDitheredImage(WALKERS.SHOE_W, WALKERS.SHOE_H, 0.
 ---@class Leg: _Object
 ---@field item_type ItemType
 ---@field private direction Direction
----@field private dx_remaining number
+---@field private dx_remaining number horizontal distance left for leg to tavel
 ---@field private x number
 ---@field private y number
 ---@field private vx number
 ---@field private vy number
----@field private just_landed boolean
+---@field private just_landed boolean boolean when leg just lands
 ---@field private current_move_state MovementState
 ---@field private leg_sprite LegSprite
 ---@field private shoe_sprite ShoeSprite
 ---@overload fun(x: number, y: number, direction: Direction, item_type: ItemType): Leg
 Leg = class('Leg').extends() or Leg
+
+--#region _____________________________  Init  _____________________________
+
 function Leg:init(x, y, direction, item_type)
   Leg.super.init(self)
 
@@ -103,6 +112,9 @@ function Leg:init(x, y, direction, item_type)
 
   self:moveTo(x, y)
 end
+--#endregion
+
+--#region _____________________________  Update  _____________________________
 
 function Leg:update()
   if self.current_move_state == MOVEMENT_STATES.RISING then
@@ -120,6 +132,9 @@ function Leg:update()
     end
   end
 end
+--#endregion
+
+--#region _____________________________  State Management  _____________________________
 
 ---@param step_length number
 ---@param vx number
@@ -145,6 +160,9 @@ function Leg:land()
 
   self.just_landed = true
 end
+--#endregion
+
+--#region _____________________________  Sprite Management  _____________________________
 
 function Leg:add()
   self.leg_sprite:add()
@@ -155,6 +173,9 @@ function Leg:remove()
   self.leg_sprite:remove()
   self.shoe_sprite:remove()
 end
+--#endregion
+
+--#region _____________________________  Movement  _____________________________
 
 ---@private
 ---@param dx number
@@ -179,8 +200,12 @@ function Leg:moveTo(x, y)
     self.leg_sprite:moveTo(x - shoe_w / 2 + leg_w / 2, y - shoe_h)
   end
 end
+--#endregion
+
+--#region _____________________________  Queries  _____________________________
 
 -- TODO: maybe also use event system here? fire off a "hey I just landed message?"
+--- Check if leg landed since the last call. Sets just landed to false after consumption.
 ---@nodiscard
 ---@return boolean
 function Leg:justLanded()
@@ -222,6 +247,7 @@ function Leg:isFalling()
   return self.current_move_state == MOVEMENT_STATES.FALLING
 end
 
+--- Get climbable positions of leg so player movement can clamp to leg.
 ---@nodiscard
 ---@return number
 ---@return number
@@ -232,6 +258,7 @@ function Leg:getClimbBounds()
   return self.y - shoe_h - leg_h, self.y - shoe_h
 end
 
+--- Get y position above which player is in scoring range.
 ---@nodiscard
 ---@return number
 function Leg:getScoreThreshold()
@@ -245,3 +272,4 @@ end
 function Leg:getDamage()
   return WALKERS.STOMP_DAMAGE
 end
+--#endregion

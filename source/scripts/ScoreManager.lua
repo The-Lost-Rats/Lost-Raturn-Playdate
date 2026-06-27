@@ -1,3 +1,8 @@
+-- ScoreManager.lua
+-- Tracks running score and streak. Scores a delivery by matching item type to leg item type.
+-- Floors total score so player cannot go negative.
+--
+
 import "CoreLibs/object"
 
 local SCORING <const> = {
@@ -25,6 +30,8 @@ end
 ---@field total integer
 ---@field streak integer
 
+--- Scores a delivery. A match adds to total and increments streak by one.
+--- A miss applies a penalty and resets the streak. Ensures score cannot go negative.
 ---@nodiscard
 ---@param item_type ItemType
 ---@param leg_type ItemType

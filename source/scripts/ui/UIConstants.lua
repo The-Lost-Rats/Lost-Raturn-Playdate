@@ -1,3 +1,7 @@
+-- uiConstants.lua
+-- Tuning values for the UI
+--
+
 UI_CONSTANTS = {
   HUD = {
     H = 24,

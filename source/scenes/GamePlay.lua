@@ -1,3 +1,7 @@
+-- GamePlay.lua
+-- Core game play scene. Manages player, walkers, UI.
+--
+
 import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/timer"
@@ -36,6 +40,9 @@ local PLAYER <const> = PLAYER_CONSTANTS
 ---@field walker_timer? _Timer
 ---@overload fun(): GamePlay
 GamePlay = class('GamePlay').extends(BaseScene) or GamePlay
+
+--#region _____________________________  Init/Enter/Leave  _____________________________
+
 function GamePlay:init()
   GamePlay.super.init(self)
 
@@ -82,6 +89,23 @@ function GamePlay:enter()
   self:trySpawnWalker()
 end
 
+function GamePlay:leave()
+  if (self.walker_timer ~= nil) then
+    self.walker_timer:remove()
+  end
+
+  self.player:remove()
+
+  for _, walker in ipairs(self.walkers) do
+    walker:remove()
+  end
+
+  self.hud:remove()
+end
+--#endregion
+
+--#region _____________________________  Update  _____________________________
+
 function GamePlay:update()
   for _, walker in ipairs(self.walkers) do
     walker:update()
@@ -108,21 +132,13 @@ function GamePlay:update()
     setScene(SCENE_GAME_OVER)
   end
 end
+--#endregion
 
-function GamePlay:leave()
-  if (self.walker_timer ~= nil) then
-    self.walker_timer:remove()
-  end
+--#region _____________________________  Walker Spawning _____________________________
 
-  self.player:remove()
-
-  for _, walker in ipairs(self.walkers) do
-    walker:remove()
-  end
-
-  self.hud:remove()
-end
-
+--- Spawn a walker if we are under the current walker cap count.
+--- Ramps the spawn interval down so walkers spawn faster as the game goes on and
+--- ramps the walker cap up so more walkers spawn as the game goes on.
 function GamePlay:trySpawnWalker()
   if (#self.walkers < self.walkers_spawn_cap) then
     self:spawnWalker()
@@ -144,3 +160,4 @@ function GamePlay:spawnWalker()
   local new_walker = Walker.spawn(walker_type, direction)
   table.insert(self.walkers, new_walker)
 end
+--#endregion

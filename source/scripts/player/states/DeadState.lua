@@ -1,3 +1,7 @@
+-- DeadState.lua
+-- Currently final state that pushes game to game over scene.
+--
+
 import "CoreLibs/object"
 
 import "scripts/player/states/PlayerState"

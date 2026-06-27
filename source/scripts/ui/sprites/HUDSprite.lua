@@ -1,3 +1,7 @@
+-- HUDSprite.lua
+-- Base for HUD sprites. Draws from the top left.
+--
+
 import "CoreLibs/object"
 import "CoreLibs/sprites"
 

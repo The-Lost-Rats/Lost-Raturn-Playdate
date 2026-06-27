@@ -1,3 +1,7 @@
+-- GroundedState.lua
+-- Handles player moving on the ground (walk left and right, jump, take damage).
+--
+
 import "CoreLibs/object"
 
 import "scripts/player/states/PlayerState"

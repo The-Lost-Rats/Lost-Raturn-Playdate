@@ -1,3 +1,7 @@
+-- HUD.lua
+-- Player HUD when playing the game (health, score, etc.)
+--
+
 import "CoreLibs/object"
 
 import "scripts/ui/sprites/HUDBackgroundSprite"

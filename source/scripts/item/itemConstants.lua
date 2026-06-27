@@ -1,3 +1,7 @@
+-- itemConstants.lua
+-- Contains tuning values for items as well as the item registry (item -> sprite mapping).
+--
+
 import "utilities/constants"
 
 ---@class ItemType
