@@ -44,3 +44,5 @@ source/**
 # Whitelist config files
 !.editorconfig
 !.luarc.json
+!.stylua.toml
+!.styluaignore

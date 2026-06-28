@@ -1,0 +1,5 @@
+# Ignore submodules
+library/
+
+# Ignore game bundles
+*.pdx/
