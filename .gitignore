@@ -41,5 +41,6 @@ source/**
 # Whitelist playdate files
 !source/pdxinfo
 
-# Whitelist luarc file
+# Whitelist config files
+!.editorconfig
 !.luarc.json
