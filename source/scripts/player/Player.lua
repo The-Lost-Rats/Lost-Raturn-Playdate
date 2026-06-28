@@ -128,8 +128,8 @@ end
 
 --#region _____________________________  Update  _____________________________
 
---- Per frame: read input (may switch state), let the active state compute 
---- velocity, integrate position, constrain position, resolve collisions, 
+--- Per frame: read input (may switch state), let the active state compute
+--- velocity, integrate position, constrain position, resolve collisions,
 --- and then advance animation.
 function Player:update()
   local state = self.current_state
@@ -323,7 +323,7 @@ end
 
 --#region _____________________________  Movement  _____________________________
 
---- Returns horizontal velocity based on left right button press. 
+--- Returns horizontal velocity based on left right button press.
 --- Also sets player direction.
 ---@nodiscard
 ---@return number
@@ -344,7 +344,7 @@ function Player:horizontalMovement()
   return vx
 end
 
---- Clamps x to keep the player on the screen. 
+--- Clamps x to keep the player on the screen.
 --- Uses sprite size which may not match hit box.
 ---@private
 ---@nodiscard
