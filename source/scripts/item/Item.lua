@@ -1,5 +1,5 @@
 -- Item.lua
--- Manages item lifecycle: drop to ground -> bob up and down -> blink faster and faster 
+-- Manages item lifecycle: drop to ground -> bob up and down -> blink faster and faster
 -- till it disappears.
 --
 
@@ -27,7 +27,7 @@ local ITEM_STATES = {
   FALLING = 0,
   GROUNDED = 1,
   DISAPPEARING = 2,
-  PICKED_UP = 3
+  PICKED_UP = 3,
 }
 
 ---@class Item: _Sprite
@@ -41,7 +41,7 @@ local ITEM_STATES = {
 ---@field private grounded_timer? _Timer
 ---@field private blinking_timer? _Timer
 ---@overload fun(item_type: ItemType, x: number, y: number): Item
-Item = class('Item').extends(gfx.sprite) or Item
+Item = class("Item").extends(gfx.sprite) or Item
 
 --#region _____________________________  Init  _____________________________
 
@@ -57,7 +57,7 @@ function Item:init(item_type, x, y)
   -- Set center of sprite to x: center, y: bottom
   self:setCenter(0.5, 1.0)
   self:setCollideRect(0, 0, self:getSize())
-  self:setGroups({GROUPS.PICK_UP})
+  self:setGroups({ GROUPS.PICK_UP })
   self:setTag(TAGS.ITEM)
 
   self.item_type = item_type
@@ -72,15 +72,17 @@ end
 --#region _____________________________  Update  _____________________________
 
 function Item:update()
-  if (self.current_state == ITEM_STATES.FALLING) then self:handleFalling()
-  elseif(self.current_state == ITEM_STATES.GROUNDED) then self:handleGrounded()
+  if self.current_state == ITEM_STATES.FALLING then
+    self:handleFalling()
+  elseif self.current_state == ITEM_STATES.GROUNDED then
+    self:handleGrounded()
   end
 end
 --#endregion
 
 --#region _____________________________  Falling  _____________________________
 
---- Falls with dampened gravity. When item hits the floor switch to grounded state 
+--- Falls with dampened gravity. When item hits the floor switch to grounded state
 --- and timer to move to disappearing state.
 ---@private
 function Item:handleFalling()
@@ -90,13 +92,16 @@ function Item:handleFalling()
   y = y + self.vy
   x = x + self.vx
 
-  if (y >= WORLD.FLOOR_Y) then
+  if y >= WORLD.FLOOR_Y then
     self.vy = 0
     y = WORLD.FLOOR_Y
     self.grounded_start_time_ms = playdate.getCurrentTimeMilliseconds()
     self.current_state = ITEM_STATES.GROUNDED
 
-    self.grounded_timer = timer.performAfterDelay(ITEM.GROUNDED_TIME_MS, function() self:startDisappearing() end)
+    self.grounded_timer = timer.performAfterDelay(
+      ITEM.GROUNDED_TIME_MS,
+      function() self:startDisappearing() end
+    )
   end
 
   self:moveTo(x, y)
@@ -126,9 +131,7 @@ end
 -- TODO: maybe callback chain up to walker and gameplay to notify delete?
 ---@private
 function Item:disappear()
-  if (self.blinking_timer ~= nil) then
-    self.blinking_timer:remove()
-  end
+  if self.blinking_timer ~= nil then self.blinking_timer:remove() end
 
   self:remove()
 end
@@ -142,16 +145,19 @@ function Item:startBlinking(duration_ms)
   self.is_visible = not self.is_visible
   self:setVisible(self.is_visible)
 
-  self.blinking_timer = timer.performAfterDelay(blink_duration_ms, function() self:startBlinking(blink_duration_ms / ITEM.BLINK_INTERVAL_DIVISOR) end)
+  self.blinking_timer = timer.performAfterDelay(
+    blink_duration_ms,
+    function() self:startBlinking(blink_duration_ms / ITEM.BLINK_INTERVAL_DIVISOR) end
+  )
 end
 --#endregion
 
 --#region _____________________________  Pick up and drop  _____________________________
 
 function Item:pickUp()
-  if (self.grounded_timer ~= nil) then self.grounded_timer:remove() end
-  if (self.disappear_timer ~= nil) then self.disappear_timer:remove() end
-  if (self.blinking_timer ~= nil) then self.blinking_timer:remove() end
+  if self.grounded_timer ~= nil then self.grounded_timer:remove() end
+  if self.disappear_timer ~= nil then self.disappear_timer:remove() end
+  if self.blinking_timer ~= nil then self.blinking_timer:remove() end
 
   self.is_visible = true
   self:setVisible(true)

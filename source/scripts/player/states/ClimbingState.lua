@@ -18,7 +18,11 @@ local CLIMBING <const> = PLAYER_CONSTANTS.CLIMBING
 ---@return number
 local function getCrankClimbDelta()
   local _, accelerated_change = playdate.getCrankChange()
-  local clamped = math.clamp(accelerated_change, -CLIMBING.MAX_ACCELERATED_CHANGE, CLIMBING.MAX_ACCELERATED_CHANGE)
+  local clamped = math.clamp(
+    accelerated_change,
+    -CLIMBING.MAX_ACCELERATED_CHANGE,
+    CLIMBING.MAX_ACCELERATED_CHANGE
+  )
 
   return -clamped * CLIMBING.PIXELS_PER_DEGREE
 end
@@ -29,7 +33,7 @@ end
 ---@field private prev_leg_x number
 ---@field private prev_leg_y number
 ---@overload fun(leg: Leg): ClimbingState
-ClimbingState = class('ClimbingState').extends(PlayerState) or ClimbingState
+ClimbingState = class("ClimbingState").extends(PlayerState) or ClimbingState
 function ClimbingState:init(leg)
   ClimbingState.super.init(self)
 
@@ -44,7 +48,7 @@ function ClimbingState:enter(player)
 end
 
 function ClimbingState:readInput(player, a_pressed, b_pressed)
-  if (a_pressed) then player:jumpOffLeg() end
+  if a_pressed then player:jumpOffLeg() end
   self.crank_dy = getCrankClimbDelta()
 end
 
@@ -67,9 +71,9 @@ end
 function ClimbingState:constrain(player, x, y, hit_edge)
   y = math.clamp(y, self.leg:getClimbBounds())
 
-  if (y <= self.leg:getScoreThreshold()) then
+  if y <= self.leg:getScoreThreshold() then
     player:scoreDelivery(self.leg)
-  elseif (hit_edge) then
+  elseif hit_edge then
     player:jumpOffLeg()
   end
 
@@ -78,6 +82,4 @@ end
 
 function ClimbingState:usesCrank() return true end
 
-function ClimbingState:animationName(player)
-  return ANIMATION.CLIMB
-end
+function ClimbingState:animationName(player) return ANIMATION.CLIMB end

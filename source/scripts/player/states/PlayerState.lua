@@ -9,7 +9,7 @@ import "scripts/player/playerConstants"
 local ANIMATION <const> = PLAYER_CONSTANTS.ANIMATION
 
 ---@class PlayerState: _Object
-PlayerState = class('PlayerState').extends() or PlayerState
+PlayerState = class("PlayerState").extends() or PlayerState
 
 --- Called once when this state becomes active (after a transition).
 ---@param player Player
@@ -38,9 +38,7 @@ function PlayerState:applyForces(player, vx, vy) return vx, vy end
 ---@param hit_edge boolean
 ---@return number
 ---@return number
-function PlayerState:constrain(player, x, y, hit_edge)
-  return x, y
-end
+function PlayerState:constrain(player, x, y, hit_edge) return x, y end
 
 --- Handle collisions for this state
 ---@param player Player

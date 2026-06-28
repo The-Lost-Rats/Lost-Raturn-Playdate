@@ -39,7 +39,7 @@ local PLAYER <const> = PLAYER_CONSTANTS
 ---@field walkers_spawn_interval_ms number
 ---@field walker_timer? _Timer
 ---@overload fun(): GamePlay
-GamePlay = class('GamePlay').extends(BaseScene) or GamePlay
+GamePlay = class("GamePlay").extends(BaseScene) or GamePlay
 
 --#region _____________________________  Init/Enter/Leave  _____________________________
 
@@ -56,12 +56,15 @@ function GamePlay:init()
 
       return result
     end,
-    on_health_changed = function(health) self.hud:setHealth(health) end
+    on_health_changed = function(health) self.hud:setHealth(health) end,
   })
 
   local background_image_path = "images/background"
   local background_image = gfx.image.new(background_image_path)
-  assert(background_image, "Assertion Failed - could not load image for background at " .. background_image_path)
+  assert(
+    background_image,
+    "Assertion Failed - could not load image for background at " .. background_image_path
+  )
 
   gfx.sprite.setBackgroundDrawingCallback(function(x, y, w, h)
     -- Redraw background elements and clip to dirty rect
@@ -90,9 +93,7 @@ function GamePlay:enter()
 end
 
 function GamePlay:leave()
-  if (self.walker_timer ~= nil) then
-    self.walker_timer:remove()
-  end
+  if self.walker_timer ~= nil then self.walker_timer:remove() end
 
   self.player:remove()
 
@@ -114,7 +115,7 @@ function GamePlay:update()
   -- Clean up walkers off screen
   for i = #self.walkers, 1, -1 do
     local walker = self.walkers[i]
-    if (walker:isOffScreen()) then
+    if walker:isOffScreen() then
       walker:remove()
       table.remove(self.walkers, i)
     end
@@ -124,13 +125,9 @@ function GamePlay:update()
   gfx.sprite.update()
 
   -- Show crank indicator when player needs it and docked
-  if (playdate.isCrankDocked() and self.player:usesCrank()) then
-    ui.crankIndicator:draw()
-  end
+  if playdate.isCrankDocked() and self.player:usesCrank() then ui.crankIndicator:draw() end
 
-  if (self.player:isDone()) then
-    setScene(SCENE_GAME_OVER)
-  end
+  if self.player:isDone() then setScene(SCENE_GAME_OVER) end
 end
 --#endregion
 
@@ -140,13 +137,20 @@ end
 --- Ramps the spawn interval down so walkers spawn faster as the game goes on and
 --- ramps the walker cap up so more walkers spawn as the game goes on.
 function GamePlay:trySpawnWalker()
-  if (#self.walkers < self.walkers_spawn_cap) then
+  if #self.walkers < self.walkers_spawn_cap then
     self:spawnWalker()
-    self.walkers_spawn_cap = math.min(WALKERS.MAX_WALKERS, self.walkers_spawn_cap + WALKERS.SPAWN_CAP_RAMP)
-    self.walkers_spawn_interval_ms = math.max(WALKERS.MIN_SPAWN_INTERVAL_MS, self.walkers_spawn_interval_ms - WALKERS.SPAWN_INTERVAL_RAMP_MS)
+    self.walkers_spawn_cap =
+      math.min(WALKERS.MAX_WALKERS, self.walkers_spawn_cap + WALKERS.SPAWN_CAP_RAMP)
+    self.walkers_spawn_interval_ms = math.max(
+      WALKERS.MIN_SPAWN_INTERVAL_MS,
+      self.walkers_spawn_interval_ms - WALKERS.SPAWN_INTERVAL_RAMP_MS
+    )
   end
 
-  self.walker_timer = timer.performAfterDelay(self.walkers_spawn_interval_ms, function() self:trySpawnWalker() end)
+  self.walker_timer = timer.performAfterDelay(
+    self.walkers_spawn_interval_ms,
+    function() self:trySpawnWalker() end
+  )
 end
 
 function GamePlay:spawnWalker()

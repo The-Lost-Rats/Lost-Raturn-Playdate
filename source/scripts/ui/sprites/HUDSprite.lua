@@ -9,7 +9,7 @@ local gfx <const> = playdate.graphics
 
 ---@class HUDSprite: _Sprite
 ---@overload fun(x: integer, y: integer, z_index: integer): HUDSprite
-HUDSprite = class('HUDSprite').extends(gfx.sprite) or HUDSprite
+HUDSprite = class("HUDSprite").extends(gfx.sprite) or HUDSprite
 function HUDSprite:init(x, y, z_index)
   HUDSprite.super.init(self)
 

@@ -32,7 +32,7 @@ CONSTANTS = {
     UI_BACKGROUND = 1,
     ITEM = 0,
     PLAYER = -1,
-    WALKER = -2
+    WALKER = -2,
   },
 
   -- Tags and groups for collision detection
@@ -41,7 +41,7 @@ CONSTANTS = {
     PLAYER = 1,
     ITEM = 2,
     LEG = 3,
-    SHOE = 4
+    SHOE = 4,
   },
 
   ---@enum Group
@@ -49,12 +49,12 @@ CONSTANTS = {
     PLAYER = 1,
     PICK_UP = 2,
     HAZARD = 3,
-    CLIMBABLE = 4
+    CLIMBABLE = 4,
   },
 
   ---@enum Direction
   DIRECTION = {
     LEFT = 0,
-    RIGHT = 1
-  }
+    RIGHT = 1,
+  },
 }

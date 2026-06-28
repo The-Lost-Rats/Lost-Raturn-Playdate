@@ -20,7 +20,8 @@ local HUD_CONSTANTS <const> = UI_CONSTANTS.HUD
 
 ---@class HUDBackgroundSprite: HUDSprite
 ---@overload fun(x: integer, y: integer): HUDBackgroundSprite
-HUDBackgroundSprite = class('HUDBackgroundSprite').extends(HUDSprite --[[@as table]]) or HUDBackgroundSprite
+HUDBackgroundSprite = class("HUDBackgroundSprite").extends(HUDSprite --[[@as table]])
+  or HUDBackgroundSprite
 function HUDBackgroundSprite:init(x, y)
   HUDBackgroundSprite.super.init(self, x, y, LAYERS.UI_BACKGROUND)
 

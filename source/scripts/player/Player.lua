@@ -31,21 +31,37 @@ local PLAYER <const> = PLAYER_CONSTANTS
 -- TODO: bigger collision rect for picking up items?
 local ANIMATION <const> = PLAYER.ANIMATION
 local ANIMATION_DEFS <const> = {
-  [ANIMATION.IDLE] = { path = "images/player/run", frame_time_ms = 120, hit_box = {25, 20, 32, 22} },
-  [ANIMATION.RUN] = { path = "images/player/run", frame_time_ms = 120, hit_box = {25, 20, 32, 22} },
-  [ANIMATION.JUMP] = { path = "images/player/run", frame_time_ms = 120, hit_box = {25, 20, 32, 22} },
-  [ANIMATION.CLIMB] = { path = "images/player/run", frame_time_ms = 120, hit_box = {25, 20, 32, 22} }
+  [ANIMATION.IDLE] = {
+    path = "images/player/run",
+    frame_time_ms = 120,
+    hit_box = { 25, 20, 32, 22 },
+  },
+  [ANIMATION.RUN] = {
+    path = "images/player/run",
+    frame_time_ms = 120,
+    hit_box = { 25, 20, 32, 22 },
+  },
+  [ANIMATION.JUMP] = {
+    path = "images/player/run",
+    frame_time_ms = 120,
+    hit_box = { 25, 20, 32, 22 },
+  },
+  [ANIMATION.CLIMB] = {
+    path = "images/player/run",
+    frame_time_ms = 120,
+    hit_box = { 25, 20, 32, 22 },
+  },
 }
 
 local FLIP_DIRECTION <const> = {
   [DIRECTION.LEFT] = gfx.kImageFlippedX,
-  [DIRECTION.RIGHT] = gfx.kImageUnflipped
+  [DIRECTION.RIGHT] = gfx.kImageUnflipped,
 }
 
 local STATES = {
   GROUNDED = GroundedState(),
   FALLING = FallingState(),
-  DEAD = DeadState()
+  DEAD = DeadState(),
   -- Climbing state is created on demand with knowledge of attached leg
 }
 
@@ -75,7 +91,7 @@ local STATES = {
 ---@field private current_animation AnimationState
 ---@field private current_frame? integer last animation frame the sprite was on; nil forces a redraw
 ---@overload fun(x: number, y: number, initial_health: integer, callbacks: PlayerCallbacks): Player
-Player = class('Player').extends(gfx.sprite) or Player
+Player = class("Player").extends(gfx.sprite) or Player
 
 --#region _____________________________  Init/Reset  _____________________________
 
@@ -88,7 +104,10 @@ function Player:init(x, y, initial_health, callbacks)
   self.loops, self.hit_boxes = {}, {}
   for name, def in pairs(ANIMATION_DEFS) do
     local image_table = gfx.imagetable.new(def.path)
-    assert(image_table, "Assertion Failed - missing image table for animation '" .. name .. "' at " .. def.path)
+    assert(
+      image_table,
+      "Assertion Failed - missing image table for animation '" .. name .. "' at " .. def.path
+    )
 
     -- Set loop to true so animation repeats at end
     self.loops[name] = gfx.animation.loop.new(def.frame_time_ms, image_table, true)
@@ -98,8 +117,8 @@ function Player:init(x, y, initial_health, callbacks)
   self:setZIndex(LAYERS.PLAYER)
   -- Set center of sprite to x: center, y: bottom
   self:setCenter(0.5, 1.0)
-  self:setGroups({GROUPS.PLAYER})
-  self:setCollidesWithGroups({GROUPS.PICK_UP, GROUPS.HAZARD, GROUPS.CLIMBABLE})
+  self:setGroups({ GROUPS.PLAYER })
+  self:setCollidesWithGroups({ GROUPS.PICK_UP, GROUPS.HAZARD, GROUPS.CLIMBABLE })
   self:setTag(TAGS.PLAYER)
 
   self.initial_health = initial_health
@@ -134,13 +153,13 @@ end
 function Player:update()
   local state = self.current_state
 
-  if (state:isTerminal()) then return end
+  if state:isTerminal() then return end
 
   -- Could change state
   self:readInput(state)
 
   -- Apply forces for state only if it is still active
-  if (self.current_state == state) then
+  if self.current_state == state then
     self.vx, self.vy = state:applyForces(self, self.vx, self.vy)
   end
 
@@ -152,7 +171,7 @@ function Player:update()
   x, hit_edge = self:clampHorizontal(x)
 
   -- Constrain movement only if state is still active
-  if (self.current_state == state) then
+  if self.current_state == state then
     x, y = state:constrain(self, x, y, hit_edge)
   end
 
@@ -180,7 +199,7 @@ end
 ---@private
 ---@param state PlayerState
 function Player:resolveActions(state)
-  if (self.pickup_requested and self.held_item ~= nil) then
+  if self.pickup_requested and self.held_item ~= nil then
     self:dropItem()
     self.pickup_requested = false
   end
@@ -188,7 +207,7 @@ function Player:resolveActions(state)
   for _, other in ipairs(self:overlappingSprites() or {}) do
     local tag = other:getTag()
 
-    if (self.pickup_requested and tag == TAGS.ITEM) then
+    if self.pickup_requested and tag == TAGS.ITEM then
       ---@cast other Item -- Tag guarantees we are an item
       self:pickUp(other)
     else
@@ -203,7 +222,7 @@ end
 ---@private
 ---@param next_state PlayerState
 function Player:transitionTo(next_state)
-  if (next_state == self.current_state) then return end
+  if next_state == self.current_state then return end
   self.current_state = next_state
   next_state:enter(self)
 end
@@ -224,7 +243,7 @@ function Player:hit(amount)
   self:dropItem()
   self:takeDamage(amount)
 
-  if (not self:isDone()) then self:transitionTo(STATES.FALLING) end
+  if not self:isDone() then self:transitionTo(STATES.FALLING) end
 end
 
 ---@private
@@ -233,7 +252,7 @@ function Player:takeDamage(amount)
   self.health = math.max(0, self.health - amount)
   self.on_health_changed(self.health)
 
-  if (self.health == 0) then self:transitionTo(STATES.DEAD) end
+  if self.health == 0 then self:transitionTo(STATES.DEAD) end
 end
 
 ---@param leg_sprite LegSprite
@@ -260,7 +279,7 @@ end
 
 ---@private
 function Player:dropItem()
-  if (self.held_item ~= nil) then
+  if self.held_item ~= nil then
     self.held_item:release()
     self.held_item = nil
   end
@@ -268,11 +287,11 @@ end
 
 ---@param leg Leg
 function Player:scoreDelivery(leg)
-  if (self.held_item ~= nil) then
+  if self.held_item ~= nil then
     -- TODO: do something cool on correct or incorrect delivery?
     local result = self.on_deliver(self.held_item.item_type, leg.item_type)
 
-    if (result.correct) then
+    if result.correct then
       self.held_item:remove()
       self.held_item = nil
     else
@@ -293,7 +312,7 @@ end
 ---@private
 ---@param name AnimationState
 function Player:setAnimation(name)
-  if (name == self.current_animation) then return end
+  if name == self.current_animation then return end
   self.current_animation = name
   self.loops[name].frame = self.loops[name].startFrame
   -- Set current frame to nil so we call setImage
@@ -307,7 +326,7 @@ end
 function Player:updateAnimationFrame()
   local loop = self.loops[self.current_animation]
   local frame = loop.frame
-  if (frame ~= self.current_frame) then
+  if frame ~= self.current_frame then
     self.current_frame = frame
     self:setImage(loop:image(), FLIP_DIRECTION[self.current_direction])
   end
@@ -316,7 +335,7 @@ end
 ---@private
 ---@param direction Direction
 function Player:setDirection(direction)
-  if (direction == self.current_direction) then return end
+  if direction == self.current_direction then return end
   self.current_direction = direction
   -- Set current frame to nil to force redraw with setImage
   self.current_frame = nil
@@ -334,11 +353,11 @@ function Player:horizontalMovement()
   local left_pressed = playdate.buttonIsPressed(playdate.kButtonLeft)
   local right_pressed = playdate.buttonIsPressed(playdate.kButtonRight)
 
-  if (left_pressed) then
+  if left_pressed then
     vx -= PLAYER.MOVE_SPEED
     self:setDirection(DIRECTION.LEFT)
   end
-  if (right_pressed) then
+  if right_pressed then
     vx += PLAYER.MOVE_SPEED
     self:setDirection(DIRECTION.RIGHT)
   end
@@ -356,12 +375,12 @@ end
 function Player:clampHorizontal(x)
   local hit_edge = false
 
-  if (x >= WORLD.W - self.width / 2) then
+  if x >= WORLD.W - self.width / 2 then
     x = WORLD.W - self.width / 2
     hit_edge = true
   end
 
-  if (x <= self.width / 2) then
+  if x <= self.width / 2 then
     x = self.width / 2
     hit_edge = true
   end
@@ -374,7 +393,7 @@ end
 function Player:moveTo(x, y)
   Player.super.moveTo(self, x, y)
 
-  if (self.held_item ~= nil) then
+  if self.held_item ~= nil then
     self.held_item:moveTo(x, y - self:getCollideRect().height - PLAYER.HELD_ITEM_Y_GAP)
   end
 end
@@ -384,25 +403,17 @@ end
 
 ---@nodiscard
 ---@return boolean
-function Player:usesCrank()
-  return self.current_state:usesCrank()
-end
+function Player:usesCrank() return self.current_state:usesCrank() end
 
 ---@nodiscard
 ---@return boolean
-function Player:isDone()
-  return self.current_state:isTerminal()
-end
+function Player:isDone() return self.current_state:isTerminal() end
 
 ---@nodiscard
 ---@return integer
-function Player:getCurrentHealth()
-  return self.health
-end
+function Player:getCurrentHealth() return self.health end
 
 ---@nodiscard
 ---@return boolean
-function Player:isMovingHorizontally()
-  return self.vx ~= 0
-end
+function Player:isMovingHorizontally() return self.vx ~= 0 end
 --#endregion

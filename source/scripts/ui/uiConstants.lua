@@ -11,5 +11,5 @@ UI_CONSTANTS = {
 
     HEART_SPACING = 20,
     HEART_DIAMETER = 10,
-  }
+  },
 }

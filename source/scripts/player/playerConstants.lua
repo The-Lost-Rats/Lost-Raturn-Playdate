@@ -11,7 +11,7 @@ PLAYER_CONSTANTS = {
 
   CLIMBING = {
     PIXELS_PER_DEGREE = 0.17, -- crank delta to pixels (crank sensitivity)
-    MAX_ACCELERATED_CHANGE = 60 -- crank cap so player cannot go super fast
+    MAX_ACCELERATED_CHANGE = 60, -- crank cap so player cannot go super fast
   },
 
   MAX_HEALTH = 3,
@@ -23,6 +23,6 @@ PLAYER_CONSTANTS = {
     IDLE = "idle",
     RUN = "run",
     JUMP = "jump",
-    CLIMB = "climb"
-  }
+    CLIMB = "climb",
+  },
 }

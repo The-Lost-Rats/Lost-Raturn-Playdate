@@ -30,28 +30,28 @@ WALKER_CONSTANTS = {
   TYPES = {
     {
       name = "COWBOY",
-      item = ITEM_TYPES.SIX_SHOOTER
+      item = ITEM_TYPES.SIX_SHOOTER,
     },
     {
       name = "BUSINESS_MAN",
-      item = ITEM_TYPES.WATCH
+      item = ITEM_TYPES.WATCH,
     },
     {
       name = "WOMAN",
-      item = ITEM_TYPES.RING
+      item = ITEM_TYPES.RING,
     },
     {
       name = "SWIMMER",
-      item = ITEM_TYPES.SUNSCREEN
+      item = ITEM_TYPES.SUNSCREEN,
     },
     {
       name = "CONSTRUCTION_WORKER",
-      item = ITEM_TYPES.WRENCH
+      item = ITEM_TYPES.WRENCH,
     },
     {
       name = "RUNNER",
-      item = ITEM_TYPES.PHONE
-    }
+      item = ITEM_TYPES.PHONE,
+    },
   },
 
   STEP_LENGTH = 120,

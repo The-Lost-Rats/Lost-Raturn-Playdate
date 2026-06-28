@@ -14,7 +14,7 @@ local DISPLAY <const> = CONSTANTS.DISPLAY
 
 ---@class GameOver: BaseScene
 ---@overload fun(): GameOver
-GameOver = class('GameOver').extends(BaseScene) or GameOver
+GameOver = class("GameOver").extends(BaseScene) or GameOver
 function GameOver:update()
   local display_text = self.className
   local text_w, text_h = gfx.getTextSize(display_text)
@@ -22,7 +22,5 @@ function GameOver:update()
   gfx.clear()
   gfx.drawText(display_text, DISPLAY.W_HALF - text_w / 2, DISPLAY.H_HALF - text_h / 2)
 
-  if (playdate.buttonJustPressed(playdate.kButtonA)) then
-    setScene(SCENE_TITLE)
-  end
+  if playdate.buttonJustPressed(playdate.kButtonA) then setScene(SCENE_TITLE) end
 end

@@ -25,8 +25,15 @@ local function buildHeartImage(is_filled)
   local height <const> = HUD_CONSTANTS.H
 
   local image = gfx.image.new(diameter, height)
-  assert(image, "Assertion Failed - buildHeartImage image.new returned nil for diameter " .. diameter .. " and height " .. height)
+  assert(
+    image,
+    "Assertion Failed - buildHeartImage image.new returned nil for diameter "
+      .. diameter
+      .. " and height "
+      .. height
+  )
 
+  -- stylua: ignore start
   gfx.pushContext(image)
     gfx.setColor(gfx.kColorWhite)
     if (is_filled) then
@@ -35,7 +42,8 @@ local function buildHeartImage(is_filled)
       gfx.drawCircleInRect(0, 0, diameter, height)
     end
   gfx.popContext()
-  
+  -- stylua: ignore end
+
   return image
 end
 
@@ -45,7 +53,7 @@ local EMPTY_IMAGE <const> = buildHeartImage(false)
 ---@class HeartSprite: HUDSprite
 ---@field private is_filled boolean
 ---@overload fun(x: integer, y: integer): HeartSprite
-HeartSprite = class('HeartSprite').extends(HUDSprite --[[@as table]]) or HeartSprite
+HeartSprite = class("HeartSprite").extends(HUDSprite --[[@as table]]) or HeartSprite
 function HeartSprite:init(x, y)
   HeartSprite.super.init(self, x, y, LAYERS.UI)
   self:setFilled(true)
@@ -53,7 +61,7 @@ end
 
 ---@param is_filled boolean
 function HeartSprite:setFilled(is_filled)
-  if (self.is_filled == is_filled) then return end
+  if self.is_filled == is_filled then return end
   self.is_filled = is_filled
   self:setImage(self.is_filled and FILLED_IMAGE or EMPTY_IMAGE)
 end

@@ -19,7 +19,7 @@ local HUD_CONSTANTS <const> = UI_CONSTANTS.HUD
 ---@field private score_sprite ScoreSprite
 ---@field private heart_sprites HeartSprite[]
 ---@overload fun(max_health: integer): HUD
-HUD = class('HUD').extends() or HUD
+HUD = class("HUD").extends() or HUD
 function HUD:init(max_health)
   HUD.super.init(self)
 
@@ -52,9 +52,7 @@ function HUD:remove()
 end
 
 ---@param score integer
-function HUD:setScore(score)
-  self.score_sprite:setScore(score)
-end
+function HUD:setScore(score) self.score_sprite:setScore(score) end
 
 ---@param health integer
 function HUD:setHealth(health)

@@ -6,14 +6,14 @@
 import "CoreLibs/object"
 
 local SCORING <const> = {
-    CORRECT_DELIVERY = 100,
-    WRONG_DELIVERY = -50
+  CORRECT_DELIVERY = 100,
+  WRONG_DELIVERY = -50,
 }
 
 ---@class ScoreManager: _Object
 ---@field private total integer
 ---@field private streak integer
-ScoreManager = class('ScoreManager').extends() or ScoreManager
+ScoreManager = class("ScoreManager").extends() or ScoreManager
 function ScoreManager:init()
   ScoreManager.super.init(self)
   self:reset()
@@ -40,7 +40,7 @@ function ScoreManager:recordDelivery(item_type, leg_type)
   local correct_delivery = item_type == leg_type
 
   local points
-  if (correct_delivery) then
+  if correct_delivery then
     self.streak += 1
     points = SCORING.CORRECT_DELIVERY
   else
@@ -55,6 +55,4 @@ end
 
 ---@nodiscard
 ---@return integer
-function ScoreManager:getScore()
-  return self.total
-end
+function ScoreManager:getScore() return self.total end

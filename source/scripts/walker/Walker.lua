@@ -28,7 +28,7 @@ local ITEM <const> = ITEM_CONSTANTS
 ---@field private legs Leg[]
 ---@field private active_leg_index integer which leg is moving
 ---@overload fun(walker_type: WalkerType, x: number, y: number, vx: number, vy: number, direction: Direction): Walker
-Walker = class('Walker').extends() or Walker
+Walker = class("Walker").extends() or Walker
 
 --#region _____________________________  Init  _____________________________
 
@@ -38,16 +38,19 @@ function Walker:init(walker_type, x, y, vx, vy, direction)
   self.item_type = walker_type.item
   self.will_drop_item = math.random() <= WALKERS.ITEM_DROP_CHANCE
   self.has_dropped_item = false
-  if (self.will_drop_item) then
+  if self.will_drop_item then
     self.drop_at_x = math.random(ITEM.SPAWN_LEFT_BOUND, ITEM.SPAWN_RIGHT_BOUND)
   end
 
   self.vx, self.vy = vx, vy
   self.direction = direction
 
-  self.legs = { Leg(x + WALKERS.LEG_SPACING, y, direction, self.item_type), Leg(x, y, direction, self.item_type) }
+  self.legs = {
+    Leg(x + WALKERS.LEG_SPACING, y, direction, self.item_type),
+    Leg(x, y, direction, self.item_type),
+  }
 
-  if (direction == DIRECTION.LEFT) then
+  if direction == DIRECTION.LEFT then
     self.active_leg_index = 1
   else
     self.active_leg_index = 2
@@ -67,18 +70,21 @@ function Walker:update()
 
   local active_leg = self.legs[self.active_leg_index]
 
-  if (self.will_drop_item) then
+  if self.will_drop_item then
     local x, _ = active_leg:getPosition()
-    if (not self.has_dropped_item and
-        ((x >= self.drop_at_x and self.direction == DIRECTION.RIGHT) or
-        (x <= self.drop_at_x and self.direction == DIRECTION.LEFT)
-      )) then
+    if
+      not self.has_dropped_item
+      and (
+        (x >= self.drop_at_x and self.direction == DIRECTION.RIGHT)
+        or (x <= self.drop_at_x and self.direction == DIRECTION.LEFT)
+      )
+    then
       active_leg:dropItem(self.item_type)
       self.has_dropped_item = true
     end
   end
 
-  if (active_leg:justLanded()) then
+  if active_leg:justLanded() then
     -- Alternate between legs (lists are 1 indexed)
     self.active_leg_index = (self.active_leg_index % #self.legs) + 1
     active_leg = self.legs[self.active_leg_index]
@@ -108,9 +114,7 @@ end
 ---@return boolean
 function Walker:isOffScreen()
   for _, leg in ipairs(self.legs) do
-    if (not leg:isOffScreen()) then
-      return false
-    end
+    if not leg:isOffScreen() then return false end
   end
 
   return true
@@ -128,7 +132,7 @@ function Walker.spawn(walker_type, direction)
   local x, y, vx, vy
 
   -- If moving left, spawn on right of screen and move left
-  if (direction == DIRECTION.LEFT) then
+  if direction == DIRECTION.LEFT then
     x = WALKERS.SPAWN_POSITION_RIGHT
     vx = WALKERS.LEFT_VX
   else

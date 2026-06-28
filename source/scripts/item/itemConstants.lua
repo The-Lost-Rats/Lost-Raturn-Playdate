@@ -20,7 +20,7 @@ ITEM_CONSTANTS = {
     RING = { name = "Ring", sprite = "images/items/sunscreen" },
     SUNSCREEN = { name = "Sunscreen", sprite = "images/items/sunscreen" },
     WRENCH = { name = "Wrench", sprite = "images/items/sunscreen" },
-    PHONE = { name = "Phone", sprite = "images/items/sunscreen" }
+    PHONE = { name = "Phone", sprite = "images/items/sunscreen" },
   },
 
   SPAWN_Y = -10,
@@ -36,5 +36,5 @@ ITEM_CONSTANTS = {
   BLINK_INTERVAL_DIVISOR = 1.5,
 
   SPAWN_LEFT_BOUND = ITEM_SPAWN_PADDING,
-  SPAWN_RIGHT_BOUND = DISPLAY.W - ITEM_SPAWN_PADDING
+  SPAWN_RIGHT_BOUND = DISPLAY.W - ITEM_SPAWN_PADDING,
 }

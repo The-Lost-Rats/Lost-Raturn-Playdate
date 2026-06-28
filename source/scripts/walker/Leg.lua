@@ -30,7 +30,7 @@ local WALKERS <const> = WALKER_CONSTANTS
 local MOVEMENT_STATES = {
   FALLING = 0,
   GROUNDED = 1,
-  RISING = 2
+  RISING = 2,
 }
 
 --- Temporary function to build dithered sprite for leg.
@@ -42,18 +42,25 @@ local MOVEMENT_STATES = {
 ---@return _Image
 local function buildDitheredImage(w, h, dither_alpha, dither_type)
   local image = gfx.image.new(w, h)
-  assert(image, "Assertion Failed - buildDitheredImage image.new returned nil for " .. w .. "x" .. h)
+  assert(
+    image,
+    "Assertion Failed - buildDitheredImage image.new returned nil for " .. w .. "x" .. h
+  )
 
+  -- stylua: ignore start
   gfx.pushContext(image)
     gfx.setDitherPattern(dither_alpha, dither_type)
     gfx.fillRect(0, 0, w, h)
   gfx.popContext()
+  -- stylua: ignore end
 
   return image
 end
 
-local LEG_IMAGE <const> = buildDitheredImage(WALKERS.LEG_W, WALKERS.LEG_H, 0.5, gfx.image.kDitherTypeBayer8x8)
-local SHOE_IMAGE <const> = buildDitheredImage(WALKERS.SHOE_W, WALKERS.SHOE_H, 0.2, gfx.image.kDitherTypeBayer8x8)
+local LEG_IMAGE <const> =
+  buildDitheredImage(WALKERS.LEG_W, WALKERS.LEG_H, 0.5, gfx.image.kDitherTypeBayer8x8)
+local SHOE_IMAGE <const> =
+  buildDitheredImage(WALKERS.SHOE_W, WALKERS.SHOE_H, 0.2, gfx.image.kDitherTypeBayer8x8)
 
 ---@class Leg: _Object
 ---@field item_type ItemType
@@ -68,7 +75,7 @@ local SHOE_IMAGE <const> = buildDitheredImage(WALKERS.SHOE_W, WALKERS.SHOE_H, 0.
 ---@field private leg_sprite LegSprite
 ---@field private shoe_sprite ShoeSprite
 ---@overload fun(x: number, y: number, direction: Direction, item_type: ItemType): Leg
-Leg = class('Leg').extends() or Leg
+Leg = class("Leg").extends() or Leg
 
 --#region _____________________________  Init  _____________________________
 
@@ -94,7 +101,7 @@ function Leg:init(x, y, direction, item_type)
   -- Set center of sprite to x: center, y: bottom
   self.leg_sprite:setCenter(0.5, 1.0)
   self.leg_sprite:setCollideRect(0, 0, self.leg_sprite:getSize())
-  self.leg_sprite:setGroups({GROUPS.CLIMBABLE})
+  self.leg_sprite:setGroups({ GROUPS.CLIMBABLE })
   self.leg_sprite:setTag(TAGS.LEG)
   self.leg_sprite.item_type = item_type
   self.leg_sprite.controller = self
@@ -106,7 +113,7 @@ function Leg:init(x, y, direction, item_type)
   -- Set center of sprite to x: center, y: bottom
   self.shoe_sprite:setCenter(0.5, 1.0)
   self.shoe_sprite:setCollideRect(0, 0, self.shoe_sprite:getSize())
-  self.shoe_sprite:setGroups({GROUPS.HAZARD})
+  self.shoe_sprite:setGroups({ GROUPS.HAZARD })
   self.shoe_sprite:setTag(TAGS.SHOE)
   self.shoe_sprite.controller = self
 
@@ -120,16 +127,12 @@ function Leg:update()
   if self.current_move_state == MOVEMENT_STATES.RISING then
     self:moveBy(self.vx, self.vy)
     self.dx_remaining = self.dx_remaining - math.abs(self.vx)
-    if self.dx_remaining <= 0 then 
-      self:fall()
-    end
+    if self.dx_remaining <= 0 then self:fall() end
   elseif self.current_move_state == MOVEMENT_STATES.FALLING then
     self.vy = self.vy + PHYSICS.GRAVITY
     self:moveBy(0, self.vy)
 
-    if (self.y >= WORLD.FLOOR_Y) then
-      self:land()
-    end
+    if self.y >= WORLD.FLOOR_Y then self:land() end
   end
 end
 --#endregion
@@ -180,9 +183,7 @@ end
 ---@private
 ---@param dx number
 ---@param dy number
-function Leg:moveBy(dx, dy)
-  self:moveTo(self.x + dx, self.y + dy)
-end
+function Leg:moveBy(dx, dy) self:moveTo(self.x + dx, self.y + dy) end
 
 ---@private
 ---@param x number
@@ -194,7 +195,7 @@ function Leg:moveTo(x, y)
   local shoe_w, shoe_h = self.shoe_sprite:getSize()
 
   self.shoe_sprite:moveTo(x, y)
-  if (self.direction == DIRECTION.LEFT) then
+  if self.direction == DIRECTION.LEFT then
     self.leg_sprite:moveTo(x + shoe_w / 2 - leg_w / 2, y - shoe_h)
   else
     self.leg_sprite:moveTo(x - shoe_w / 2 + leg_w / 2, y - shoe_h)
@@ -222,9 +223,7 @@ end
 
 ---@nodiscard
 ---@return boolean
-function Leg:isRising()
-  return self.current_move_state == MOVEMENT_STATES.RISING
-end
+function Leg:isRising() return self.current_move_state == MOVEMENT_STATES.RISING end
 
 ---@param item_type ItemType
 ---@return Item
@@ -237,15 +236,11 @@ end
 ---@nodiscard
 ---@return number
 ---@return number
-function Leg:getPosition()
-  return self.x, self.y
-end
+function Leg:getPosition() return self.x, self.y end
 
 ---@nodiscard
 ---@return boolean
-function Leg:isFalling()
-  return self.current_move_state == MOVEMENT_STATES.FALLING
-end
+function Leg:isFalling() return self.current_move_state == MOVEMENT_STATES.FALLING end
 
 --- Get climbable positions of leg so player movement can clamp to leg.
 ---@nodiscard
@@ -269,7 +264,5 @@ end
 
 ---@nodiscard
 ---@return integer
-function Leg:getDamage()
-  return WALKERS.STOMP_DAMAGE
-end
+function Leg:getDamage() return WALKERS.STOMP_DAMAGE end
 --#endregion

@@ -14,7 +14,7 @@ function math.clamp(value, min, max)
     error(string.format("Error - clamp: min (%s) must be less than max (%s)", min, max), 2)
   end
 
-  if (value < min) then return min end
-  if (value > max) then return max end
+  if value < min then return min end
+  if value > max then return max end
   return value
 end
