@@ -287,6 +287,8 @@ end
 
 --#region _____________________________  Animation Handling  _____________________________
 
+-- TODO: maybe animation should be its own system/class/manager?
+
 --- Switches the active animation. Starts animation from beginning and updates hitbox.
 ---@private
 ---@param name AnimationState
