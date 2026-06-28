@@ -3,6 +3,7 @@
     "midouest.playdate-debug",
     "sumneko.lua",
     "jep-a.lua-plus",
-    "editorconfig.editorconfig"
+    "editorconfig.editorconfig",
+    "johnnymorganz.stylua",
   ]
 }

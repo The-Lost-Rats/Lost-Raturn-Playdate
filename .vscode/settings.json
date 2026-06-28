@@ -1,4 +1,9 @@
 {
   "playdate-debug.sourcePath": "source",
-  "playdate-debug.productName": "LostRaturn"
+  "playdate-debug.productName": "LostRaturn",
+  "[lua]": {
+    "editor.defaultFormatter": "JohnnyMorganz.stylua",
+    "editor.formatOnSave": true,
+  },
+  "Lua.format.enable": false,
 }
