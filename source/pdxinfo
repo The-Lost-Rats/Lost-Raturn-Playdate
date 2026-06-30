@@ -1,6 +1,6 @@
 name=Lost & Raturn
 author=The Lost Rats
-description=
+description=A rat on a mission to save the world, one lost item at a time. Climb pedestrians' legs to return their dropped belongings, and try not to get squashed!
 bundleID=com.thelostrats.lostraturn
 version=0.0.1
 imagePath=
