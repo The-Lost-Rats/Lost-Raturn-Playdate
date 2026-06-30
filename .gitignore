@@ -21,6 +21,8 @@
 !README.md
 !LICENSE
 
+!docs/
+
 # Whitelist makefile
 !Makefile
 

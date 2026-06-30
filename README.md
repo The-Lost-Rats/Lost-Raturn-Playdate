@@ -52,7 +52,9 @@ give someone the wrong item and you lose points. Don't get stepped on or you wil
 
 ## Gallery
 
-TODO: Screenshots!
+| Delivering sunscreen to a swimmer                                                                  |
+| :------------------------------------------------------------------------------------------------: |
+| <img src="docs/media/screenshot-1.png" alt="Gameplay screenshot: delivering an item" width="400">  |
 
 ## Development
 
