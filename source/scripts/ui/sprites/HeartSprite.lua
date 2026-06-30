@@ -16,33 +16,16 @@ local gfx <const> = playdate.graphics
 local HUD_CONSTANTS <const> = UI_CONSTANTS.HUD
 local LAYERS <const> = CONSTANTS.LAYERS
 
---- Temporary helper to build heart images.
+--- Build sprite images for hearts
 ---@param is_filled boolean
 ---@nodiscard
 ---@return _Image
 local function buildHeartImage(is_filled)
-  local diameter <const> = HUD_CONSTANTS.HEART_DIAMETER
-  local height <const> = HUD_CONSTANTS.H
+  local image_path = is_filled and HUD_CONSTANTS.HEART_FULL_SPRITE
+    or HUD_CONSTANTS.HEART_EMPTY_SPRITE
 
-  local image = gfx.image.new(diameter, height)
-  assert(
-    image,
-    "Assertion Failed - buildHeartImage image.new returned nil for diameter "
-      .. diameter
-      .. " and height "
-      .. height
-  )
-
-  -- stylua: ignore start
-  gfx.pushContext(image)
-    gfx.setColor(gfx.kColorWhite)
-    if (is_filled) then
-      gfx.fillCircleInRect(0, 0, diameter, height)
-    else
-      gfx.drawCircleInRect(0, 0, diameter, height)
-    end
-  gfx.popContext()
-  -- stylua: ignore end
+  local image = gfx.image.new(image_path)
+  assert(image, "Assertion Failed - could not load image for heart at " .. image_path)
 
   return image
 end
@@ -56,6 +39,8 @@ local EMPTY_IMAGE <const> = buildHeartImage(false)
 HeartSprite = class("HeartSprite").extends(HUDSprite --[[@as table]]) or HeartSprite
 function HeartSprite:init(x, y)
   HeartSprite.super.init(self, x, y, LAYERS.UI)
+  -- Veritically center sprites
+  self:setCenter(0, 0.5)
   self:setFilled(true)
 end
 

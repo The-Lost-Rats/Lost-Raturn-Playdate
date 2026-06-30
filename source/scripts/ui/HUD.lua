@@ -27,9 +27,10 @@ function HUD:init(max_health)
   self.score_sprite = ScoreSprite(HUD_CONSTANTS.SCORE_X, HUD_CONSTANTS.SCORE_Y)
   self.heart_sprites = {}
 
+  local heart_y = HUD_CONSTANTS.H / 2
   for i = 1, max_health do
     local x = DISPLAY.W - HUD_CONSTANTS.HEART_SPACING * i
-    self.heart_sprites[i] = HeartSprite(x, 0)
+    self.heart_sprites[i] = HeartSprite(x, heart_y)
   end
 end
 
