@@ -33,58 +33,49 @@ local MOVEMENT_STATES = {
   RISING = 2,
 }
 
---- Temporary function to build dithered sprite for leg.
----@nodiscard
----@param w integer
----@param h integer
----@param dither_alpha number
----@param dither_type integer
----@return _Image
-local function buildDitheredImage(w, h, dither_alpha, dither_type)
-  local image = gfx.image.new(w, h)
-  assert(
-    image,
-    "Assertion Failed - buildDitheredImage image.new returned nil for " .. w .. "x" .. h
-  )
-
-  -- stylua: ignore start
-  gfx.pushContext(image)
-    gfx.setDitherPattern(dither_alpha, dither_type)
-    gfx.fillRect(0, 0, w, h)
-  gfx.popContext()
-  -- stylua: ignore end
-
-  return image
-end
-
-local LEG_IMAGE <const> =
-  buildDitheredImage(WALKERS.LEG_W, WALKERS.LEG_H, 0.5, gfx.image.kDitherTypeBayer8x8)
-local SHOE_IMAGE <const> =
-  buildDitheredImage(WALKERS.SHOE_W, WALKERS.SHOE_H, 0.2, gfx.image.kDitherTypeBayer8x8)
+-- Cache images so instances all share the same loaded image
+local image_cache = {}
 
 ---@class Leg: _Object
 ---@field item_type ItemType
 ---@field private direction Direction
----@field private dx_remaining number horizontal distance left for leg to tavel
+---@field private dx_remaining number horizontal distance left for leg to travel
 ---@field private x number
 ---@field private y number
 ---@field private vx number
 ---@field private vy number
 ---@field private just_landed boolean boolean when leg just lands
 ---@field private current_move_state MovementState
+---@field private sprite WalkerSprite
+---@field private image_w integer
+---@field private image_h integer
 ---@field private leg_sprite LegSprite
 ---@field private shoe_sprite ShoeSprite
----@overload fun(x: number, y: number, direction: Direction, item_type: ItemType): Leg
+---@overload fun(x: number, y: number, direction: Direction, item_type: ItemType, sprite: WalkerSprite): Leg
 Leg = class("Leg").extends() or Leg
+
+--#region _____________________________  Static Methods  _____________________________
+
+function Leg.loadImage(path)
+  local image = image_cache[path]
+  if image == nil then
+    image =
+      assert(gfx.image.new(path), "Assertion Failed - could not load image for walker at " .. path)
+    image_cache[path] = image
+  end
+
+  return image
+end
+--#endregion
 
 --#region _____________________________  Init  _____________________________
 
-function Leg:init(x, y, direction, item_type)
+function Leg:init(x, y, direction, item_type, sprite)
   Leg.super.init(self)
 
   self.item_type = item_type
-
   self.direction = direction
+  self.sprite = sprite
 
   self.dx_remaining = 0
   self.x, self.y = 0, 0
@@ -93,14 +84,21 @@ function Leg:init(x, y, direction, item_type)
   self.just_landed = false
   self.current_move_state = MOVEMENT_STATES.GROUNDED
 
+  local image = Leg.loadImage(sprite.path)
+  self.image_w, self.image_h = image:getSize()
+
+  -- Flip sprite if leg is moving to the right of the screen (leg sprites point left by default)
+  local flip = direction == DIRECTION.RIGHT and gfx.kImageFlippedX or gfx.kImageUnflipped
+
   ---@class LegSprite: _Sprite
   ---@field controller Leg
   ---@field item_type ItemType
-  self.leg_sprite = gfx.sprite.new(LEG_IMAGE)
+  self.leg_sprite = gfx.sprite.new(image)
   self.leg_sprite:setZIndex(LAYERS.WALKER)
   -- Set center of sprite to x: center, y: bottom
   self.leg_sprite:setCenter(0.5, 1.0)
-  self.leg_sprite:setCollideRect(0, 0, self.leg_sprite:getSize())
+  self.leg_sprite:setCollideRect(table.unpack(sprite.leg_rect))
+  self.leg_sprite:setImageFlip(flip, true)
   self.leg_sprite:setGroups({ GROUPS.CLIMBABLE })
   self.leg_sprite:setTag(TAGS.LEG)
   self.leg_sprite.item_type = item_type
@@ -108,11 +106,15 @@ function Leg:init(x, y, direction, item_type)
 
   ---@class ShoeSprite: _Sprite
   ---@field controller Leg
-  self.shoe_sprite = gfx.sprite.new(SHOE_IMAGE)
+  -- Invisible sprite. Just used for hazard collide rect.
+  -- Use the same sprite so we can draw collide rects at known places on sprite.
+  self.shoe_sprite = gfx.sprite.new(image)
+  self.shoe_sprite:setVisible(false)
   self.shoe_sprite:setZIndex(LAYERS.WALKER)
   -- Set center of sprite to x: center, y: bottom
   self.shoe_sprite:setCenter(0.5, 1.0)
-  self.shoe_sprite:setCollideRect(0, 0, self.shoe_sprite:getSize())
+  self.shoe_sprite:setCollideRect(table.unpack(sprite.shoe_rect))
+  self.shoe_sprite:setImageFlip(flip, true)
   self.shoe_sprite:setGroups({ GROUPS.HAZARD })
   self.shoe_sprite:setTag(TAGS.SHOE)
   self.shoe_sprite.controller = self
@@ -185,21 +187,14 @@ end
 ---@param dy number
 function Leg:moveBy(dx, dy) self:moveTo(self.x + dx, self.y + dy) end
 
+--- Move both the leg and shoe sprite/colliders
 ---@private
 ---@param x number
 ---@param y number
 function Leg:moveTo(x, y)
   self.x, self.y = x, y
-
-  local leg_w, _ = self.leg_sprite:getSize()
-  local shoe_w, shoe_h = self.shoe_sprite:getSize()
-
+  self.leg_sprite:moveTo(x, y)
   self.shoe_sprite:moveTo(x, y)
-  if self.direction == DIRECTION.LEFT then
-    self.leg_sprite:moveTo(x + shoe_w / 2 - leg_w / 2, y - shoe_h)
-  else
-    self.leg_sprite:moveTo(x - shoe_w / 2 + leg_w / 2, y - shoe_h)
-  end
 end
 --#endregion
 
@@ -242,24 +237,52 @@ function Leg:getPosition() return self.x, self.y end
 ---@return boolean
 function Leg:isFalling() return self.current_move_state == MOVEMENT_STATES.FALLING end
 
+---@private
+---@nodiscard
+---@param local_x number
+---@param local_y number
+---@return number world_x
+---@return number world_y
+function Leg:localToWorld(local_x, local_y)
+  -- To convert from local to world coords we do the following:
+  -- 1. Take the known x or y position (self.x, self.y)
+  --      self.x is the center of the sprite; self.y is the bottom of the sprite in world coordinates
+  -- 2. Subtract:
+  --      For x: half the width to go to the edge of the sprite
+  --      For y: the height of the sprite to go to the top
+  -- 3. Add the local x or y coordinate to get the world coordinate
+
+  local world_x = self.x - 0.5 * self.image_w + local_x
+  local world_y = self.y - self.image_h + local_y
+
+  return world_x, world_y
+end
+
 --- Get climbable positions of leg so player movement can clamp to leg.
 ---@nodiscard
----@return number
----@return number
+---@return number leg_top
+---@return number leg_bottom
 function Leg:getClimbBounds()
-  local _, leg_h = self.leg_sprite:getSize()
-  local _, shoe_h = self.shoe_sprite:getSize()
+  local leg_rect = self.sprite.leg_rect
+  local local_top = leg_rect[2] -- y: top of sprite
+  local local_bottom = leg_rect[2] + leg_rect[4] -- y + height: bottom of sprite
 
-  return self.y - shoe_h - leg_h, self.y - shoe_h
+  -- Don't care about x. Just y bounds.
+  local _, world_top = self:localToWorld(0, local_top)
+  local _, world_bottom = self:localToWorld(0, local_bottom)
+  return world_top, world_bottom
 end
 
 --- Get y position above which player is in scoring range.
 ---@nodiscard
 ---@return number
 function Leg:getScoreThreshold()
-  local _, leg_h = self.leg_sprite:getSize()
-  local _, shoe_h = self.shoe_sprite:getSize()
-  return self.y - shoe_h - leg_h * WALKERS.LEG_SCORE_PERCENT
+  local leg_rect = self.sprite.leg_rect
+  -- 1 - X% down from the top of the sprite
+  local local_y = leg_rect[2] + leg_rect[4] * (1 - WALKERS.LEG_SCORE_PERCENT)
+  local _, world_y = self:localToWorld(0, local_y)
+
+  return world_y
 end
 
 ---@nodiscard

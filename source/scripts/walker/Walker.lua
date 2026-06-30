@@ -30,6 +30,15 @@ local ITEM <const> = ITEM_CONSTANTS
 ---@overload fun(walker_type: WalkerType, x: number, y: number, vx: number, vy: number, direction: Direction): Walker
 Walker = class("Walker").extends() or Walker
 
+--#region _____________________________  Static Methods  _____________________________
+
+function Walker.preloadImages()
+  for _, walker_type in ipairs(WALKERS.TYPES) do
+    Leg.loadImage(walker_type.sprite.path)
+  end
+end
+--#endregion
+
 --#region _____________________________  Init  _____________________________
 
 function Walker:init(walker_type, x, y, vx, vy, direction)
@@ -46,8 +55,8 @@ function Walker:init(walker_type, x, y, vx, vy, direction)
   self.direction = direction
 
   self.legs = {
-    Leg(x + WALKERS.LEG_SPACING, y, direction, self.item_type),
-    Leg(x, y, direction, self.item_type),
+    Leg(x + WALKERS.LEG_SPACING, y, direction, self.item_type, walker_type.sprite),
+    Leg(x, y, direction, self.item_type, walker_type.sprite),
   }
 
   if direction == DIRECTION.LEFT then

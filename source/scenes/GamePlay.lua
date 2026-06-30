@@ -70,6 +70,8 @@ function GamePlay:init()
     -- Redraw background elements and clip to dirty rect
     background_image:draw(0, 0)
   end)
+
+  Walker.preloadImages()
 end
 
 function GamePlay:enter()
