@@ -13,8 +13,7 @@ A rat on a mission to save the world — one lost item at a time.
 ![Lua 5.4](https://img.shields.io/badge/Lua-5.4-blue.svg)
 [![Code style: stylua](https://img.shields.io/badge/code%20style-stylua-blue.svg)](https://github.com/JohnnyMorganz/StyLua)
 
-<!-- TODO: gameplay GIF -->
-<!-- <img src="docs/media/gameplay.gif" alt="Gameplay" width="400"> -->
+<img width="400" height="240" alt="Gameplay Gif: Marshall running around" src="https://github.com/user-attachments/assets/4d2a25ef-2816-4b00-bddd-581ab40865d6" />
 
 </div>
 
