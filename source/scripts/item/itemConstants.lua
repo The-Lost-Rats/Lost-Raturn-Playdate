@@ -15,12 +15,12 @@ local ITEM_SPAWN_PADDING <const> = 30
 ITEM_CONSTANTS = {
   ---@type table<string, ItemType>
   TYPES = {
-    SIX_SHOOTER = { name = "Six Shooter", sprite = "images/items/sunscreen" },
-    WATCH = { name = "Watch", sprite = "images/items/sunscreen" },
-    RING = { name = "Ring", sprite = "images/items/sunscreen" },
+    SIX_SHOOTER = { name = "Six Shooter", sprite = "images/items/revolver" },
+    WATCH = { name = "Watch", sprite = "images/items/watch" },
+    RING = { name = "Ring", sprite = "images/items/ring" },
     SUNSCREEN = { name = "Sunscreen", sprite = "images/items/sunscreen" },
-    WRENCH = { name = "Wrench", sprite = "images/items/sunscreen" },
-    PHONE = { name = "Phone", sprite = "images/items/sunscreen" },
+    WRENCH = { name = "Wrench", sprite = "images/items/wrench" },
+    PHONE = { name = "Phone", sprite = "images/items/phone" },
   },
 
   SPAWN_Y = -10,
