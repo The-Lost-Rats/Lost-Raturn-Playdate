@@ -38,4 +38,7 @@ function playdate.update()
   -- Update timers across the entire system
   timer.updateTimers()
   current_game_scene:update()
+
+  -- Temp render FPS while developing
+  playdate.drawFPS(5, 30)
 end
