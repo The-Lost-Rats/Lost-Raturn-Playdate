@@ -22,46 +22,62 @@ local DISPLAY <const> = CONSTANTS.DISPLAY
 local WALKER_SPAWN_PADDING <const> = 20
 local WALKER_DESPAWN_PADDING <const> = 40
 
---- Temporary constant sprite shared for all walkers
----@type WalkerSprite
-local SWIMMER_SPRITE <const> = {
-  path = "images/walkers/swimmer",
-  leg_rect = { 41, 0, 47, 212 },
-  shoe_rect = { 18, 212, 62, 16 },
-}
-
 WALKER_CONSTANTS = {
   ---@type WalkerType[]
   TYPES = {
     {
       name = "COWBOY",
       item = ITEM_TYPES.SIX_SHOOTER,
-      sprite = SWIMMER_SPRITE,
+      sprite = {
+        path = "images/walkers/cowboy",
+        leg_rect = { 37, 0, 42, 215 },
+        shoe_rect = { 5, 217, 74, 9 },
+      },
     },
     {
       name = "BUSINESS_MAN",
       item = ITEM_TYPES.WATCH,
-      sprite = SWIMMER_SPRITE,
+      sprite = {
+        path = "images/walkers/business_man",
+        leg_rect = { 36, 0, 52, 207 },
+        shoe_rect = { 5, 216, 76, 12 },
+      },
     },
     {
-      name = "WOMAN",
+      name = "DANCER",
       item = ITEM_TYPES.RING,
-      sprite = SWIMMER_SPRITE,
+      sprite = {
+        path = "images/walkers/dancer",
+        leg_rect = { 36, 0, 49, 214 },
+        shoe_rect = { 12, 216, 70, 12 },
+      },
     },
     {
       name = "SWIMMER",
       item = ITEM_TYPES.SUNSCREEN,
-      sprite = SWIMMER_SPRITE,
+      sprite = {
+        path = "images/walkers/swimmer",
+        leg_rect = { 41, 0, 47, 212 },
+        shoe_rect = { 18, 212, 62, 16 },
+      },
     },
     {
       name = "CONSTRUCTION_WORKER",
       item = ITEM_TYPES.WRENCH,
-      sprite = SWIMMER_SPRITE,
+      sprite = {
+        path = "images/walkers/construction_worker",
+        leg_rect = { 36, 0, 47, 204 },
+        shoe_rect = { 12, 216, 70, 12 },
+      },
     },
     {
       name = "RUNNER",
       item = ITEM_TYPES.PHONE,
-      sprite = SWIMMER_SPRITE,
+      sprite = {
+        path = "images/walkers/runner",
+        leg_rect = { 47, 0, 34, 202 },
+        shoe_rect = { 9, 214, 75, 14 },
+      },
     },
   },
 
