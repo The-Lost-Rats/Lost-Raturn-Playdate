@@ -25,4 +25,15 @@ PLAYER_CONSTANTS = {
     JUMP = "jump",
     CLIMB = "climb",
   },
+
+  JUMP_FRAME = {
+    CROUCH = 1,
+    RISE = 2,
+    HANG = 3,
+    FALL = 4,
+    LAND_SQUISH = 5,
+    LAND_POP_UP = 6,
+  },
+
+  APEX_VY = 2,
 }

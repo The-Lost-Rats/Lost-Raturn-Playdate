@@ -61,3 +61,11 @@ function PlayerState:usesCrank() return false end
 ---@param player Player
 ---@return AnimationState
 function PlayerState:animationName(player) return ANIMATION.IDLE end
+
+--- Potential specific frame of current animation to show this tick.
+--- Returns nil to let the animation loop continue on its own.
+---@nodiscard
+---@param player Player
+---@param vy number
+---@return integer?
+function PlayerState:animationFrame(player, vy) return nil end

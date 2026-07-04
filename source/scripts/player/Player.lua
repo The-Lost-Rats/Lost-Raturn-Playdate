@@ -32,9 +32,9 @@ local PLAYER <const> = PLAYER_CONSTANTS
 local ANIMATION <const> = PLAYER.ANIMATION
 local ANIMATION_DEFS <const> = {
   [ANIMATION.IDLE] = {
-    path = "images/player/run",
+    path = "images/player/idle",
     frame_time_ms = 120,
-    hit_box = { 25, 20, 32, 22 },
+    hit_box = { 30, 12, 33, 18 },
   },
   [ANIMATION.RUN] = {
     path = "images/player/run",
@@ -42,7 +42,7 @@ local ANIMATION_DEFS <const> = {
     hit_box = { 25, 20, 32, 22 },
   },
   [ANIMATION.JUMP] = {
-    path = "images/player/run",
+    path = "images/player/jump",
     frame_time_ms = 120,
     hit_box = { 25, 20, 32, 22 },
   },
@@ -78,6 +78,7 @@ local STATES = {
 ---@field private on_health_changed OnHealthChanged
 ---@field private loops table<AnimationState, _AnimationLoop> One loop animation per animation state
 ---@field private hit_boxes table<AnimationState, HitBox> Collide rect per animation
+---@field private image_tables table<AnimationState, _ImageTable>
 ---@field private initial_health integer
 ---@field private health integer
 ---@field private start_x number spawn x, restored on reset
@@ -101,7 +102,7 @@ function Player:init(x, y, initial_health, callbacks)
   self.on_deliver = callbacks.on_deliver
   self.on_health_changed = callbacks.on_health_changed
 
-  self.loops, self.hit_boxes = {}, {}
+  self.loops, self.hit_boxes, self.image_tables = {}, {}, {}
   for name, def in pairs(ANIMATION_DEFS) do
     local image_table = gfx.imagetable.new(def.path)
     assert(
@@ -112,6 +113,7 @@ function Player:init(x, y, initial_health, callbacks)
     -- Set loop to true so animation repeats at end
     self.loops[name] = gfx.animation.loop.new(def.frame_time_ms, image_table, true)
     self.hit_boxes[name] = def.hit_box
+    self.image_tables[name] = image_table
   end
 
   self:setZIndex(LAYERS.PLAYER)
@@ -132,15 +134,16 @@ function Player:reset()
   self.vx = 0
   self.vy = 0
 
-  -- TODO: maybe take this as param in class?
-  self.current_direction = DIRECTION.RIGHT
-  self:setAnimation(ANIMATION.IDLE)
-  self:updateAnimationFrame()
-
   self.held_item = nil
   self.pickup_requested = false
 
+  -- TODO: maybe take this as param in class?
+  self.current_direction = DIRECTION.RIGHT
   self:transitionTo(STATES.GROUNDED)
+
+  self:setAnimation(ANIMATION.IDLE)
+  self:updateAnimationFrame()
+
   self:moveTo(self.start_x, self.start_y)
 end
 --#endregion
@@ -325,10 +328,25 @@ end
 ---@private
 function Player:updateAnimationFrame()
   local loop = self.loops[self.current_animation]
-  local frame = loop.frame
+  local maybe_forced_frame = self.current_state:animationFrame(self, self.vy)
+  local frame = maybe_forced_frame or loop.frame
   if frame ~= self.current_frame then
     self.current_frame = frame
-    self:setImage(loop:image(), FLIP_DIRECTION[self.current_direction])
+    local image = nil
+    if maybe_forced_frame then
+      image = self.image_tables[self.current_animation]:getImage(frame)
+      assert(
+        image,
+        "Assertion Failed - missing frame "
+          .. frame
+          .. " for animation  '"
+          .. self.current_animation
+          .. "'"
+      )
+    else
+      image = loop:image()
+    end
+    self:setImage(image, FLIP_DIRECTION[self.current_direction])
   end
 end
 
