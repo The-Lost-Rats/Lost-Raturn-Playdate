@@ -7,6 +7,8 @@ import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/sprites"
 
+import "engine/signal"
+
 import "game/entities/player/states/ClimbingState"
 import "game/entities/player/states/DeadState"
 import "game/entities/player/states/FallingState"
@@ -66,16 +68,16 @@ local STATES = {
 }
 
 ---@alias OnDeliver fun(item_type: ItemType, leg_type: ItemType): ScoreResult
----@alias OnHealthChanged fun(health: integer)
+-- -@alias OnHealthChanged fun(health: integer)
 
 ---@class PlayerCallbacks
 ---@field on_deliver OnDeliver
----@field on_health_changed OnHealthChanged
+-- -@field on_health_changed OnHealthChanged
 
 -- TODO: move from callbacks to event system?
 ---@class Player: _Sprite
----@field private on_deliver OnDeliver
----@field private on_health_changed OnHealthChanged
+---@field on_deliver OnDeliver
+---@field on_health_changed Signal<integer> notify new player health
 ---@field private loops table<AnimationState, _AnimationLoop> One loop animation per animation state
 ---@field private hit_boxes table<AnimationState, HitBox> Collide rect per animation
 ---@field private image_tables table<AnimationState, _ImageTable>
@@ -100,7 +102,8 @@ function Player:init(x, y, initial_health, callbacks)
   Player.super.init(self)
 
   self.on_deliver = callbacks.on_deliver
-  self.on_health_changed = callbacks.on_health_changed
+  -- self.on_health_changed = callbacks.on_health_changed
+  self.on_health_changed = Signal()
 
   self.loops, self.hit_boxes, self.image_tables = {}, {}, {}
   for name, def in pairs(ANIMATION_DEFS) do
@@ -253,7 +256,7 @@ end
 ---@param amount integer
 function Player:takeDamage(amount)
   self.health = math.max(0, self.health - amount)
-  self.on_health_changed(self.health)
+  self.on_health_changed:emit(self.health)
 
   if self.health == 0 then self:transitionTo(STATES.DEAD) end
 end

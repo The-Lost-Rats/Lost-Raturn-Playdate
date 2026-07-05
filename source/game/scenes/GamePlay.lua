@@ -56,8 +56,10 @@ function GamePlay:init()
 
       return result
     end,
-    on_health_changed = function(health) self.hud:setHealth(health) end,
   })
+
+  ---@param health integer
+  self.player.on_health_changed:subscribe(function(health) self.hud:setHealth(health) end)
 
   local background_image_path = "images/background"
   local background_image = gfx.image.new(background_image_path)
