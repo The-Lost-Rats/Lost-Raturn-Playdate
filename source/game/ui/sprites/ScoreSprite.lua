@@ -6,10 +6,10 @@ import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/sprites"
 
-import "scripts/ui/sprites/HUDSprite"
+import "game/ui/sprites/HUDSprite"
 
-import "scripts/ui/uiConstants"
-import "utilities/constants"
+import "game/ui/uiConstants"
+import "game/constants"
 
 local gfx <const> = playdate.graphics
 

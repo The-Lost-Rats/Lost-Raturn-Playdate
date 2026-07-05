@@ -4,7 +4,7 @@
 
 import "CoreLibs/object"
 
-import "scripts/player/playerConstants"
+import "game/entities/player/playerConstants"
 
 local ANIMATION <const> = PLAYER_CONSTANTS.ANIMATION
 

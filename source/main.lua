@@ -5,10 +5,10 @@
 import "CoreLibs/graphics"
 import "CoreLibs/timer"
 
-import "scenes/GameOver"
-import "scenes/GamePlay"
-import "scenes/Title"
-import "utilities/constants"
+import "game/scenes/GameOver"
+import "game/scenes/GamePlay"
+import "game/scenes/Title"
+import "game/constants"
 
 local timer <const> = playdate.timer
 

@@ -4,10 +4,10 @@
 
 import "CoreLibs/object"
 
-import "scripts/player/states/PlayerState"
+import "game/entities/player/states/PlayerState"
 
-import "scripts/player/playerConstants"
-import "utilities/constants"
+import "game/entities/player/playerConstants"
+import "game/constants"
 
 local ANIMATION <const> = PLAYER_CONSTANTS.ANIMATION
 local JUMP_FRAME <const> = PLAYER_CONSTANTS.JUMP_FRAME

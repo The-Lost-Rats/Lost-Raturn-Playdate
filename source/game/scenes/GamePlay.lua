@@ -7,16 +7,16 @@ import "CoreLibs/object"
 import "CoreLibs/timer"
 import "CoreLibs/ui"
 
-import "scenes/BaseScene"
+import "game/scenes/BaseScene"
 
-import "scripts/walker/Walker"
-import "scripts/player/Player"
-import "scripts/ScoreManager"
-import "scripts/ui/HUD"
+import "game/entities/walker/Walker"
+import "game/entities/player/Player"
+import "game/systems/ScoreManager"
+import "game/ui/HUD"
 
-import "scripts/player/playerConstants"
-import "scripts/walker/walkerConstants"
-import "utilities/constants"
+import "game/entities/player/playerConstants"
+import "game/entities/walker/walkerConstants"
+import "game/constants"
 
 local gfx <const> = playdate.graphics
 local timer <const> = playdate.timer

@@ -4,12 +4,12 @@
 
 import "CoreLibs/object"
 
-import "scripts/item/Item"
-import "scripts/walker/Leg"
+import "game/entities/item/Item"
+import "game/entities/walker/Leg"
 
-import "scripts/item/itemConstants"
-import "scripts/walker/walkerConstants"
-import "utilities/constants"
+import "game/entities/item/itemConstants"
+import "game/entities/walker/walkerConstants"
+import "game/constants"
 
 local DIRECTION <const> = CONSTANTS.DIRECTION
 local WORLD <const> = CONSTANTS.WORLD

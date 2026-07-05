@@ -7,11 +7,11 @@ import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/sprites"
 
-import "scripts/item/Item"
+import "game/entities/item/Item"
 
-import "scripts/item/itemConstants"
-import "scripts/walker/walkerConstants"
-import "utilities/constants"
+import "game/entities/item/itemConstants"
+import "game/entities/walker/walkerConstants"
+import "game/constants"
 
 local gfx <const> = playdate.graphics
 

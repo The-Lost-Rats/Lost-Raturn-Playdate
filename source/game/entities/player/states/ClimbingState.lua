@@ -4,11 +4,11 @@
 
 import "CoreLibs/object"
 
-import "scripts/player/states/PlayerState"
+import "game/entities/player/states/PlayerState"
 
-import "scripts/player/playerConstants"
+import "game/entities/player/playerConstants"
 
-import "utilities/math"
+import "engine/math"
 
 local ANIMATION <const> = PLAYER_CONSTANTS.ANIMATION
 local CLIMBING <const> = PLAYER_CONSTANTS.CLIMBING

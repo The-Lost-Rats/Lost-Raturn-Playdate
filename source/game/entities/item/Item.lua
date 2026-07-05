@@ -8,8 +8,8 @@ import "CoreLibs/object"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
-import "scripts/item/itemConstants"
-import "utilities/constants"
+import "game/entities/item/itemConstants"
+import "game/constants"
 
 local gfx <const> = playdate.graphics
 local timer <const> = playdate.timer

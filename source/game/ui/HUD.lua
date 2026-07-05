@@ -4,12 +4,12 @@
 
 import "CoreLibs/object"
 
-import "scripts/ui/sprites/HUDBackgroundSprite"
-import "scripts/ui/sprites/HeartSprite"
-import "scripts/ui/sprites/ScoreSprite"
+import "game/ui/sprites/HUDBackgroundSprite"
+import "game/ui/sprites/HeartSprite"
+import "game/ui/sprites/ScoreSprite"
 
-import "scripts/ui/uiConstants"
-import "utilities/constants"
+import "game/ui/uiConstants"
+import "game/constants"
 
 local DISPLAY <const> = CONSTANTS.DISPLAY
 local HUD_CONSTANTS <const> = UI_CONSTANTS.HUD

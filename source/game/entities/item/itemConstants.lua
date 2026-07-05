@@ -2,7 +2,7 @@
 -- Contains tuning values for items as well as the item registry (item -> sprite mapping).
 --
 
-import "utilities/constants"
+import "game/constants"
 
 ---@class ItemType
 ---@field name string

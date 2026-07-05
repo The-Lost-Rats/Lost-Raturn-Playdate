@@ -5,8 +5,8 @@
 import "CoreLibs/graphics"
 import "CoreLibs/object"
 
-import "scenes/BaseScene"
-import "utilities/constants"
+import "game/scenes/BaseScene"
+import "game/constants"
 
 local gfx <const> = playdate.graphics
 

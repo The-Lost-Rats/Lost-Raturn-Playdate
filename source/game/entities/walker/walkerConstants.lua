@@ -2,8 +2,8 @@
 -- Tuning values for walker behaviour and walker registry (type -> item, sprite etc.)
 --
 
-import "utilities/constants"
-import "scripts/item/itemConstants"
+import "game/constants"
+import "game/entities/item/itemConstants"
 
 ---@class WalkerSprite
 ---@field path string

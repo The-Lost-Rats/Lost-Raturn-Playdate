@@ -7,14 +7,14 @@ import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/sprites"
 
-import "scripts/player/states/ClimbingState"
-import "scripts/player/states/DeadState"
-import "scripts/player/states/FallingState"
-import "scripts/player/states/GroundedState"
-import "scripts/player/states/PlayerState"
+import "game/entities/player/states/ClimbingState"
+import "game/entities/player/states/DeadState"
+import "game/entities/player/states/FallingState"
+import "game/entities/player/states/GroundedState"
+import "game/entities/player/states/PlayerState"
 
-import "scripts/player/playerConstants"
-import "utilities/constants"
+import "game/entities/player/playerConstants"
+import "game/constants"
 
 local gfx <const> = playdate.graphics
 

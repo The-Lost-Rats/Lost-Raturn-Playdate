@@ -4,7 +4,7 @@
 
 import "CoreLibs/object"
 
-import "scripts/player/states/PlayerState"
+import "game/entities/player/states/PlayerState"
 
 ---@class DeadState: PlayerState
 ---@overload fun(): DeadState
