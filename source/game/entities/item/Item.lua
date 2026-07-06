@@ -30,6 +30,10 @@ local ITEM_STATES = {
   PICKED_UP = 3,
 }
 
+--- List of all items.
+--- Used to delete items on game over and clean up state.
+local live_items = {}
+
 ---@class Item: _Sprite
 ---@field item_type ItemType
 ---@field private vx number
@@ -42,6 +46,19 @@ local ITEM_STATES = {
 ---@field private blinking_timer? _Timer
 ---@overload fun(item_type: ItemType, x: number, y: number): Item
 Item = class("Item").extends(gfx.sprite) or Item
+
+--#region _____________________________  Static Methods  _____________________________
+
+---@return Item[] items List of all active items
+function Item.getAll()
+  local items = {}
+  for item in pairs(live_items) do
+    items[#items + 1] = item
+  end
+
+  return items
+end
+--#endregion
 
 --#region _____________________________  Init  _____________________________
 
@@ -120,20 +137,12 @@ end
 
 --#region _____________________________  Disappearing  _____________________________
 
---- Start the timer to disappear an item and make the item start blinking.
+--- Start the timer to remove an item and make the item start blinking.
 ---@private
 function Item:startDisappearing()
   self.current_state = ITEM_STATES.DISAPPEARING
-  self.disappear_timer = timer.performAfterDelay(ITEM.TTL_MS, function() self:disappear() end)
+  self.disappear_timer = timer.performAfterDelay(ITEM.TTL_MS, function() self:remove() end)
   self:startBlinking(ITEM.MAX_BLINK_SPEED_MS)
-end
-
--- TODO: maybe callback chain up to walker and gameplay to notify delete?
----@private
-function Item:disappear()
-  if self.blinking_timer ~= nil then self.blinking_timer:remove() end
-
-  self:remove()
 end
 
 --- Toggle item visibility at faster and faster rates (floored to MIN_BLINK_SPEED_MS).
@@ -155,9 +164,7 @@ end
 --#region _____________________________  Pick up and drop  _____________________________
 
 function Item:pickUp()
-  if self.grounded_timer ~= nil then self.grounded_timer:remove() end
-  if self.disappear_timer ~= nil then self.disappear_timer:remove() end
-  if self.blinking_timer ~= nil then self.blinking_timer:remove() end
+  self:cancelTimers()
 
   self.is_visible = true
   self:setVisible(true)
@@ -168,5 +175,33 @@ function Item:release()
   -- TODO: do we need to zero this out? wouldn't it be more realistic physics wise to just switch states? Do we want drag in x and y also?
   self.vy = 0
   self.current_state = ITEM_STATES.FALLING
+end
+--#endregion
+
+--#region _____________________________  Object Lifecycle  _____________________________
+
+---@private
+function Item:cancelTimers()
+  if self.grounded_timer ~= nil then self.grounded_timer:remove() end
+  if self.disappear_timer ~= nil then self.disappear_timer:remove() end
+  if self.blinking_timer ~= nil then self.blinking_timer:remove() end
+
+  self.grounded_timer = nil
+  self.disappear_timer = nil
+  self.blinking_timer = nil
+end
+
+--- Call super add and then register item in global set.
+function Item:add()
+  Item.super.add(self)
+  live_items[self] = true
+end
+
+--- Deregister item from global set by setting to nil (i.e. remove it from set).
+--- Then call super remove after we do our own clean up.
+function Item:remove()
+  live_items[self] = nil
+  self:cancelTimers()
+  Item.super.remove(self)
 end
 --#endregion

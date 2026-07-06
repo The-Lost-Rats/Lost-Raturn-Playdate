@@ -114,6 +114,10 @@ function GamePlay:leave()
   end
 
   self.hud:remove()
+
+  for _, item in ipairs(Item.getAll()) do
+    item:remove()
+  end
 end
 --#endregion
 
