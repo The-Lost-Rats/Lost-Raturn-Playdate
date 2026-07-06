@@ -7,6 +7,8 @@ import "CoreLibs/object"
 import "CoreLibs/timer"
 import "CoreLibs/ui"
 
+import "engine/signal"
+
 import "game/scenes/BaseScene"
 
 import "game/entities/walker/Walker"
@@ -34,6 +36,7 @@ local PLAYER <const> = PLAYER_CONSTANTS
 ---@field hud HUD
 ---@field score_manager ScoreManager
 ---@field player Player
+---@field delivery_resolved Signal<ScoreResult>
 ---@field walkers Walker[]
 ---@field walkers_spawn_cap number
 ---@field walkers_spawn_interval_ms number
@@ -49,17 +52,22 @@ function GamePlay:init()
   self.hud = HUD(PLAYER.MAX_HEALTH)
   self.score_manager = ScoreManager()
 
-  self.player = Player(DISPLAY.W_HALF, WORLD.FLOOR_Y, PLAYER.MAX_HEALTH, {
-    on_deliver = function(item_type, leg_type)
-      local result = self.score_manager:recordDelivery(item_type, leg_type)
-      self.hud:setScore(result.total)
+  self.delivery_resolved = Signal()
 
-      return result
-    end,
-  })
+  local function on_deliver(item_type, leg_type)
+    local result = self.score_manager:recordDelivery(item_type, leg_type)
+    self.delivery_resolved:emit(result)
+  end
+
+  self.player = Player(DISPLAY.W_HALF, WORLD.FLOOR_Y, PLAYER.MAX_HEALTH, on_deliver)
 
   ---@param health integer
   self.player.on_health_changed:subscribe(function(health) self.hud:setHealth(health) end)
+
+  ---@param result ScoreResult
+  self.delivery_resolved:subscribe(function(result) self.hud:setScore(result.total) end)
+  ---@param result ScoreResult
+  self.delivery_resolved:subscribe(function(result) self.player:onDeliveryResult(result) end)
 
   local background_image_path = "images/background"
   local background_image = gfx.image.new(background_image_path)

@@ -15,6 +15,8 @@ import "game/entities/player/states/FallingState"
 import "game/entities/player/states/GroundedState"
 import "game/entities/player/states/PlayerState"
 
+import "game/systems/ScoreManager"
+
 import "game/entities/player/playerConstants"
 import "game/constants"
 
@@ -67,17 +69,11 @@ local STATES = {
   -- Climbing state is created on demand with knowledge of attached leg
 }
 
----@alias OnDeliver fun(item_type: ItemType, leg_type: ItemType): ScoreResult
--- -@alias OnHealthChanged fun(health: integer)
+---@alias OnDeliver fun(item_type: ItemType, leg_type: ItemType)
 
----@class PlayerCallbacks
----@field on_deliver OnDeliver
--- -@field on_health_changed OnHealthChanged
-
--- TODO: move from callbacks to event system?
 ---@class Player: _Sprite
----@field on_deliver OnDeliver
 ---@field on_health_changed Signal<integer> notify new player health
+---@field private on_deliver OnDeliver
 ---@field private loops table<AnimationState, _AnimationLoop> One loop animation per animation state
 ---@field private hit_boxes table<AnimationState, HitBox> Collide rect per animation
 ---@field private image_tables table<AnimationState, _ImageTable>
@@ -93,16 +89,15 @@ local STATES = {
 ---@field private current_state PlayerState
 ---@field private current_animation AnimationState
 ---@field private current_frame? integer last animation frame the sprite was on; nil forces a redraw
----@overload fun(x: number, y: number, initial_health: integer, callbacks: PlayerCallbacks): Player
+---@overload fun(x: number, y: number, initial_health: integer, on_deliver: OnDeliver): Player
 Player = class("Player").extends(gfx.sprite) or Player
 
 --#region _____________________________  Init/Reset  _____________________________
 
-function Player:init(x, y, initial_health, callbacks)
+function Player:init(x, y, initial_health, on_deliver)
   Player.super.init(self)
 
-  self.on_deliver = callbacks.on_deliver
-  -- self.on_health_changed = callbacks.on_health_changed
+  self.on_deliver = on_deliver
   self.on_health_changed = Signal()
 
   self.loops, self.hit_boxes, self.image_tables = {}, {}, {}
@@ -293,21 +288,21 @@ end
 
 ---@param leg Leg
 function Player:scoreDelivery(leg)
-  if self.held_item ~= nil then
-    -- TODO: do something cool on correct or incorrect delivery?
-    local result = self.on_deliver(self.held_item.item_type, leg.item_type)
-
-    if result.correct then
-      self.held_item:remove()
-      self.held_item = nil
-    else
-      self:dropItem()
-    end
-  end
-
+  if self.held_item ~= nil then self.on_deliver(self.held_item.item_type, leg.item_type) end
   self:jumpOffLeg()
 end
 
+---@param result ScoreResult
+function Player:onDeliveryResult(result)
+  if self.held_item == nil then return end
+
+  if result.correct then
+    self.held_item:remove()
+    self.held_item = nil
+  else
+    self:dropItem()
+  end
+end
 --#endregion
 
 --#region _____________________________  Animation Handling  _____________________________
