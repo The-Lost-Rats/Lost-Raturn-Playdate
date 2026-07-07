@@ -10,7 +10,7 @@ PLAYER_CONSTANTS = {
   DISMOUNT_V = -9,
 
   CLIMBING = {
-    PIXELS_PER_DEGREE = 0.17, -- crank delta to pixels (crank sensitivity)
+    PIXELS_PER_DEGREE = 0.35, -- crank delta to pixels (crank sensitivity)
     MAX_ACCELERATED_CHANGE = 60, -- crank cap so player cannot go super fast
   },
 
