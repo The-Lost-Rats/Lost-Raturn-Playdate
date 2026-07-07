@@ -7,6 +7,7 @@ import "CoreLibs/object"
 import "CoreLibs/timer"
 import "CoreLibs/ui"
 
+import "engine/assets"
 import "engine/signal"
 
 import "game/scenes/BaseScene"
@@ -70,7 +71,7 @@ function GamePlay:init()
   self.delivery_resolved:subscribe(function(result) self.player:onDeliveryResult(result) end)
 
   local background_image_path = "images/background"
-  local background_image = gfx.image.new(background_image_path)
+  local background_image = Assets.loadImage(background_image_path, "background")
   assert(
     background_image,
     "Assertion Failed - could not load image for background at " .. background_image_path

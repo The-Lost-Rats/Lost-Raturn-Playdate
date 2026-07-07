@@ -8,6 +8,8 @@ import "CoreLibs/object"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
+import "engine/assets"
+
 import "game/entities/item/itemConstants"
 import "game/constants"
 
@@ -66,8 +68,7 @@ function Item:init(item_type, x, y)
   Item.super.init(self)
 
   local item_image_path = item_type.sprite
-  local item_image = gfx.image.new(item_image_path)
-  assert(item_image, "Assertion Failed - could not load image for item at " .. item_image_path)
+  local item_image = Assets.loadImage(item_image_path, "item " .. item_type.name)
 
   self:setImage(item_image)
   self:setZIndex(LAYERS.ITEM)

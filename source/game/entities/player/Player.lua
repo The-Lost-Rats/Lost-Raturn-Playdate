@@ -7,6 +7,7 @@ import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/sprites"
 
+import "engine/assets"
 import "engine/signal"
 
 import "game/entities/player/states/ClimbingState"
@@ -102,11 +103,7 @@ function Player:init(x, y, initial_health, on_deliver)
 
   self.loops, self.hit_boxes, self.image_tables = {}, {}, {}
   for name, def in pairs(ANIMATION_DEFS) do
-    local image_table = gfx.imagetable.new(def.path)
-    assert(
-      image_table,
-      "Assertion Failed - missing image table for animation '" .. name .. "' at " .. def.path
-    )
+    local image_table = Assets.loadImageTable(def.path, "animation '" .. name .. "'")
 
     -- Set loop to true so animation repeats at end
     self.loops[name] = gfx.animation.loop.new(def.frame_time_ms, image_table, true)

@@ -6,6 +6,8 @@ import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/sprites"
 
+import "engine/assets"
+
 import "game/ui/sprites/HUDSprite"
 
 import "game/ui/uiConstants"
@@ -24,10 +26,7 @@ local function buildHeartImage(is_filled)
   local image_path = is_filled and HUD_CONSTANTS.HEART_FULL_SPRITE
     or HUD_CONSTANTS.HEART_EMPTY_SPRITE
 
-  local image = gfx.image.new(image_path)
-  assert(image, "Assertion Failed - could not load image for heart at " .. image_path)
-
-  return image
+  return Assets.loadImage(image_path, "heart")
 end
 
 local FILLED_IMAGE <const> = buildHeartImage(true)

@@ -7,6 +7,8 @@ import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/sprites"
 
+import "engine/assets"
+
 import "game/entities/item/Item"
 
 import "game/entities/item/itemConstants"
@@ -33,9 +35,6 @@ local MOVEMENT_STATES = {
   RISING = 2,
 }
 
--- Cache images so instances all share the same loaded image
-local image_cache = {}
-
 ---@class Leg: _Object
 ---@field item_type ItemType
 ---@field private direction Direction
@@ -53,20 +52,6 @@ local image_cache = {}
 ---@overload fun(x: number, y: number, direction: Direction, item_type: ItemType, sprite: WalkerSprite): Leg
 Leg = class("Leg").extends() or Leg
 
---#region _____________________________  Static Methods  _____________________________
-
-function Leg.loadImage(path)
-  local image = image_cache[path]
-  if image == nil then
-    image =
-      assert(gfx.image.new(path), "Assertion Failed - could not load image for walker at " .. path)
-    image_cache[path] = image
-  end
-
-  return image
-end
---#endregion
-
 --#region _____________________________  Init  _____________________________
 
 function Leg:init(x, y, direction, item_type, sprite)
@@ -82,7 +67,7 @@ function Leg:init(x, y, direction, item_type, sprite)
 
   self.current_move_state = MOVEMENT_STATES.GROUNDED
 
-  local image = Leg.loadImage(sprite.path)
+  local image = Assets.loadImage(sprite.path, "leg")
   self.image_w, self.image_h = image:getSize()
 
   -- Flip sprite if leg is moving to the right of the screen (leg sprites point left by default)

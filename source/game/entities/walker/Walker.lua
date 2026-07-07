@@ -4,6 +4,8 @@
 
 import "CoreLibs/object"
 
+import "engine/assets"
+
 import "game/entities/item/Item"
 import "game/entities/walker/Leg"
 
@@ -34,7 +36,7 @@ Walker = class("Walker").extends() or Walker
 
 function Walker.preloadImages()
   for _, walker_type in ipairs(WALKERS.TYPES) do
-    Leg.loadImage(walker_type.sprite.path)
+    Assets.loadImage(walker_type.sprite.path, "walker")
   end
 end
 --#endregion
