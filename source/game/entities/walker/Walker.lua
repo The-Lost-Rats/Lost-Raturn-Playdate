@@ -93,7 +93,7 @@ function Walker:update()
     end
   end
 
-  if active_leg:justLanded() then
+  if active_leg:isGrounded() then
     -- Alternate between legs (lists are 1 indexed)
     self.active_leg_index = (self.active_leg_index % #self.legs) + 1
     active_leg = self.legs[self.active_leg_index]

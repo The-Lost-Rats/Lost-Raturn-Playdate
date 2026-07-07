@@ -44,7 +44,6 @@ local image_cache = {}
 ---@field private y number
 ---@field private vx number
 ---@field private vy number
----@field private just_landed boolean boolean when leg just lands
 ---@field private current_move_state MovementState
 ---@field private sprite WalkerSprite
 ---@field private image_w integer
@@ -81,7 +80,6 @@ function Leg:init(x, y, direction, item_type, sprite)
   self.x, self.y = 0, 0
   self.vx, self.vy = 0, 0
 
-  self.just_landed = false
   self.current_move_state = MOVEMENT_STATES.GROUNDED
 
   local image = Leg.loadImage(sprite.path)
@@ -162,8 +160,6 @@ function Leg:land()
   self.y = WORLD.FLOOR_Y
   self.vx, self.vy = 0, 0
   self:moveTo(self.x, self.y)
-
-  self.just_landed = true
 end
 --#endregion
 
@@ -200,25 +196,23 @@ end
 
 --#region _____________________________  Queries  _____________________________
 
--- TODO: maybe also use event system here? fire off a "hey I just landed message?"
---- Check if leg landed since the last call. Sets just landed to false after consumption.
 ---@nodiscard
 ---@return boolean
-function Leg:justLanded()
-  local temp_just_landed = self.just_landed
-  self.just_landed = false
-  return temp_just_landed
-end
+function Leg:isGrounded() return self.current_move_state == MOVEMENT_STATES.GROUNDED end
+
+---@nodiscard
+---@return boolean
+function Leg:isRising() return self.current_move_state == MOVEMENT_STATES.RISING end
+
+---@nodiscard
+---@return boolean
+function Leg:isFalling() return self.current_move_state == MOVEMENT_STATES.FALLING end
 
 ---@nodiscard
 ---@return boolean
 function Leg:isOffScreen()
   return self.x < WALKERS.DESPAWN_BOUND_LEFT or self.x > WALKERS.DESPAWN_BOUND_RIGHT
 end
-
----@nodiscard
----@return boolean
-function Leg:isRising() return self.current_move_state == MOVEMENT_STATES.RISING end
 
 ---@param item_type ItemType
 ---@return Item
@@ -232,10 +226,6 @@ end
 ---@return number
 ---@return number
 function Leg:getPosition() return self.x, self.y end
-
----@nodiscard
----@return boolean
-function Leg:isFalling() return self.current_move_state == MOVEMENT_STATES.FALLING end
 
 ---@private
 ---@nodiscard
