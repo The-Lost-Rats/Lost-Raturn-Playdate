@@ -60,6 +60,12 @@ function Item.getAll()
 
   return items
 end
+
+function Item.preloadImages()
+  for _, item_type in pairs(ITEM.TYPES) do
+    Assets.loadImage(item_type.sprite, item_type.name)
+  end
+end
 --#endregion
 
 --#region _____________________________  Init  _____________________________

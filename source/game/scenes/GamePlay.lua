@@ -83,6 +83,7 @@ function GamePlay:init()
   end)
 
   Walker.preloadImages()
+  Item.preloadImages()
 end
 
 function GamePlay:enter()
