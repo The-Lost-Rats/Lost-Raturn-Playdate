@@ -72,10 +72,6 @@ function GamePlay:init()
 
   local background_image_path = "images/background"
   local background_image = Assets.loadImage(background_image_path, "background")
-  assert(
-    background_image,
-    "Assertion Failed - could not load image for background at " .. background_image_path
-  )
 
   gfx.sprite.setBackgroundDrawingCallback(function(x, y, w, h)
     -- Redraw background elements and clip to dirty rect
