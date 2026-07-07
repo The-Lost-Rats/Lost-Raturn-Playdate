@@ -8,7 +8,7 @@ import "CoreLibs/object"
 import "CoreLibs/sprites"
 
 import "engine/assets"
-import "engine/signal"
+import "engine/Signal"
 
 import "game/entities/player/states/ClimbingState"
 import "game/entities/player/states/DeadState"

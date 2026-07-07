@@ -1,4 +1,4 @@
--- signal.lua
+-- Signal.lua
 -- Synchronous observer. An owner creates a signal; consumers subscribe.
 -- emit() fans out to every subscriber in subscription order and returns nothing.
 --

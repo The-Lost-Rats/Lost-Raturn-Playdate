@@ -8,7 +8,7 @@ import "CoreLibs/timer"
 import "CoreLibs/ui"
 
 import "engine/assets"
-import "engine/signal"
+import "engine/Signal"
 
 import "game/scenes/BaseScene"
 
