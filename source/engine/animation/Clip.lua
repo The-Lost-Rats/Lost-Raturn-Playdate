@@ -27,7 +27,7 @@ end
 local function validatePosition(position, size, function_name)
   if position < 1 or position > size then
     error(
-      "Error - Clip:"
+      "Error - Clip: "
         .. function_name
         .. " attempted to access an invalid position "
         .. position

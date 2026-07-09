@@ -9,7 +9,7 @@ import "engine/math"
 import "engine/Signal"
 
 ---@class AnimationPlayer: _Object
----@field event_signal Signal<string> emits an event name  when a frame carrying one begins
+---@field private event_signal Signal<string> emits an event name when a frame carrying one begins
 ---@field private clip Clip
 ---@field private current_frame_index integer current clip position (1 indexed)
 ---@field private elapsed_time number ms accumulated on the current frame
@@ -21,6 +21,7 @@ AnimationPlayer = class("AnimationPlayer").extends() or AnimationPlayer
 
 ---@param clip Clip
 function AnimationPlayer:init(clip)
+  AnimationPlayer.super.init(self)
   self.event_signal = Signal()
   self:play(clip)
 end
@@ -127,3 +128,7 @@ function AnimationPlayer:getImage() return self.clip:imageAt(self.current_frame_
 --- True when a ONCE clip has played fully. Always false for LOOP and PINGPONG.
 ---@return boolean
 function AnimationPlayer:isComplete() return self.is_complete end
+
+---@param listener fun(event_name: string)
+---@return integer handle
+function AnimationPlayer:onEvent(listener) return self.event_signal:subscribe(listener) end
