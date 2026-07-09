@@ -5,6 +5,7 @@
 
 import "CoreLibs/object"
 
+import "engine/animation/Clip"
 import "engine/math"
 import "engine/Signal"
 
