@@ -59,7 +59,7 @@ function PlayerState:usesCrank() return false end
 --- What is the Animation this state uses?
 ---@nodiscard
 ---@param player Player
----@return AnimationState
+---@return AnimationStateEnum
 function PlayerState:animationName(player) return ANIMATION.IDLE end
 
 --- Potential specific frame of current animation to show this tick.

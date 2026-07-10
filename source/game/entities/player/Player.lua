@@ -75,9 +75,9 @@ local STATES = {
 ---@class Player: _Sprite
 ---@field on_health_changed Signal<integer> notify new player health
 ---@field private on_deliver OnDeliver
----@field private loops table<AnimationState, _AnimationLoop> One loop animation per animation state
----@field private hit_boxes table<AnimationState, HitBox> Collide rect per animation
----@field private image_tables table<AnimationState, _ImageTable>
+---@field private loops table<AnimationStateEnum, _AnimationLoop> One loop animation per animation state
+---@field private hit_boxes table<AnimationStateEnum, HitBox> Collide rect per animation
+---@field private image_tables table<AnimationStateEnum, _ImageTable>
 ---@field private initial_health integer
 ---@field private health integer
 ---@field private start_x number spawn x, restored on reset
@@ -88,7 +88,7 @@ local STATES = {
 ---@field private held_item? Item item the player is carrying; can be nil
 ---@field private pickup_requested boolean
 ---@field private current_state PlayerState
----@field private current_animation AnimationState
+---@field private current_animation AnimationStateEnum
 ---@field private current_frame? integer last animation frame the sprite was on; nil forces a redraw
 ---@overload fun(x: number, y: number, initial_health: integer, on_deliver: OnDeliver): Player
 Player = class("Player").extends(gfx.sprite) or Player
@@ -308,7 +308,7 @@ end
 
 --- Switches the active animation. Starts animation from beginning and updates hitbox.
 ---@private
----@param name AnimationState
+---@param name AnimationStateEnum
 function Player:setAnimation(name)
   if name == self.current_animation then return end
   self.current_animation = name
