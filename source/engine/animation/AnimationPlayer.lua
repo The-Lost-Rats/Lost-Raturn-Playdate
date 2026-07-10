@@ -20,6 +20,8 @@ import "engine/Signal"
 ---@overload fun(clip: Clip): AnimationPlayer
 AnimationPlayer = class("AnimationPlayer").extends() or AnimationPlayer
 
+--#region _____________________________  Init/Play  _____________________________
+
 ---@param clip Clip
 function AnimationPlayer:init(clip)
   AnimationPlayer.super.init(self)
@@ -37,6 +39,9 @@ function AnimationPlayer:play(clip)
   self.direction = 1
   self.is_complete = false
 end
+--#endregion
+
+--#region _____________________________  Update  _____________________________
 
 --- Advance animation by dt (ms). Returns true if the frame changed.
 ---@param dt number
@@ -59,6 +64,9 @@ function AnimationPlayer:update(dt)
   has_changed = has_changed or (old_index ~= self.current_frame_index)
   return has_changed
 end
+--#endregion
+
+--#region _____________________________  Frame Advance  _____________________________
 
 --- Advance one frame based on loop mode.
 --- Emits signal on frame entry if event/tag exists for frame.
@@ -120,6 +128,9 @@ function AnimationPlayer:_advancePingPong()
   next_frame = math.clamp(next_frame, 1, self.clip:frameCount())
   self.current_frame_index = next_frame
 end
+--#endregion
+
+--#region _____________________________  Queries  _____________________________
 
 --- Current frame image.
 ---@return _Image
@@ -133,3 +144,4 @@ function AnimationPlayer:isComplete() return self.is_complete end
 ---@param listener fun(event_name: string)
 ---@return integer handle
 function AnimationPlayer:onEvent(listener) return self.event_signal:subscribe(listener) end
+--#endregion
