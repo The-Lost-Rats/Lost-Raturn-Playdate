@@ -32,7 +32,7 @@ function Signal:subscribe(listener)
   ---@type Subscriber
   local subscriber = { handle = handle, listener = listener }
 
-  self.subscribers[#self.subscribers + 1] = subscriber
+  table.insert(self.subscribers, subscriber)
   return handle
 end
 

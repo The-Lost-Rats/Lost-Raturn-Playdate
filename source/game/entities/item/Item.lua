@@ -55,7 +55,7 @@ Item = class("Item").extends(gfx.sprite) or Item
 function Item.getAll()
   local items = {}
   for item in pairs(live_items) do
-    items[#items + 1] = item
+    table.insert(items, item)
   end
 
   return items
