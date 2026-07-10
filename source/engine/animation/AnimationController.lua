@@ -7,6 +7,89 @@ import "CoreLibs/object"
 import "engine/animation/Clip"
 import "engine/animation/AnimationPlayer"
 
+--#region _____________________________  Parameter Delegate  _____________________________
+
+---@enum ParamType
+PARAM_TYPE = {
+  NUMBER = "number",
+  BOOLEAN = "boolean",
+  TRIGGER = "trigger",
+}
+
+---@class Parameters: _Object
+---@field private declared table<string, ParamType>
+---@field private values table<string, number | boolean>
+---@field private trigger_names string[]
+Parameters = class("Parameters").extends() or Parameters
+
+function Parameters:init()
+  Parameters.super.init(self)
+  self.declared = {}
+  self.values = {}
+  self.trigger_names = {}
+end
+
+---@param name string
+---@param default? number defaults to 0
+function Parameters:declareNumber(name, default)
+  self.declared[name] = PARAM_TYPE.NUMBER
+  self.values[name] = default or 0
+end
+
+---@param name string
+---@param default? boolean defaults to false
+function Parameters:declareBoolean(name, default)
+  self.declared[name] = PARAM_TYPE.BOOLEAN
+  self.values[name] = default or false
+end
+
+---@param name string
+function Parameters:declareTrigger(name)
+  self.declared[name] = PARAM_TYPE.TRIGGER
+  self.values[name] = false
+  table.insert(self.trigger_names, name)
+end
+
+---@param name string
+---@param value number
+function Parameters:setNumber(name, value)
+  if self.declared[name] ~= PARAM_TYPE.NUMBER then
+    error("Error - parameter " .. name .. " is not a number", 2)
+  end
+
+  self.values[name] = value
+end
+
+---@param name string
+---@param value boolean
+function Parameters:setBoolean(name, value)
+  if self.declared[name] ~= PARAM_TYPE.BOOLEAN then
+    error("Error - parameter " .. name .. " is not a boolean", 2)
+  end
+
+  self.values[name] = value
+end
+
+---@param name string
+function Parameters:setTrigger(name)
+  if self.declared[name] ~= PARAM_TYPE.TRIGGER then
+    error("Error - parameter " .. name .. " is not a trigger", 2)
+  end
+
+  self.values[name] = true
+end
+
+---@param name string
+---@return boolean | number
+function Parameters:get(name) return self.values[name] end
+
+function Parameters:resetTriggers()
+  for _, name in ipairs(self.trigger_names) do
+    self.values[name] = false
+  end
+end
+--#endregion
+
 --#region _____________________________  Transitions  _____________________________
 
 ---@enum TransitionOp
@@ -57,15 +140,15 @@ function Transition:addCondition(name, operation, value)
 end
 
 --- Are all the conditions for this transition true?
----@param values table<string, number | boolean>
+---@param parameters Parameters
 ---@param clip_complete boolean
 ---@return boolean
-function Transition:isSatisfied(values, clip_complete)
+function Transition:isSatisfied(parameters, clip_complete)
   if self.wait_for_complete and not clip_complete then return false end
 
   for _, condition in ipairs(self.conditions) do
     local operation = condition.operation
-    local value = values[condition.name]
+    local value = parameters:get(condition.name)
     local compare = condition.value
     local condition_holds = false
 
@@ -108,37 +191,33 @@ end
 ---@class AnimationController: _Object
 ---@field private animation_player AnimationPlayer
 ---@field private current_state AnimationState
----@field private values table<string, number | boolean>
----@field private triggers table<string, true>
+---@field private parameters Parameters
 ---@field private global_transitions Transition[] Any State Transition. Happens before current state's transitions.
 ---@overload fun(initial_state: AnimationState, global_transitions?: Transition[]): AnimationController
 AnimationController = class("AnimationController").extends() or AnimationController
 
 ---@param initial_state AnimationState
+---@param parameters Parameters
 ---@param global_transitions? Transition[]
-function AnimationController:init(initial_state, global_transitions)
+function AnimationController:init(initial_state, parameters, global_transitions)
   AnimationController.super.init(self)
 
   self.animation_player = AnimationPlayer(initial_state.clip)
   self.current_state = initial_state
   self.global_transitions = global_transitions or {}
-  self.values = {}
-  self.triggers = {}
+  self.parameters = parameters
 end
 
 ---@param name string
 ---@param value boolean
-function AnimationController:setBool(name, value) self.values[name] = value end
+function AnimationController:setBoolean(name, value) self.parameters:setBoolean(name, value) end
 
 ---@param name string
 ---@param value number
-function AnimationController:setNumber(name, value) self.values[name] = value end
+function AnimationController:setNumber(name, value) self.parameters:setNumber(name, value) end
 
 ---@param name string
-function AnimationController:setTrigger(name)
-  self.values[name] = true
-  self.triggers[name] = true
-end
+function AnimationController:setTrigger(name) self.parameters:setTrigger(name) end
 
 --- First transition in list whose conditions are all true; else nil.
 ---@private
@@ -147,7 +226,7 @@ end
 function AnimationController:_findFirstValidTransition(transitions)
   local clip_complete = self.animation_player:isComplete()
   for _, transition in ipairs(transitions) do
-    if transition:isSatisfied(self.values, clip_complete) then return transition end
+    if transition:isSatisfied(self.parameters, clip_complete) then return transition end
   end
 
   return nil
@@ -166,10 +245,7 @@ function AnimationController:update(dt)
   end
 
   -- Reset triggers
-  for name in pairs(self.triggers) do
-    self.values[name] = false
-  end
-  self.triggers = {}
+  self.parameters:resetTriggers()
 
   return self.animation_player:update(dt)
 end
