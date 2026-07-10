@@ -6,89 +6,7 @@ import "CoreLibs/object"
 
 import "engine/animation/Clip"
 import "engine/animation/AnimationPlayer"
-
---#region _____________________________  Parameter Delegate  _____________________________
-
----@enum ParamType
-PARAM_TYPE = {
-  NUMBER = "number",
-  BOOLEAN = "boolean",
-  TRIGGER = "trigger",
-}
-
----@class Parameters: _Object
----@field private declared table<string, ParamType>
----@field private values table<string, number | boolean>
----@field private trigger_names string[]
-Parameters = class("Parameters").extends() or Parameters
-
-function Parameters:init()
-  Parameters.super.init(self)
-  self.declared = {}
-  self.values = {}
-  self.trigger_names = {}
-end
-
----@param name string
----@param default? number defaults to 0
-function Parameters:declareNumber(name, default)
-  self.declared[name] = PARAM_TYPE.NUMBER
-  self.values[name] = default or 0
-end
-
----@param name string
----@param default? boolean defaults to false
-function Parameters:declareBoolean(name, default)
-  self.declared[name] = PARAM_TYPE.BOOLEAN
-  self.values[name] = default or false
-end
-
----@param name string
-function Parameters:declareTrigger(name)
-  self.declared[name] = PARAM_TYPE.TRIGGER
-  self.values[name] = false
-  table.insert(self.trigger_names, name)
-end
-
----@param name string
----@param value number
-function Parameters:setNumber(name, value)
-  if self.declared[name] ~= PARAM_TYPE.NUMBER then
-    error("Error - parameter " .. name .. " is not a number", 2)
-  end
-
-  self.values[name] = value
-end
-
----@param name string
----@param value boolean
-function Parameters:setBoolean(name, value)
-  if self.declared[name] ~= PARAM_TYPE.BOOLEAN then
-    error("Error - parameter " .. name .. " is not a boolean", 2)
-  end
-
-  self.values[name] = value
-end
-
----@param name string
-function Parameters:setTrigger(name)
-  if self.declared[name] ~= PARAM_TYPE.TRIGGER then
-    error("Error - parameter " .. name .. " is not a trigger", 2)
-  end
-
-  self.values[name] = true
-end
-
----@param name string
----@return boolean | number
-function Parameters:get(name) return self.values[name] end
-
-function Parameters:resetTriggers()
-  for _, name in ipairs(self.trigger_names) do
-    self.values[name] = false
-  end
-end
---#endregion
+import "engine/animation/Parameters"
 
 --#region _____________________________  Transitions  _____________________________
 
@@ -155,9 +73,9 @@ function Transition:isSatisfied(parameters, clip_complete)
     if operation == TRANSITION_OP.EQUAL_TO then
       condition_holds = value == compare
     elseif operation == TRANSITION_OP.GREATER_THAN then
-      condition_holds = type(value) == "number" and value > compare
+      condition_holds = value > compare
     elseif operation == TRANSITION_OP.LESS_THAN then
-      condition_holds = type(value) == "number" and value < compare
+      condition_holds = value < compare
     else
       error("Error - Unknown operation " .. operation .. " for " .. condition.name, 2)
     end
@@ -166,6 +84,49 @@ function Transition:isSatisfied(parameters, clip_complete)
   end
 
   return true
+end
+
+-- TODO: can I merge this a little with addCondition?
+---@param type ParamType
+---@param operation TransitionOp
+local function validOperation(type, operation)
+  if type == PARAM_TYPE.NUMBER then
+    return operation == TRANSITION_OP.GREATER_THAN
+      or operation == TRANSITION_OP.LESS_THAN
+      or operation == TRANSITION_OP.EQUAL_TO
+  elseif type == PARAM_TYPE.BOOLEAN then
+    return operation == TRANSITION_OP.EQUAL_TO
+  elseif type == PARAM_TYPE.TRIGGER then
+    return operation == TRANSITION_OP.EQUAL_TO
+  else
+    error(
+      "Error - attempted to validate an unknown type " .. type .. " for operation " .. operation,
+      2
+    )
+  end
+end
+
+--- Checks transition conditions are valid. Throws error if not.
+---@param parameters Parameters
+function Transition:validate(parameters)
+  for _, condition in ipairs(self.conditions) do
+    local name = condition.name
+    if not parameters:isDeclared(name) then
+      error("Error - transition uses non-existent value " .. name, 2)
+    end
+
+    local parameter_type = parameters:typeOf(name)
+    local operation = condition.operation
+    if not validOperation(parameter_type, operation) then
+      error(
+        "Error - transition uses invalid operation "
+          .. operation
+          .. " for condition of type "
+          .. parameter_type,
+        2
+      )
+    end
+  end
 end
 --#endregion
 
@@ -193,7 +154,7 @@ end
 ---@field private current_state AnimationState
 ---@field private parameters Parameters
 ---@field private global_transitions Transition[] Any State Transition. Happens before current state's transitions.
----@overload fun(initial_state: AnimationState, global_transitions?: Transition[]): AnimationController
+---@overload fun(initial_state: AnimationState, parameters: Parameters, global_transitions?: Transition[]): AnimationController
 AnimationController = class("AnimationController").extends() or AnimationController
 
 ---@param initial_state AnimationState
@@ -204,8 +165,33 @@ function AnimationController:init(initial_state, parameters, global_transitions)
 
   self.animation_player = AnimationPlayer(initial_state.clip)
   self.current_state = initial_state
-  self.global_transitions = global_transitions or {}
   self.parameters = parameters
+  self.global_transitions = global_transitions or {}
+
+  -- Validate transition conditions on start up
+  self:_validateStateGraph()
+end
+
+---@private
+function AnimationController:_validateStateGraph()
+  local to_visit = { self.current_state }
+  for _, transition in ipairs(self.global_transitions) do
+    transition:validate(self.parameters)
+    table.insert(to_visit, transition.to_state)
+  end
+
+  local visited = {}
+  while #to_visit > 0 do
+    local state = table.remove(to_visit)
+    if not visited[state] then
+      visited[state] = true
+
+      for _, transition in ipairs(state.transitions) do
+        transition:validate(self.parameters)
+        table.insert(to_visit, transition.to_state)
+      end
+    end
+  end
 end
 
 ---@param name string
