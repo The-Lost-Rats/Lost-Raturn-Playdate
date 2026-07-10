@@ -17,6 +17,11 @@ TRANSITION_OP = {
   EQUAL_TO = "equal",
 }
 
+---@param operation TransitionOp
+local function isComparison(operation)
+  return operation == TRANSITION_OP.GREATER_THAN or operation == TRANSITION_OP.LESS_THAN
+end
+
 ---@class Condition
 ---@field name string
 ---@field operation TransitionOp
@@ -43,10 +48,7 @@ end
 ---@param value number | boolean
 ---@return Transition self to allow chaining conditions
 function Transition:addCondition(name, operation, value)
-  if
-    (operation == TRANSITION_OP.GREATER_THAN or operation == TRANSITION_OP.LESS_THAN)
-    and type(value) == "boolean"
-  then
+  if isComparison(operation) and type(value) == "boolean" then
     error(
       "Error - attempted to add a condition using operator " .. operation .. " for a boolean value",
       2
@@ -86,24 +88,11 @@ function Transition:isSatisfied(parameters, clip_complete)
   return true
 end
 
--- TODO: can I merge this a little with addCondition?
----@param type ParamType
+---@param parameter_type ParamType
 ---@param operation TransitionOp
-local function validOperation(type, operation)
-  if type == PARAM_TYPE.NUMBER then
-    return operation == TRANSITION_OP.GREATER_THAN
-      or operation == TRANSITION_OP.LESS_THAN
-      or operation == TRANSITION_OP.EQUAL_TO
-  elseif type == PARAM_TYPE.BOOLEAN then
-    return operation == TRANSITION_OP.EQUAL_TO
-  elseif type == PARAM_TYPE.TRIGGER then
-    return operation == TRANSITION_OP.EQUAL_TO
-  else
-    error(
-      "Error - attempted to validate an unknown type " .. type .. " for operation " .. operation,
-      2
-    )
-  end
+local function validOperation(parameter_type, operation)
+  if isComparison(operation) then return parameter_type == PARAM_TYPE.NUMBER end
+  return true
 end
 
 --- Checks transition conditions are valid. Throws error if not.
