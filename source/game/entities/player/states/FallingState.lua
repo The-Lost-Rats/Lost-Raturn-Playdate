@@ -6,12 +6,7 @@ import "CoreLibs/object"
 
 import "game/entities/player/states/PlayerState"
 
-import "game/entities/player/playerConstants"
 import "game/constants"
-
-local ANIMATION <const> = PLAYER_CONSTANTS.ANIMATION
-local JUMP_FRAME <const> = PLAYER_CONSTANTS.JUMP_FRAME
-local APEX_VY <const> = PLAYER_CONSTANTS.APEX_VY
 
 local PHYSICS <const> = CONSTANTS.PHYSICS
 local WORLD <const> = CONSTANTS.WORLD
@@ -42,17 +37,4 @@ end
 ---@param tag integer
 function FallingState:resolveOverlap(player, other, tag)
   if self.grab_requested and tag == TAGS.LEG then player:grabLeg(other) end
-end
-
-function FallingState:animationName(player) return ANIMATION.JUMP end
-
---- Use player velocity to determine what frame of jump animation to show.
----@nodiscard
----@param player Player
----@param vy number
----@return integer?
-function FallingState:animationFrame(player, vy)
-  if vy < -APEX_VY then return JUMP_FRAME.RISE end
-  if vy > APEX_VY then return JUMP_FRAME.FALL end
-  return JUMP_FRAME.HANG
 end

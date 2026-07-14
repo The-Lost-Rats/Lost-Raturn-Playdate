@@ -10,7 +10,6 @@ import "game/entities/player/playerConstants"
 
 import "engine/math"
 
-local ANIMATION <const> = PLAYER_CONSTANTS.ANIMATION
 local CLIMBING <const> = PLAYER_CONSTANTS.CLIMBING
 
 --- Get crank change (delta) and convert to player pixel movement.
@@ -81,5 +80,3 @@ function ClimbingState:constrain(player, x, y, hit_edge)
 end
 
 function ClimbingState:usesCrank() return true end
-
-function ClimbingState:animationName(player) return ANIMATION.CLIMB end

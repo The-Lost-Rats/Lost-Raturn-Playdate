@@ -4,10 +4,6 @@
 
 import "CoreLibs/object"
 
-import "game/entities/player/playerConstants"
-
-local ANIMATION <const> = PLAYER_CONSTANTS.ANIMATION
-
 ---@class PlayerState: _Object
 PlayerState = class("PlayerState").extends() or PlayerState
 
@@ -55,17 +51,3 @@ function PlayerState:isTerminal() return false end
 ---@nodiscard
 ---@return boolean
 function PlayerState:usesCrank() return false end
-
---- What is the Animation this state uses?
----@nodiscard
----@param player Player
----@return AnimationStateEnum
-function PlayerState:animationName(player) return ANIMATION.IDLE end
-
---- Potential specific frame of current animation to show this tick.
---- Returns nil to let the animation loop continue on its own.
----@nodiscard
----@param player Player
----@param vy number
----@return integer?
-function PlayerState:animationFrame(player, vy) return nil end

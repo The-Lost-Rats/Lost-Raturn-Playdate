@@ -15,25 +15,5 @@ PLAYER_CONSTANTS = {
   },
 
   MAX_HEALTH = 3,
-
   HELD_ITEM_Y_GAP = 4,
-
-  ---@enum AnimationStateEnum
-  ANIMATION = {
-    IDLE = "idle",
-    RUN = "run",
-    JUMP = "jump",
-    CLIMB = "climb",
-  },
-
-  JUMP_FRAME = {
-    CROUCH = 1,
-    RISE = 2,
-    HANG = 3,
-    FALL = 4,
-    LAND_SQUISH = 5,
-    LAND_POP_UP = 6,
-  },
-
-  APEX_VY = 2,
 }
