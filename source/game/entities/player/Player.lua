@@ -6,6 +6,7 @@ import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/sprites"
 
+import "engine/time"
 import "engine/Signal"
 
 import "game/entities/player/PlayerAnimator"
@@ -86,8 +87,6 @@ function Player:init(x, y, initial_health, on_deliver)
 end
 
 function Player:reset()
-  self.last_update_ms = playdate.getCurrentTimeMilliseconds()
-
   self.health = self.initial_health
 
   self.vx = 0
@@ -138,15 +137,11 @@ function Player:update()
 
   self:resolveActions(state)
 
-  local now = playdate.getCurrentTimeMilliseconds()
-  local dt = now - self.last_update_ms
-  self.last_update_ms = now
-
   self.animator:setVy(self.vy)
   self.animator:setGrounded(self:isGrounded())
   self.animator:setMoving(self:isMovingHorizontally())
 
-  if self.animator:update(dt) then
+  if self.animator:update(Time.getDeltaTime()) then
     self:setImage(self.animator:getImage(), FLIP_DIRECTION[self.current_direction])
   end
 end
