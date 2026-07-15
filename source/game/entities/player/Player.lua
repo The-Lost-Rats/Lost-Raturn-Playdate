@@ -31,8 +31,6 @@ local TAGS <const> = CONSTANTS.TAGS
 
 local PLAYER <const> = PLAYER_CONSTANTS
 
----@alias HitBox [integer, integer, integer, integer] -- {x, y, w, h}
-
 local FLIP_DIRECTION <const> = {
   [DIRECTION.LEFT] = gfx.kImageFlippedX,
   [DIRECTION.RIGHT] = gfx.kImageUnflipped,
