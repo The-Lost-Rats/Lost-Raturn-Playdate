@@ -5,7 +5,6 @@
 import "CoreLibs/graphics"
 import "CoreLibs/timer"
 
-import "engine/collision/CollisionSystem"
 import "engine/time"
 
 import "game/scenes/GameOver"
@@ -32,9 +31,6 @@ local current_game_scene = SCENE_TITLE
 ---@param new_scene BaseScene
 function setScene(new_scene)
   current_game_scene:leave()
-
-  -- Reset colliders for new scene
-  CollisionSystem.init()
   current_game_scene = new_scene
   current_game_scene:enter()
 end
@@ -51,9 +47,6 @@ function playdate.update()
   -- Update timers across the entire system
   timer.updateTimers()
   current_game_scene:update()
-
-  -- Resolve collisions
-  CollisionSystem.tick()
 
   -- Temp render FPS while developing
   playdate.drawFPS(5, 30)

@@ -5,12 +5,9 @@
 import "CoreLibs/graphics"
 import "CoreLibs/object"
 
-import "engine/Signal"
 import "engine/math"
 
 local gfx <const> = playdate.graphics
-
-local next_id = 0
 
 ---@alias ColliderTag integer
 ---@alias ColliderGroup integer
@@ -26,9 +23,6 @@ local next_id = 0
 ---@field flip_mode? integer
 
 ---@class Collider: _Object
----@field id integer
----@field enter_signal Signal<Collider>
----@field exit_signal Signal<Collider>
 ---@field game_object _Object
 ---@field private flip_mode integer
 ---@field private collider_sprite ColliderSprite
@@ -38,11 +32,6 @@ Collider = class("Collider").extends() or Collider
 
 ---@param config ColliderConfig
 function Collider:init(config)
-  self.id = next_id
-  next_id = next_id + 1
-
-  self.enter_signal = Signal()
-  self.exit_signal = Signal()
   self.game_object = config.game_object
 
   ---@class ColliderSprite: _Sprite
@@ -144,12 +133,16 @@ function Collider:setFlip(flip_mode)
   self:_applyRect()
 end
 
---- Subscribe to on enter collision
----@param listener fun(other: Collider)
----@return integer handle
-function Collider:onEnter(listener) return self.enter_signal:subscribe(listener) end
+--- Return all overlapping collider sprites with this collider
+---@return ColliderSprite[]
+function Collider:getOverlaps()
+  local collisions = self.collider_sprite:overlappingSprites()
+  for _, sprite in ipairs(collisions or {}) do
+    local maybe_collider_sprite = sprite --[[@as ColliderSprite]]
+    if maybe_collider_sprite.collider == nil then
+      error("Error - Collider: Collision sprite is not type ColliderSprite", 2)
+    end
+  end
 
---- Subscribe to on exit collision
----@param listener fun(other: Collider)
----@return integer handle
-function Collider:onExit(listener) return self.exit_signal:subscribe(listener) end
+  return collisions
+end
