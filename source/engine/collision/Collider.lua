@@ -6,6 +6,7 @@ import "CoreLibs/graphics"
 import "CoreLibs/object"
 
 import "engine/Signal"
+import "engine/math"
 
 local gfx <const> = playdate.graphics
 
@@ -141,6 +142,13 @@ function Collider:setFlip(flip_mode)
   -- Manually flip collide rect to avoid idempotent responses
   -- e.g. setImageFlip(mode, false), setImageFlip(mode, true) <- won't flip collide rect
   self:_applyRect()
+end
+
+--- Flip collider around center Y axis.
+function Collider:flipX()
+  local new_flip_mode = self.flip_mode == gfx.kImageFlippedX and gfx.kImageUnflipped
+    or gfx.kImageFlippedX
+  self:setFlip(new_flip_mode)
 end
 
 --- Subscribe to on enter collision

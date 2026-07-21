@@ -2,6 +2,9 @@
 -- Extends the built in math lib.
 --
 
+--- Alias for rectangle shape.
+---@alias Rect [integer, integer, integer, integer] {x, y, w, h}
+
 -- Lua and the Playdate SDK have no built-in clamp.
 --- Constrains value to [min, max]. Raises an error on invalid min, max values (e.g. max < min).
 ---@nodiscard

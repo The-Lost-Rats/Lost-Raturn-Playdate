@@ -6,6 +6,8 @@
 
 import "CoreLibs/object"
 
+import "engine/math"
+
 ---@enum LoopMode
 LOOP_MODE = {
   ONCE = "once",
@@ -92,8 +94,6 @@ end
 --#endregion
 
 --#region _____________________________  Frame Boxes  _____________________________
-
----@alias Rect [integer, integer, integer, integer] {x, y, w, h}
 
 ---@class FrameBoxConfig
 ---@field tag string
