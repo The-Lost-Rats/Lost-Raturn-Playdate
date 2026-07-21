@@ -164,19 +164,28 @@ end
 ---@private
 ---@param state PlayerState
 function Player:resolveActions(state)
+  -- Handle item drop
   if self.pickup_requested and self.held_item ~= nil then
     self:dropItem()
     self.pickup_requested = false
   end
 
-  for _, other in ipairs(self:overlappingSprites() or {}) do
+  -- Handle hazards
+  for _, other in ipairs(self.animator:getOverlaps "hitbox") do
+    state:resolveOverlap(self, other.collider.game_object, other:getTag())
+  end
+
+  -- Handle item pick up and climb
+  for _, other in ipairs(self.animator:getOverlaps "grabbox") do
+    local entity = other.collider.game_object
     local tag = other:getTag()
 
-    if self.pickup_requested and tag == TAGS.ITEM then
-      ---@cast other Item -- Tag guarantees we are an item
-      self:pickUp(other)
+    if tag == TAGS.ITEM then
+      if self.pickup_requested then
+        self:pickUp(entity --[[@as Item]])
+      end
     else
-      state:resolveOverlap(self, other, tag)
+      state:resolveOverlap(self, entity, tag)
     end
   end
 end
@@ -221,10 +230,10 @@ function Player:takeDamage(amount)
   if self.health == 0 then self:transitionTo(STATES.DEAD) end
 end
 
----@param leg_sprite LegSprite
-function Player:grabLeg(leg_sprite)
+---@param leg Leg
+function Player:grabLeg(leg)
   self.vx, self.vy = 0, 0
-  self:transitionTo(ClimbingState(leg_sprite.controller))
+  self:transitionTo(ClimbingState(leg))
 end
 
 function Player:jumpOffLeg()

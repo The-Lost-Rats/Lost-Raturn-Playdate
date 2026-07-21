@@ -4,6 +4,8 @@
 
 import "CoreLibs/object"
 
+import "engine/collision/Collider"
+
 ---@class PlayerState: _Object
 PlayerState = class("PlayerState").extends() or PlayerState
 
@@ -38,7 +40,7 @@ function PlayerState:constrain(player, x, y, hit_edge) return x, y end
 
 --- Handle collisions for this state
 ---@param player Player
----@param other _Sprite
+---@param other _Object
 ---@param tag integer
 function PlayerState:resolveOverlap(player, other, tag) end
 
