@@ -13,7 +13,7 @@ local gfx <const> = playdate.graphics
 ---@alias ColliderGroup integer
 
 ---@class ColliderConfig
----@field image _Image
+---@field size [integer, integer] (w, h)
 ---@field groups? ColliderGroup[]
 ---@field collide_groups? ColliderGroup[]
 ---@field tag ColliderTag
@@ -36,7 +36,8 @@ function Collider:init(config)
 
   ---@class ColliderSprite: _Sprite
   ---@field collider Collider
-  self.collider_sprite = gfx.sprite.new(config.image)
+  self.collider_sprite = gfx.sprite.new()
+  self.collider_sprite:setSize(table.unpack(config.size))
   self.collider_sprite:setVisible(false)
 
   -- TODO: where should validation live?
@@ -73,7 +74,7 @@ function Collider:setRect(rect)
   local _, _, w, h = table.unpack(rect)
   if w <= 0 or h <= 0 then
     error(
-      "Error - Collider: attempted to create collider with invalid width or height: "
+      "Error - Collider: attempted to set collider rect with invalid width or height: "
         .. w
         .. ", "
         .. h,
@@ -127,17 +128,14 @@ function Collider:setFlip(flip_mode)
   end
 
   self.flip_mode = flip_mode
-  self.collider_sprite:setImageFlip(flip_mode, false)
-  -- Manually flip collide rect to avoid idempotent responses
-  -- e.g. setImageFlip(mode, false), setImageFlip(mode, true) <- won't flip collide rect
   self:_applyRect()
 end
 
 --- Return all overlapping collider sprites with this collider
 ---@return ColliderSprite[]
 function Collider:getOverlaps()
-  local collisions = self.collider_sprite:overlappingSprites()
-  for _, sprite in ipairs(collisions or {}) do
+  local collisions = self.collider_sprite:overlappingSprites() or {}
+  for _, sprite in ipairs(collisions) do
     local maybe_collider_sprite = sprite --[[@as ColliderSprite]]
     if maybe_collider_sprite.collider == nil then
       error("Error - Collider: Collision sprite is not type ColliderSprite", 2)

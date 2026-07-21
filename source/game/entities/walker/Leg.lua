@@ -89,7 +89,7 @@ function Leg:init(x, y, direction, item_type, sprite)
   self.leg_sprite:setImageFlip(flip)
 
   self.leg_collider = Collider({
-    image = image,
+    size = { self.leg_sprite:getSize() },
     groups = { GROUPS.CLIMBABLE },
     tag = TAGS.LEG,
     center = sprite_center,
@@ -99,7 +99,7 @@ function Leg:init(x, y, direction, item_type, sprite)
   })
 
   self.shoe_collider = Collider({
-    image = image,
+    size = { self.leg_sprite:getSize() },
     groups = { GROUPS.HAZARD },
     tag = TAGS.SHOE,
     center = sprite_center,

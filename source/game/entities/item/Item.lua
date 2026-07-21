@@ -90,7 +90,7 @@ function Item:init(item_type, x, y)
 
   local collide_rect = { 0, 0, self:getSize() }
   self.collider = Collider({
-    image = item_image,
+    size = { self:getSize() },
     groups = { GROUPS.PICK_UP },
     tag = TAGS.ITEM,
     center = sprite_center,

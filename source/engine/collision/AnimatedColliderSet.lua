@@ -15,7 +15,7 @@ import "engine/collision/Collider"
 ---@field center [number, number] (x, y)
 
 ---@class AnimatedColliderSetConfig
----@field image _Image
+---@field size [integer, integer] (w, h)
 ---@field game_object _Object
 ---@field tag_map table<string, ColliderSpec>
 
@@ -31,7 +31,7 @@ function AnimatedColliderSet:init(config)
 
   for tag_str, collider_spec in pairs(config.tag_map) do
     local collider = Collider({
-      image = config.image,
+      size = config.size,
       groups = collider_spec.groups,
       collide_groups = collider_spec.collide_groups,
       tag = collider_spec.tag,

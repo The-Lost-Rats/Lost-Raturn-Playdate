@@ -220,4 +220,17 @@ end
 
 ---@return LoopMode
 function Clip:loopMode() return self.loop end
+
+--- Get all tags for this clip's frame boxes.
+---@return table<string, true>
+function Clip:boxTags()
+  local tags = {}
+  for _, frame_box in pairs(self.frame_boxes) do
+    for tag in pairs(frame_box) do
+      tags[tag] = true
+    end
+  end
+
+  return tags
+end
 --#endregion

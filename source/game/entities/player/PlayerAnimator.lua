@@ -8,6 +8,15 @@ import "engine/assets"
 import "engine/animation/Clip"
 import "engine/animation/Parameters"
 import "engine/animation/AnimationController"
+import "engine/collision/AnimatedColliderSet"
+
+import "game/constants"
+import "game/entities/player/playerConstants"
+
+local PLAYER <const> = PLAYER_CONSTANTS
+
+local GROUPS <const> = CONSTANTS.GROUPS
+local TAGS <const> = CONSTANTS.TAGS
 
 local JUMP_FRAMES <const> = {
   CROUCH = 1,
@@ -21,10 +30,13 @@ local APEX_VY <const> = 2
 
 ---@class PlayerAnimator: _Object
 ---@field private controller AnimationController
----@overload fun(): PlayerAnimator
+---@field private collider_set AnimatedColliderSet
+---@overload fun(player: Player): PlayerAnimator
 PlayerAnimator = class("PlayerAnimator").extends() or PlayerAnimator
 
-function PlayerAnimator:init()
+--- Create animation and collider controllers.
+---@param player _Object
+function PlayerAnimator:init(player)
   PlayerAnimator.super.init(self)
 
   -- Clips --------------------------------------------------------------
@@ -32,37 +44,65 @@ function PlayerAnimator:init()
   local run_sheet = Assets.loadImageTable "images/player/run"
   local jump_sheet = Assets.loadImageTable "images/player/jump"
 
-  local idle_clip =
-    Clip({ imagetable = idle_sheet, frames = { 1, 2 }, durations = 120, loop = LOOP_MODE.LOOP })
+  local idle_clip = Clip({
+    imagetable = idle_sheet,
+    frames = { 1, 2 },
+    durations = 120,
+    loop = LOOP_MODE.LOOP,
+    frame_boxes = {
+      { tag = "hitbox", rect = { 30, 12, 33, 18 }, frames = { 1, 2 } },
+      { tag = "grabbox", rect = { 30, 12, 33, 18 }, frames = { 1, 2 } },
+    },
+  })
   local run_clip = Clip({
     imagetable = run_sheet,
     frames = { 1, 2, 3, 4 },
     durations = 120,
     loop = LOOP_MODE.LOOP,
+    frame_boxes = {
+      { tag = "hitbox", rect = { 25, 20, 32, 22 }, frames = { 1, 2, 3, 4 } },
+      { tag = "grabbox", rect = { 25, 20, 32, 22 }, frames = { 1, 2, 3, 4 } },
+    },
   })
   local rise_clip = Clip({
     imagetable = jump_sheet,
     frames = { JUMP_FRAMES.RISE },
     durations = 100,
     loop = LOOP_MODE.LOOP,
+    frame_boxes = {
+      { tag = "hitbox", rect = { 25, 20, 32, 22 }, frames = { JUMP_FRAMES.RISE } },
+      { tag = "grabbox", rect = { 25, 20, 32, 22 }, frames = { JUMP_FRAMES.RISE } },
+    },
   })
   local hang_clip = Clip({
     imagetable = jump_sheet,
     frames = { JUMP_FRAMES.HANG },
     durations = 100,
     loop = LOOP_MODE.LOOP,
+    frame_boxes = {
+      { tag = "hitbox", rect = { 25, 20, 32, 22 }, frames = { JUMP_FRAMES.HANG } },
+      { tag = "grabbox", rect = { 25, 20, 32, 22 }, frames = { JUMP_FRAMES.HANG } },
+    },
   })
   local fall_clip = Clip({
     imagetable = jump_sheet,
     frames = { JUMP_FRAMES.FALL },
     durations = 100,
     loop = LOOP_MODE.LOOP,
+    frame_boxes = {
+      { tag = "hitbox", rect = { 25, 20, 32, 22 }, frames = { JUMP_FRAMES.FALL } },
+      { tag = "grabbox", rect = { 25, 20, 32, 22 }, frames = { JUMP_FRAMES.FALL } },
+    },
   })
   local land_clip = Clip({
     imagetable = jump_sheet,
     frames = { JUMP_FRAMES.LAND_SQUISH, JUMP_FRAMES.LAND_POP_UP },
     durations = { 120, 80 },
     loop = LOOP_MODE.ONCE,
+    frame_boxes = {
+      { tag = "hitbox", rect = { 25, 20, 32, 22 }, frames = { JUMP_FRAMES.LAND_POP_UP } },
+      { tag = "grabbox", rect = { 25, 20, 32, 22 }, frames = { JUMP_FRAMES.LAND_POP_UP } },
+    },
   })
 
   -- States --------------------------------------------------------------
@@ -104,6 +144,33 @@ function PlayerAnimator:init()
   params:declareTrigger "jump"
 
   self.controller = AnimationController(idle, params, {})
+
+  -- Colliders --------------------------------------------------------------
+  self.collider_set = AnimatedColliderSet({
+    size = { PLAYER.COLLISION_W, PLAYER.COLLISION_H },
+    game_object = player,
+    tag_map = {
+      hitbox = {
+        groups = { GROUPS.PLAYER },
+        collide_groups = { GROUPS.HAZARD },
+        tag = TAGS.PLAYER,
+        center = { 0.5, 1.0 },
+      },
+      grabbox = {
+        groups = { GROUPS.PLAYER },
+        collide_groups = { GROUPS.PICK_UP, GROUPS.CLIMBABLE },
+        tag = TAGS.PLAYER,
+        center = { 0.5, 1.0 },
+      },
+    },
+  })
+
+  -- Verify colliders exist for every tag defined
+  for _, clip in ipairs({ idle_clip, run_clip, rise_clip, hang_clip, fall_clip, land_clip }) do
+    for tag in pairs(clip:boxTags()) do
+      self.collider_set:getCollider(tag)
+    end
+  end
 end
 
 ---@param vy number

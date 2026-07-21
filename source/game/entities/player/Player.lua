@@ -80,7 +80,7 @@ function Player:init(x, y, initial_health, on_deliver)
   self.initial_health = initial_health
   self.start_x, self.start_y = x, y
 
-  self.animator = PlayerAnimator()
+  self.animator = PlayerAnimator(self)
   self:reset()
 end
 
