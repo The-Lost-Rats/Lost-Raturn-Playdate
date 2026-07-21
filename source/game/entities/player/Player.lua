@@ -73,9 +73,6 @@ function Player:init(x, y, initial_health, on_deliver)
   self:setZIndex(LAYERS.PLAYER)
   -- Set center of sprite to x: center, y: bottom
   self:setCenter(0.5, 1.0)
-  self:setGroups({ GROUPS.PLAYER })
-  self:setCollidesWithGroups({ GROUPS.PICK_UP, GROUPS.HAZARD, GROUPS.CLIMBABLE })
-  self:setTag(TAGS.PLAYER)
 
   self.initial_health = initial_health
   self.start_x, self.start_y = x, y
