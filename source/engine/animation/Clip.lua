@@ -1,9 +1,12 @@
 -- Clip.lua
 -- Immutable animation data: an ordered collection of image table frames
 -- with per-frame durations, loop modes, and optional frame tagged events.
+-- Also contains information on frame boxes.
 --
 
 import "CoreLibs/object"
+
+import "engine/math"
 
 ---@enum LoopMode
 LOOP_MODE = {
@@ -34,6 +37,18 @@ local function validatePosition(position, size, function_name)
         .. " not in range [1, "
         .. size
         .. "]",
+      2
+    )
+  end
+end
+
+--- Validate rectangle has valid dimensions
+---@param rect Rect
+local function validateRectangle(rect)
+  local _, _, w, h = table.unpack(rect)
+  if w <= 0 or h <= 0 then
+    error(
+      "Error - Clip: attempted to create frame box with invalid width or height: " .. w .. ", " .. h,
       2
     )
   end
@@ -78,18 +93,32 @@ local function normalizeDurations(durations, frame_count)
 end
 --#endregion
 
+--#region _____________________________  Frame Boxes  _____________________________
+
+---@class FrameBoxConfig
+---@field tag string
+---@field rect Rect
+---@field frames integer[] clip positions (1 indexed)
+
+---@alias FrameBoxes table<string, Rect> -- tag to collide rect for a given frame
+--#endregion
+
+--#region _____________________________  Clip  _____________________________
+
 ---@class ClipConfig
 ---@field imagetable _ImageTable source sheet
 ---@field frames integer[] imagetable cell indices in play order (1 indexed)
 ---@field durations number | number[] one value for all frames or a value per frame (in ms)
 ---@field loop? LoopMode defaults to ONCE
 ---@field events? table<integer, string> clip position (1 indexed) to event name
+---@field frame_boxes? FrameBoxConfig[] Frame box per frame (can have multiple per frame)
 
 ---@class Clip: _Object
 ---@field private images _Image[]
 ---@field private durations number[]
 ---@field private loop LoopMode
 ---@field private events table<integer, string>
+---@field private frame_boxes table<integer, FrameBoxes>
 ---@overload fun(config: ClipConfig): Clip
 Clip = class("Clip").extends() or Clip
 
@@ -103,8 +132,9 @@ function Clip:init(config)
     error("Error - Clip: frames must be a non-empty list", 2)
   end
 
-  -- Validate each individual frame
+  -- Validate each individual frame and initialise frame boxes to empty
   self.images = {}
+  self.frame_boxes = {}
   for i = 1, #frames do
     local frame_index = frames[i]
     local image = config.imagetable:getImage(frame_index)
@@ -120,6 +150,7 @@ function Clip:init(config)
     end
 
     self.images[i] = image
+    self.frame_boxes[i] = {}
   end
 
   self.durations = normalizeDurations(config.durations, #frames)
@@ -129,10 +160,24 @@ function Clip:init(config)
   -- e.g. a clip could be indices {5, 2, 3} from a sprite sheet and frame 5 at position 1 could have an event.
   self.events = {}
   for i, name in pairs(config.events or {}) do
-    if i < 1 or i > #frames then
-      error("Error - Clip: event position " .. i .. " out of range [1, " .. #frames .. "]", 2)
-    end
+    validatePosition(i, #frames, "init:events")
     self.events[i] = name
+  end
+
+  -- Validate and populate frame boxes
+  for _, box_config in ipairs(config.frame_boxes or {}) do
+    validateRectangle(box_config.rect)
+
+    for _, frame in ipairs(box_config.frames) do
+      validatePosition(frame, #frames, "init:frame_boxes")
+      if self.frame_boxes[frame][box_config.tag] then
+        error(
+          "Error - Clip: multiple frame boxes tagged " .. box_config.tag .. " on frame " .. frame,
+          2
+        )
+      end
+      self.frame_boxes[frame][box_config.tag] = box_config.rect
+    end
   end
 end
 
@@ -165,5 +210,27 @@ function Clip:eventAt(position)
   return self.events[position]
 end
 
+--- Return frame boxes at frame position. Can be multiple.
+---@param position integer
+---@return FrameBoxes
+function Clip:frameBoxesAt(position)
+  validatePosition(position, #self.images, "frameBoxesAt")
+  return self.frame_boxes[position]
+end
+
 ---@return LoopMode
 function Clip:loopMode() return self.loop end
+
+--- Get all tags for this clip's frame boxes.
+---@return table<string, true>
+function Clip:boxTags()
+  local tags = {}
+  for _, frame_box in pairs(self.frame_boxes) do
+    for tag in pairs(frame_box) do
+      tags[tag] = true
+    end
+  end
+
+  return tags
+end
+--#endregion

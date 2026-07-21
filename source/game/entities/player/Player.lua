@@ -31,8 +31,6 @@ local TAGS <const> = CONSTANTS.TAGS
 
 local PLAYER <const> = PLAYER_CONSTANTS
 
----@alias HitBox [integer, integer, integer, integer] -- {x, y, w, h}
-
 local FLIP_DIRECTION <const> = {
   [DIRECTION.LEFT] = gfx.kImageFlippedX,
   [DIRECTION.RIGHT] = gfx.kImageUnflipped,
@@ -75,14 +73,11 @@ function Player:init(x, y, initial_health, on_deliver)
   self:setZIndex(LAYERS.PLAYER)
   -- Set center of sprite to x: center, y: bottom
   self:setCenter(0.5, 1.0)
-  self:setGroups({ GROUPS.PLAYER })
-  self:setCollidesWithGroups({ GROUPS.PICK_UP, GROUPS.HAZARD, GROUPS.CLIMBABLE })
-  self:setTag(TAGS.PLAYER)
 
   self.initial_health = initial_health
   self.start_x, self.start_y = x, y
 
-  self.animator = PlayerAnimator()
+  self.animator = PlayerAnimator(self)
   self:reset()
 end
 
@@ -110,7 +105,6 @@ end
 --- and then advance animation.
 function Player:update()
   local state = self.current_state
-
   if state:isTerminal() then return end
 
   -- Could change state
@@ -133,17 +127,22 @@ function Player:update()
     x, y = state:constrain(self, x, y, hit_edge)
   end
 
+  -- Move player to final position
   self:moveTo(x, y)
 
-  self:resolveActions(state)
-
+  -- Advance animation and colliders
   self.animator:setVy(self.vy)
   self.animator:setGrounded(self:isGrounded())
   self.animator:setMoving(self:isMovingHorizontally())
 
-  if self.animator:update(Time.getDeltaTime()) then
-    self:setImage(self.animator:getImage(), FLIP_DIRECTION[self.current_direction])
-  end
+  local flip = FLIP_DIRECTION[self.current_direction]
+  local frame_changed = self.animator:update(Time.getDeltaTime(), x, y, flip)
+
+  -- Resolve collisions
+  self:resolveActions(state)
+
+  -- Draw current frame
+  if frame_changed then self:setImage(self.animator:getImage(), flip) end
 end
 --#endregion
 
@@ -162,19 +161,28 @@ end
 ---@private
 ---@param state PlayerState
 function Player:resolveActions(state)
+  -- Handle item drop
   if self.pickup_requested and self.held_item ~= nil then
     self:dropItem()
     self.pickup_requested = false
   end
 
-  for _, other in ipairs(self:overlappingSprites() or {}) do
+  -- Handle hazards
+  for _, other in ipairs(self.animator:getOverlaps "hitbox") do
+    state:resolveOverlap(self, other.collider.game_object, other:getTag())
+  end
+
+  -- Handle item pick up and climb
+  for _, other in ipairs(self.animator:getOverlaps "grabbox") do
+    local entity = other.collider.game_object
     local tag = other:getTag()
 
-    if self.pickup_requested and tag == TAGS.ITEM then
-      ---@cast other Item -- Tag guarantees we are an item
-      self:pickUp(other)
+    if tag == TAGS.ITEM then
+      if self.pickup_requested then
+        self:pickUp(entity --[[@as Item]])
+      end
     else
-      state:resolveOverlap(self, other, tag)
+      state:resolveOverlap(self, entity, tag)
     end
   end
 end
@@ -219,10 +227,10 @@ function Player:takeDamage(amount)
   if self.health == 0 then self:transitionTo(STATES.DEAD) end
 end
 
----@param leg_sprite LegSprite
-function Player:grabLeg(leg_sprite)
+---@param leg Leg
+function Player:grabLeg(leg)
   self.vx, self.vy = 0, 0
-  self:transitionTo(ClimbingState(leg_sprite.controller))
+  self:transitionTo(ClimbingState(leg))
 end
 
 function Player:jumpOffLeg()
@@ -354,4 +362,18 @@ function Player:isMovingHorizontally() return self.vx ~= 0 end
 ---@nodiscard
 ---@return boolean
 function Player:isGrounded() return self.current_state == STATES.GROUNDED end
+--#endregion
+
+--#region _____________________________  Lifecycle  _____________________________
+
+function Player:add()
+  Player.super.add(self)
+  self.animator:add()
+end
+
+function Player:remove()
+  self.animator:remove()
+  Player.super.remove(self)
+end
+
 --#endregion

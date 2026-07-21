@@ -4,6 +4,7 @@
 
 import "CoreLibs/object"
 
+import "game/entities/walker/Leg"
 import "game/entities/player/states/PlayerState"
 
 import "game/constants"
@@ -32,9 +33,9 @@ function FallingState:constrain(player, x, y, hit_edge)
   return x, y
 end
 
----@param player Player
----@param other LegSprite
----@param tag integer
 function FallingState:resolveOverlap(player, other, tag)
-  if self.grab_requested and tag == TAGS.LEG then player:grabLeg(other) end
+  if tag ~= TAGS.LEG or not self.grab_requested then return end
+
+  ---@cast other Leg
+  player:grabLeg(other)
 end

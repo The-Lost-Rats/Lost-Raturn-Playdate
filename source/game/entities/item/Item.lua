@@ -9,6 +9,7 @@ import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
 import "engine/assets"
+import "engine/collision/Collider"
 
 import "game/entities/item/itemConstants"
 import "game/constants"
@@ -46,6 +47,7 @@ local live_items = {}
 ---@field private grounded_start_time_ms? number Used for item bob sine wave. Set when item hits the gound.
 ---@field private grounded_timer? _Timer
 ---@field private blinking_timer? _Timer
+---@field private collider Collider
 ---@overload fun(item_type: ItemType, x: number, y: number): Item
 Item = class("Item").extends(gfx.sprite) or Item
 
@@ -70,19 +72,31 @@ end
 
 --#region _____________________________  Init  _____________________________
 
+--- Constructor
+---@param item_type ItemType
+---@param x number
+---@param y number
 function Item:init(item_type, x, y)
   Item.super.init(self)
 
   local item_image_path = item_type.sprite
   local item_image = Assets.loadImage(item_image_path, "item " .. item_type.name)
+  local sprite_center = { 0.5, 1.0 }
 
   self:setImage(item_image)
   self:setZIndex(LAYERS.ITEM)
   -- Set center of sprite to x: center, y: bottom
-  self:setCenter(0.5, 1.0)
-  self:setCollideRect(0, 0, self:getSize())
-  self:setGroups({ GROUPS.PICK_UP })
-  self:setTag(TAGS.ITEM)
+  self:setCenter(table.unpack(sprite_center))
+
+  local collide_rect = { 0, 0, self:getSize() }
+  self.collider = Collider({
+    size = { self:getSize() },
+    groups = { GROUPS.PICK_UP },
+    tag = TAGS.ITEM,
+    center = sprite_center,
+    game_object = self,
+    rect = collide_rect,
+  })
 
   self.item_type = item_type
   self.vx, self.vy = 0, 0
@@ -201,6 +215,7 @@ end
 --- Call super add and then register item in global set.
 function Item:add()
   Item.super.add(self)
+  self.collider:add()
   live_items[self] = true
 end
 
@@ -209,6 +224,18 @@ end
 function Item:remove()
   live_items[self] = nil
   self:cancelTimers()
+  self.collider:remove()
   Item.super.remove(self)
+end
+--#endregion
+
+--#region _____________________________  Move  _____________________________
+
+--- Move collider in lock step with item
+---@param x number
+---@param y number
+function Item:moveTo(x, y)
+  if self.collider ~= nil then self.collider:moveTo(x, y) end
+  Item.super.moveTo(self, x, y)
 end
 --#endregion

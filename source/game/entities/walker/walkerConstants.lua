@@ -2,13 +2,15 @@
 -- Tuning values for walker behaviour and walker registry (type -> item, sprite etc.)
 --
 
+import "engine/math"
+
 import "game/constants"
 import "game/entities/item/itemConstants"
 
 ---@class WalkerSprite
 ---@field path string
----@field leg_rect HitBox Collider for player to climb
----@field shoe_rect HitBox Collider for shoe to hit player
+---@field leg_rect Rect Collider for player to climb
+---@field shoe_rect Rect Collider for shoe to hit player
 
 ---@class WalkerType
 ---@field name string

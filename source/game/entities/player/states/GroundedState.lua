@@ -4,6 +4,7 @@
 
 import "CoreLibs/object"
 
+import "game/entities/walker/Leg"
 import "game/entities/player/states/PlayerState"
 
 import "game/constants"
@@ -20,11 +21,9 @@ end
 
 function GroundedState:applyForces(player, vx, vy) return player:horizontalMovement(), 0 end
 
----@param player Player
----@param other LegSprite|ShoeSprite
----@param tag integer
 function GroundedState:resolveOverlap(player, other, tag)
-  if tag == TAGS.SHOE and other.controller:isFalling() then
-    player:hit(other.controller:getDamage())
-  end
+  if tag ~= TAGS.SHOE then return end
+
+  ---@cast other Leg
+  if other:isFalling() then player:hit(other:getDamage()) end
 end

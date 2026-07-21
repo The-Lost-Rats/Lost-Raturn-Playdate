@@ -1,5 +1,5 @@
 -- Leg.lua
--- One leg of a walker. Has two sprites: 1) leg, 2) shoe.
+-- One leg of a walker. Has one sprite: 1) leg and two colliders: 1) leg 2) shoe.
 -- Controls leg lifecycle (rise, fall, land).
 --
 
@@ -8,6 +8,7 @@ import "CoreLibs/object"
 import "CoreLibs/sprites"
 
 import "engine/assets"
+import "engine/collision/Collider"
 
 import "game/entities/item/Item"
 
@@ -47,13 +48,20 @@ local MOVEMENT_STATES = {
 ---@field private sprite WalkerSprite
 ---@field private image_w integer
 ---@field private image_h integer
----@field private leg_sprite LegSprite
----@field private shoe_sprite ShoeSprite
+---@field private leg_sprite _Sprite
+---@field private leg_collider Collider
+---@field private shoe_collider Collider
 ---@overload fun(x: number, y: number, direction: Direction, item_type: ItemType, sprite: WalkerSprite): Leg
 Leg = class("Leg").extends() or Leg
 
 --#region _____________________________  Init  _____________________________
 
+--- Constructor.
+---@param x number
+---@param y number
+---@param direction Direction
+---@param item_type ItemType
+---@param sprite WalkerSprite
 function Leg:init(x, y, direction, item_type, sprite)
   Leg.super.init(self)
 
@@ -68,39 +76,37 @@ function Leg:init(x, y, direction, item_type, sprite)
   self.current_move_state = MOVEMENT_STATES.GROUNDED
 
   local image = Assets.loadImage(sprite.path, "leg")
+  local sprite_center = { 0.5, 1.0 }
   self.image_w, self.image_h = image:getSize()
 
   -- Flip sprite if leg is moving to the right of the screen (leg sprites point left by default)
   local flip = direction == DIRECTION.RIGHT and gfx.kImageFlippedX or gfx.kImageUnflipped
 
-  ---@class LegSprite: _Sprite
-  ---@field controller Leg
-  ---@field item_type ItemType
   self.leg_sprite = gfx.sprite.new(image)
   self.leg_sprite:setZIndex(LAYERS.WALKER)
   -- Set center of sprite to x: center, y: bottom
-  self.leg_sprite:setCenter(0.5, 1.0)
-  self.leg_sprite:setCollideRect(table.unpack(sprite.leg_rect))
-  self.leg_sprite:setImageFlip(flip, true)
-  self.leg_sprite:setGroups({ GROUPS.CLIMBABLE })
-  self.leg_sprite:setTag(TAGS.LEG)
-  self.leg_sprite.item_type = item_type
-  self.leg_sprite.controller = self
+  self.leg_sprite:setCenter(table.unpack(sprite_center))
+  self.leg_sprite:setImageFlip(flip)
 
-  ---@class ShoeSprite: _Sprite
-  ---@field controller Leg
-  -- Invisible sprite. Just used for hazard collide rect.
-  -- Use the same sprite so we can draw collide rects at known places on sprite.
-  self.shoe_sprite = gfx.sprite.new(image)
-  self.shoe_sprite:setVisible(false)
-  self.shoe_sprite:setZIndex(LAYERS.WALKER)
-  -- Set center of sprite to x: center, y: bottom
-  self.shoe_sprite:setCenter(0.5, 1.0)
-  self.shoe_sprite:setCollideRect(table.unpack(sprite.shoe_rect))
-  self.shoe_sprite:setImageFlip(flip, true)
-  self.shoe_sprite:setGroups({ GROUPS.HAZARD })
-  self.shoe_sprite:setTag(TAGS.SHOE)
-  self.shoe_sprite.controller = self
+  self.leg_collider = Collider({
+    size = { self.leg_sprite:getSize() },
+    groups = { GROUPS.CLIMBABLE },
+    tag = TAGS.LEG,
+    center = sprite_center,
+    game_object = self,
+    rect = sprite.leg_rect,
+    flip_mode = flip,
+  })
+
+  self.shoe_collider = Collider({
+    size = { self.leg_sprite:getSize() },
+    groups = { GROUPS.HAZARD },
+    tag = TAGS.SHOE,
+    center = sprite_center,
+    game_object = self,
+    rect = sprite.shoe_rect,
+    flip_mode = flip,
+  })
 
   self:moveTo(x, y)
 end
@@ -152,12 +158,14 @@ end
 
 function Leg:add()
   self.leg_sprite:add()
-  self.shoe_sprite:add()
+  self.leg_collider:add()
+  self.shoe_collider:add()
 end
 
 function Leg:remove()
   self.leg_sprite:remove()
-  self.shoe_sprite:remove()
+  self.leg_collider:remove()
+  self.shoe_collider:remove()
 end
 --#endregion
 
@@ -175,7 +183,8 @@ function Leg:moveBy(dx, dy) self:moveTo(self.x + dx, self.y + dy) end
 function Leg:moveTo(x, y)
   self.x, self.y = x, y
   self.leg_sprite:moveTo(x, y)
-  self.shoe_sprite:moveTo(x, y)
+  self.leg_collider:moveTo(x, y)
+  self.shoe_collider:moveTo(x, y)
 end
 --#endregion
 
