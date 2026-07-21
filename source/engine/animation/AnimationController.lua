@@ -233,6 +233,6 @@ function AnimationController:onEvent(listener) return self.animation_player:onEv
 ---@return _Image
 function AnimationController:getImage() return self.animation_player:getImage() end
 
----@return FrameBox[]
+---@return FrameBoxes
 function AnimationController:getFrameBoxes() return self.animation_player:getFrameBoxes() end
 --#endregion

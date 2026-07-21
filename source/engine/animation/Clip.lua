@@ -100,9 +100,7 @@ end
 ---@field rect Rect
 ---@field frames integer[] clip positions (1 indexed)
 
----@class FrameBox
----@field tag string
----@field rect Rect
+---@alias FrameBoxes table<string, Rect> -- tag to collide rect for a given frame
 --#endregion
 
 --#region _____________________________  Clip  _____________________________
@@ -120,7 +118,7 @@ end
 ---@field private durations number[]
 ---@field private loop LoopMode
 ---@field private events table<integer, string>
----@field private frame_boxes table<integer, FrameBox[]>
+---@field private frame_boxes table<integer, FrameBoxes>
 ---@overload fun(config: ClipConfig): Clip
 Clip = class("Clip").extends() or Clip
 
@@ -172,7 +170,13 @@ function Clip:init(config)
 
     for _, frame in ipairs(box_config.frames) do
       validatePosition(frame, #frames, "init:frame_boxes")
-      table.insert(self.frame_boxes[frame], { tag = box_config.tag, rect = box_config.rect })
+      if self.frame_boxes[frame][box_config.tag] then
+        error(
+          "Error - Clip: multiple frame boxes tagged " .. box_config.tag .. " on frame " .. frame,
+          2
+        )
+      end
+      self.frame_boxes[frame][box_config.tag] = box_config.rect
     end
   end
 end
@@ -208,7 +212,7 @@ end
 
 --- Return frame boxes at frame position. Can be multiple.
 ---@param position integer
----@return FrameBox[]
+---@return FrameBoxes
 function Clip:frameBoxesAt(position)
   validatePosition(position, #self.images, "frameBoxesAt")
   return self.frame_boxes[position]

@@ -45,25 +45,15 @@ end
 
 --- Update colliders with current frame boxes.
 --- Clear any that aren't active this frame.
----@param boxes FrameBox[]
+---@param boxes FrameBoxes
 function AnimatedColliderSet:applyBoxes(boxes)
-  local seen_tags = {}
-  for _, box in ipairs(boxes) do
-    local collider = self.colliders[box.tag]
-    if collider == nil then
-      error(
-        "Error - AnimatedColliderSet: attempted to apply box for undeclared collider with tag "
-          .. box.tag,
-        2
-      )
+  for tag, collider in pairs(self.colliders) do
+    local rect = boxes[tag]
+    if rect then
+      collider:setRect(rect)
+    else
+      collider:clearRect()
     end
-
-    collider:setRect(box.rect)
-    seen_tags[box.tag] = true
-  end
-
-  for tag_str, collider in pairs(self.colliders) do
-    if not seen_tags[tag_str] then collider:clearRect() end
   end
 end
 

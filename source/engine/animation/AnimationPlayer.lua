@@ -133,7 +133,7 @@ end
 --#region _____________________________  Queries  _____________________________
 
 --- Frame boxes at current frame.
----@return FrameBox[]
+---@return FrameBoxes
 function AnimationPlayer:getFrameBoxes() return self.clip:frameBoxesAt(self.current_frame_index) end
 
 --- Current frame image.
