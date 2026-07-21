@@ -57,11 +57,16 @@ function AnimatedColliderSet:applyBoxes(boxes)
   end
 end
 
---- Move and flip colliders to x and y with given flip mode.
+--- Move and flip colliders to follow the entity's position and facing.
 ---@param x number
 ---@param y number
 ---@param flip integer
-function AnimatedColliderSet:follow(x, y, flip) end
+function AnimatedColliderSet:follow(x, y, flip)
+  for _, collider in pairs(self.colliders) do
+    collider:moveTo(x, y)
+    collider:setFlip(flip)
+  end
+end
 
 --- Add all colliders to playdate sprite system.
 function AnimatedColliderSet:add()
