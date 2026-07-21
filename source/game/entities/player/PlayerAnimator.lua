@@ -52,7 +52,7 @@ function PlayerAnimator:init(player)
     loop = LOOP_MODE.LOOP,
     frame_boxes = {
       { tag = "hitbox", rect = { 30, 12, 33, 18 }, frames = { 1, 2 } },
-      { tag = "grabbox", rect = { 30, 12, 33, 18 }, frames = { 1, 2 } },
+      { tag = "grabbox", rect = { 30, 12, 66, 36 }, frames = { 1, 2 } },
     },
   })
   local run_clip = Clip({
@@ -62,7 +62,7 @@ function PlayerAnimator:init(player)
     loop = LOOP_MODE.LOOP,
     frame_boxes = {
       { tag = "hitbox", rect = { 25, 20, 32, 22 }, frames = { 1, 2, 3, 4 } },
-      { tag = "grabbox", rect = { 25, 20, 32, 22 }, frames = { 1, 2, 3, 4 } },
+      { tag = "grabbox", rect = { 25, 20, 64, 44 }, frames = { 1, 2, 3, 4 } },
     },
   })
   local rise_clip = Clip({
@@ -71,8 +71,8 @@ function PlayerAnimator:init(player)
     durations = 100,
     loop = LOOP_MODE.LOOP,
     frame_boxes = {
-      { tag = "hitbox", rect = { 25, 20, 32, 22 }, frames = { JUMP_FRAMES.RISE } },
-      { tag = "grabbox", rect = { 25, 20, 32, 22 }, frames = { JUMP_FRAMES.RISE } },
+      { tag = "hitbox", rect = { 25, 20, 32, 22 }, frames = { 1 } },
+      { tag = "grabbox", rect = { 25, 20, 64, 44 }, frames = { 1 } },
     },
   })
   local hang_clip = Clip({
@@ -81,8 +81,8 @@ function PlayerAnimator:init(player)
     durations = 100,
     loop = LOOP_MODE.LOOP,
     frame_boxes = {
-      { tag = "hitbox", rect = { 25, 20, 32, 22 }, frames = { JUMP_FRAMES.HANG } },
-      { tag = "grabbox", rect = { 25, 20, 32, 22 }, frames = { JUMP_FRAMES.HANG } },
+      { tag = "hitbox", rect = { 25, 20, 32, 22 }, frames = { 1 } },
+      { tag = "grabbox", rect = { 25, 20, 64, 44 }, frames = { 1 } },
     },
   })
   local fall_clip = Clip({
@@ -91,8 +91,8 @@ function PlayerAnimator:init(player)
     durations = 100,
     loop = LOOP_MODE.LOOP,
     frame_boxes = {
-      { tag = "hitbox", rect = { 25, 20, 32, 22 }, frames = { JUMP_FRAMES.FALL } },
-      { tag = "grabbox", rect = { 25, 20, 32, 22 }, frames = { JUMP_FRAMES.FALL } },
+      { tag = "hitbox", rect = { 25, 20, 32, 22 }, frames = { 1 } },
+      { tag = "grabbox", rect = { 25, 20, 64, 44 }, frames = { 1 } },
     },
   })
   local land_clip = Clip({
@@ -101,8 +101,8 @@ function PlayerAnimator:init(player)
     durations = { 120, 80 },
     loop = LOOP_MODE.ONCE,
     frame_boxes = {
-      { tag = "hitbox", rect = { 25, 20, 32, 22 }, frames = { JUMP_FRAMES.LAND_POP_UP } },
-      { tag = "grabbox", rect = { 25, 20, 32, 22 }, frames = { JUMP_FRAMES.LAND_POP_UP } },
+      { tag = "hitbox", rect = { 25, 20, 32, 22 }, frames = { 1, 2 } },
+      { tag = "grabbox", rect = { 25, 20, 64, 44 }, frames = { 1, 2 } },
     },
   })
 

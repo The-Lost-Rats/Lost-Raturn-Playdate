@@ -235,7 +235,7 @@ end
 ---@param x number
 ---@param y number
 function Item:moveTo(x, y)
-  self.collider:moveTo(x, y)
+  if self.collider ~= nil then self.collider:moveTo(x, y) end
   Item.super.moveTo(self, x, y)
 end
 --#endregion
