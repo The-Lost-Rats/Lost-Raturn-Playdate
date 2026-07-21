@@ -144,13 +144,6 @@ function Collider:setFlip(flip_mode)
   self:_applyRect()
 end
 
---- Flip collider around center Y axis.
-function Collider:flipX()
-  local new_flip_mode = self.flip_mode == gfx.kImageFlippedX and gfx.kImageUnflipped
-    or gfx.kImageFlippedX
-  self:setFlip(new_flip_mode)
-end
-
 --- Subscribe to on enter collision
 ---@param listener fun(other: Collider)
 ---@return integer handle
