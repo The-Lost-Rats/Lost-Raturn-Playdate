@@ -108,7 +108,6 @@ end
 --- and then advance animation.
 function Player:update()
   local state = self.current_state
-
   if state:isTerminal() then return end
 
   -- Could change state
@@ -131,17 +130,22 @@ function Player:update()
     x, y = state:constrain(self, x, y, hit_edge)
   end
 
+  -- Move player to final position
   self:moveTo(x, y)
 
-  self:resolveActions(state)
-
+  -- Advance animation and colliders
   self.animator:setVy(self.vy)
   self.animator:setGrounded(self:isGrounded())
   self.animator:setMoving(self:isMovingHorizontally())
 
-  if self.animator:update(Time.getDeltaTime()) then
-    self:setImage(self.animator:getImage(), FLIP_DIRECTION[self.current_direction])
-  end
+  local flip = FLIP_DIRECTION[self.current_direction]
+  local frame_changed = self.animator:update(Time.getDeltaTime(), x, y, flip)
+
+  -- Resolve collisions
+  self:resolveActions(state)
+
+  -- Draw current frame
+  if frame_changed then self:setImage(self.animator:getImage(), flip) end
 end
 --#endregion
 
@@ -352,4 +356,18 @@ function Player:isMovingHorizontally() return self.vx ~= 0 end
 ---@nodiscard
 ---@return boolean
 function Player:isGrounded() return self.current_state == STATES.GROUNDED end
+--#endregion
+
+--#region _____________________________  Lifecycle  _____________________________
+
+function Player:add()
+  Player.super.add(self)
+  self.animator:add()
+end
+
+function Player:remove()
+  self.animator:remove()
+  Player.super.remove(self)
+end
+
 --#endregion

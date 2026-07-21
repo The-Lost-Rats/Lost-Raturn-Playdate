@@ -9,6 +9,7 @@ import "engine/animation/Clip"
 import "engine/animation/Parameters"
 import "engine/animation/AnimationController"
 import "engine/collision/AnimatedColliderSet"
+import "engine/collision/Collider"
 
 import "game/constants"
 import "game/entities/player/playerConstants"
@@ -186,8 +187,16 @@ function PlayerAnimator:jump() self.controller:setTrigger "jump" end
 
 --- Advance the animation. Return true if the frame changed.
 ---@param dt number (ms)
+---@param x number
+---@param y number
+---@param flip integer
 ---@return boolean
-function PlayerAnimator:update(dt) return self.controller:update(dt) end
+function PlayerAnimator:update(dt, x, y, flip)
+  local changed = self.controller:update(dt)
+  if changed then self.collider_set:applyBoxes(self.controller:getFrameBoxes()) end
+  self.collider_set:follow(x, y, flip)
+  return changed
+end
 
 ---@return _Image
 function PlayerAnimator:getImage() return self.controller:getImage() end
@@ -195,3 +204,12 @@ function PlayerAnimator:getImage() return self.controller:getImage() end
 ---@param listener fun(event_name: string)
 ---@return integer handle
 function PlayerAnimator:onEvent(listener) return self.controller:onEvent(listener) end
+
+--- Return overlapping sprites for collider with given tag
+---@param tag string
+---@return ColliderSprite[]
+function PlayerAnimator:getOverlaps(tag) return self.collider_set:getCollider(tag):getOverlaps() end
+
+function PlayerAnimator:add() self.collider_set:add() end
+
+function PlayerAnimator:remove() self.collider_set:remove() end
